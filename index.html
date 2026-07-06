@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#000000" />
+<title>DLavie — FIFA Modding Launcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<style>
+:root{--pure-black:#000;--carbon:#0A0A0A;--surface-1:#0E0E0E;--surface-2:#141414;--text-white:#FFF;--soft-text:#CCC;--sub-text:#888;--dim-text:#555;--glass-stroke:rgba(255,255,255,0.10);--glass-stroke-hi:rgba(255,255,255,0.20);--hairline:rgba(255,255,255,0.05);--danger:#FF4444;--amber:#FFAA00;--success:#00D26A;--font-display:'Clash Display','Space Grotesk',sans-serif;--font-body:'Space Grotesk',sans-serif;--font-mono:'JetBrains Mono',monospace;--ease:cubic-bezier(0.16,1,0.3,1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font-body);background:var(--pure-black);color:var(--text-white);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;touch-action:manipulation}
+button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-action:manipulation}
+.halftone-bg{position:fixed;inset:0;z-index:-2;pointer-events:none;background:var(--pure-black)}
+.halftone-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0.85;mix-blend-mode:screen}
+.glow-orb{position:fixed;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,rgba(255,255,255,0.02) 30%,transparent 60%);filter:blur(80px);pointer-events:none;z-index:-1}
+.glow-orb-1{top:-200px;right:-200px;animation:orb1 20s ease-in-out infinite alternate}
+.glow-orb-2{bottom:-200px;left:-200px;animation:orb2 25s ease-in-out infinite alternate}
+@keyframes orb1{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-200px,200px) scale(1.2)}}
+@keyframes orb2{0%{transform:translate(0,0) scale(1)}100%{transform:translate(200px,-200px) scale(0.9)}}
+.vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 0%,transparent 50%,rgba(0,0,0,0.6) 100%)}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 32px;display:flex;align-items:center;justify-content:space-between;transition:backdrop-filter 0.4s,background 0.4s;border-bottom:1px solid transparent}
+.nav.scrolled{background:rgba(0,0,0,0.65);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--hairline)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text-white);font-family:var(--font-display);font-weight:600;font-size:18px;letter-spacing:-0.02em}
+.nav-logo-mark{width:32px;height:32px;border-radius:8px;background:var(--text-white);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;font-family:var(--font-display)}
+.nav-links{display:flex;align-items:center;gap:4px;list-style:none}
+.nav-link{text-decoration:none;color:var(--soft-text);font-size:14px;font-weight:500;padding:8px 14px;border-radius:999px;transition:color 0.25s,background 0.25s;cursor:pointer}
+.nav-link:hover{color:var(--text-white);background:rgba(255,255,255,0.06)}
+.nav-link.active{color:var(--pure-black);background:var(--text-white)}
+.nav-cta{text-decoration:none;color:var(--pure-black);background:var(--text-white);padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;transition:transform 0.25s;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px}
+.nav-cta:hover{transform:translateY(-1px)}
+.nav-cta svg{width:14px;height:14px}
+.nav-user{display:flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;background:rgba(255,255,255,0.06);border:1px solid var(--glass-stroke);border-radius:999px;cursor:pointer;transition:all 0.2s}
+.nav-user:hover{background:rgba(255,255,255,0.1)}
+.nav-user-avatar{width:26px;height:26px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;overflow:hidden}
+.nav-user-avatar img{width:100%;height:100%;object-fit:cover}
+.nav-user-name{font-size:13px;font-weight:600;color:var(--text-white);max-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.menu-toggle{display:none;background:none;border:none;color:var(--text-white);cursor:pointer;padding:8px}
+
+/* PAGES */
+.page{display:none;min-height:100vh;min-height:100dvh}
+.page.active{display:block}
+.reveal{opacity:0;transform:translateY(30px);animation:reveal-fb 0.01s 3s forwards}
+@keyframes reveal-fb{to{opacity:1;transform:none}}
+
+/* HOME */
+.home-hero{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:120px 32px 80px;text-align:center;position:relative;overflow:hidden}
+.home-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;background:var(--text-white);border:1px solid var(--text-white);border-radius:999px;font-size:12px;color:var(--pure-black);margin-bottom:32px;font-weight:600;box-shadow:0 8px 30px rgba(255,255,255,0.18)}
+.home-badge-dot{width:18px;height:18px;border-radius:50%;background:var(--success);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.home-title{font-family:var(--font-display);font-size:clamp(48px,9vw,140px);font-weight:600;line-height:0.95;letter-spacing:-0.04em;margin-bottom:24px;max-width:1200px;color:var(--text-white)}
+.home-subtitle{font-size:clamp(16px,1.4vw,19px);color:var(--soft-text);max-width:620px;line-height:1.55;margin-bottom:48px}
+.home-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn-primary,.btn-secondary{text-decoration:none;padding:16px 28px;border-radius:12px;font-size:14px;font-weight:600;transition:transform 0.25s;display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none}
+.btn-primary{background:var(--text-white);color:var(--pure-black)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(255,255,255,0.18)}
+.btn-secondary{background:transparent;color:var(--text-white);border:1px solid var(--glass-stroke)}
+.btn-secondary:hover{border-color:var(--glass-stroke-hi);background:rgba(255,255,255,0.04)}
+.btn-primary svg,.btn-secondary svg{width:16px;height:16px}
+.home-stats{display:flex;gap:48px;margin-top:64px;flex-wrap:wrap;justify-content:center}
+.home-stat{text-align:center}
+.home-stat-num{font-family:var(--font-display);font-size:32px;font-weight:600;color:var(--text-white)}
+.home-stat-label{font-size:11px;color:var(--sub-text);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px}
+
+/* FEATURES section */
+.features{padding:80px 32px;max-width:900px;margin:0 auto}
+.section-label{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;color:var(--sub-text);text-transform:uppercase;letter-spacing:0.16em;margin-bottom:20px}
+.section-label::before{content:'';width:24px;height:1px;background:var(--sub-text)}
+.section-title{font-family:var(--font-display);font-size:clamp(32px,5vw,56px);font-weight:500;letter-spacing:-0.03em;line-height:1.05;margin-bottom:40px;max-width:800px}
+.feature-card{background:var(--surface-1);border:1px solid var(--glass-stroke);border-radius:16px;padding:24px;margin-bottom:16px;transition:border-color 0.3s}
+.feature-card:hover{border-color:var(--glass-stroke-hi)}
+.feature-card h3{font-family:var(--font-display);font-size:18px;font-weight:600;margin-bottom:8px}
+.feature-card p{color:var(--soft-text);font-size:14px;line-height:1.6}
+
+/* LEGAL pages */
+.legal{padding:120px 32px 80px;max-width:800px;margin:0 auto}
+.legal h1{font-family:var(--font-display);font-size:clamp(32px,5vw,48px);font-weight:600;letter-spacing:-0.02em;margin-bottom:16px}
+.legal .updated{font-size:12px;color:var(--sub-text);font-family:var(--font-mono);margin-bottom:40px}
+.legal h2{font-family:var(--font-display);font-size:22px;font-weight:600;margin-top:32px;margin-bottom:12px}
+.legal p{color:var(--soft-text);font-size:15px;line-height:1.7;margin-bottom:16px}
+.legal ul{margin-bottom:16px;padding-left:0;list-style:none}
+.legal li{color:var(--soft-text);font-size:15px;line-height:1.7;padding-left:24px;position:relative;margin-bottom:8px}
+.legal li::before{content:'';position:absolute;left:0;top:11px;width:12px;height:1px;background:var(--sub-text)}
+.legal a{color:var(--text-white);text-decoration:none;border-bottom:1px solid var(--glass-stroke)}
+.legal .callout{background:rgba(255,170,0,0.06);border:1px solid rgba(255,170,0,0.25);border-radius:12px;padding:16px;margin:16px 0;color:var(--soft-text);font-size:14px}
+
+/* PORTAL */
+.portal{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:120px 32px 80px}
+.portal-card{max-width:480px;width:100%;background:var(--surface-1);border:1px solid var(--glass-stroke-hi);border-radius:24px;padding:40px;text-align:center}
+.portal-logo{width:64px;height:64px;border-radius:16px;background:var(--text-white);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:32px;margin:0 auto 24px}
+.portal-title{font-family:var(--font-display);font-size:28px;font-weight:600;margin-bottom:8px}
+.portal-sub{color:var(--soft-text);font-size:14px;margin-bottom:32px;line-height:1.5}
+
+/* AUTH form (shared with portal) */
+.auth-form-group{margin-bottom:16px;text-align:left}
+.auth-label{display:block;font-size:12px;color:var(--sub-text);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em}
+.auth-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:12px;padding:14px 16px;color:var(--text-white);font-family:var(--font-body);font-size:15px;transition:border-color 0.3s}
+.auth-input:focus{outline:none;border-color:var(--glass-stroke-hi);background:rgba(255,255,255,0.06)}
+.auth-input::placeholder{color:var(--dim-text)}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--dim-text);font-size:11px;text-transform:uppercase;letter-spacing:0.12em}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--hairline)}
+.btn-connect{width:100%;background:var(--text-white);color:var(--pure-black);border:none;border-radius:12px;padding:14px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:transform 0.2s;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-connect:hover{transform:translateY(-1px)}
+.btn-connect svg{width:18px;height:18px}
+.auth-error{color:var(--danger);font-size:13px;margin-top:12px;padding:10px 14px;background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.25);border-radius:8px;display:none}
+.auth-error.show{display:block}
+.auth-switch{text-align:center;margin-top:20px;font-size:13px;color:var(--sub-text)}
+.auth-switch a{color:var(--text-white);cursor:pointer;text-decoration:none;border-bottom:1px solid var(--glass-stroke)}
+
+/* FAQ + ISSUES (migrated) */
+.faq-search{width:100%;max-width:560px;position:relative;margin-bottom:48px}
+.faq-search-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:999px;padding:18px 24px 18px 56px;color:var(--text-white);font-family:var(--font-body);font-size:15px;transition:border-color 0.3s;backdrop-filter:blur(10px)}
+.faq-search-input:focus{outline:none;border-color:var(--glass-stroke-hi)}
+.faq-search-icon{position:absolute;left:20px;top:50%;transform:translateY(-50%);color:var(--sub-text)}
+.faq-search-icon svg{width:20px;height:20px}
+.categories{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.category-pill{background:rgba(255,255,255,0.03);border:1px solid var(--glass-stroke);color:var(--soft-text);padding:10px 18px;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.3s var(--ease);display:inline-flex;align-items:center;gap:8px}
+.category-pill:hover{border-color:var(--glass-stroke-hi);color:var(--text-white)}
+.category-pill.active{background:var(--text-white);color:var(--pure-black);border-color:var(--text-white)}
+.faq-item{border-bottom:1px solid var(--hairline);overflow:hidden}
+.faq-item:first-child{border-top:1px solid var(--hairline)}
+.faq-question{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:28px 0;cursor:pointer;background:none;border:none;width:100%;text-align:left;color:var(--text-white);font-family:var(--font-display);font-size:clamp(18px,2vw,22px);font-weight:500;transition:color 0.3s}
+.faq-question:hover{color:var(--soft-text)}
+.faq-question-cat{font-family:var(--font-mono);font-size:10px;color:var(--sub-text);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;display:block;font-weight:400}
+.faq-question-text{flex:1}
+.faq-icon{width:36px;height:36px;border-radius:50%;border:1px solid var(--glass-stroke);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.4s var(--ease);color:var(--soft-text)}
+.faq-item.open .faq-icon{background:var(--text-white);color:var(--pure-black);border-color:var(--text-white);transform:rotate(45deg)}
+.faq-icon svg{width:14px;height:14px;stroke-width:2}
+.faq-answer{max-height:0;overflow:hidden;transition:max-height 0.5s var(--ease)}
+.faq-answer-inner{padding:0 60px 32px 0;color:var(--soft-text);font-size:15px;line-height:1.7}
+.faq-answer-inner p{margin-bottom:14px}.faq-answer-inner p:last-child{margin-bottom:0}
+.faq-answer-inner strong{color:var(--text-white);font-weight:600}
+.faq-answer-inner code{font-family:var(--font-mono);font-size:13px;background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:4px;color:var(--text-white);border:1px solid var(--hairline)}
+.faq-answer-inner ul{margin:12px 0;padding-left:0;list-style:none}
+.faq-answer-inner li{padding-left:24px;position:relative;margin-bottom:8px}
+.faq-answer-inner li::before{content:'';position:absolute;left:0;top:11px;width:12px;height:1px;background:var(--sub-text)}
+.faq-answer-inner a{color:var(--text-white);text-decoration:none;border-bottom:1px solid var(--glass-stroke)}
+
+/* ISSUES */
+.issues-section{padding:80px 32px 120px;max-width:900px;margin:0 auto}
+.issues-list{display:flex;flex-direction:column;gap:16px}
+.issue-card{background:var(--surface-1);border:1px solid var(--glass-stroke);border-radius:16px;padding:16px;transition:border-color 0.3s}
+.issue-card:hover{border-color:var(--glass-stroke-hi)}
+.issue-card-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.issue-card-avatar{width:28px;height:28px;border-radius:50%;background:var(--surface-2);border:1px solid var(--glass-stroke);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;overflow:hidden}
+.issue-card-avatar img{width:100%;height:100%;object-fit:cover}
+.issue-card-meta{flex:1;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.issue-card-author{font-size:13px;font-weight:600;color:var(--text-white)}
+.issue-card-time{font-size:11px;color:var(--sub-text);font-family:var(--font-mono)}
+.issue-card-category{display:inline-block;padding:2px 8px;border-radius:999px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0}
+.issue-card-category.bug{background:rgba(255,68,68,0.15);color:#FF6B6B}
+.issue-card-category.feature{background:rgba(0,210,106,0.15);color:#00D26A}
+.issue-card-category.question{background:rgba(255,170,0,0.15);color:#FFAA00}
+.issue-card-category.other{background:rgba(136,136,136,0.15);color:#AAA}
+.issue-card-title{font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--text-white);margin-bottom:4px;line-height:1.3}
+.issue-card-body{color:var(--soft-text);font-size:13px;line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.issue-card-body.expanded{-webkit-line-clamp:unset;overflow:visible}
+.issue-card-reply{background:rgba(255,255,255,0.02);border:1px solid var(--hairline);border-left:2px solid var(--text-white);border-radius:8px;padding:10px 12px;margin-top:8px}
+.issue-card-reply-header{display:flex;align-items:center;gap:6px;margin-bottom:4px;cursor:pointer}
+.issue-card-reply-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:linear-gradient(110deg,#888 0%,#FFF 25%,#CCC 50%,#FFF 75%,#888 100%);background-size:200% 100%;color:var(--pure-black);border-radius:999px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;animation:shiny-sweep 3s linear infinite;position:relative;overflow:hidden}
+.issue-card-reply-badge::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.8),transparent);animation:shiny-flash 3s linear infinite}
+@keyframes shiny-sweep{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes shiny-flash{0%,100%{left:-100%}50%,60%{left:200%}}
+.issue-card-reply-toggle{font-size:11px;color:var(--sub-text);margin-left:auto}
+.issue-card-reply-text{color:var(--soft-text);font-size:12px;line-height:1.5;white-space:pre-wrap;display:none;margin-top:6px}
+.issue-card-reply.expanded .issue-card-reply-text{display:block}
+.issue-card-reply.expanded .issue-card-reply-toggle::after{content:' ▲'}
+.issue-card-reply:not(.expanded) .issue-card-reply-toggle::after{content:' ▼'}
+.issue-card-id{margin-top:8px;padding-top:6px;border-top:1px solid var(--hairline);font-family:var(--font-mono);font-size:9px;color:var(--dim-text);letter-spacing:0.04em}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal-card{background:var(--surface-1);border:1px solid var(--glass-stroke);border-radius:24px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;padding:32px;transform:scale(0.95) translateY(20px);transition:transform 0.3s var(--ease)}
+.modal-overlay.open .modal-card{transform:scale(1) translateY(0)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.modal-title{font-family:var(--font-display);font-size:22px;font-weight:600;letter-spacing:-0.02em}
+.modal-close{background:none;border:none;color:var(--sub-text);cursor:pointer;padding:8px;border-radius:50%;transition:color 0.2s;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{color:var(--text-white);background:rgba(255,255,255,0.06)}
+.modal-close svg{width:20px;height:20px}
+.modal-subtitle{color:var(--soft-text);font-size:14px;margin-bottom:24px;line-height:1.5}
+.account-selector{position:relative;margin-bottom:20px}
+.account-selector-label{font-size:12px;color:var(--sub-text);font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.08em}
+.account-selector-button{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;color:var(--text-white);font-family:var(--font-body)}
+.account-avatar{width:32px;height:32px;border-radius:50%;background:var(--surface-2);border:1px solid var(--glass-stroke);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:var(--text-white);flex-shrink:0;overflow:hidden}
+.account-avatar img{width:100%;height:100%;object-fit:cover}
+.account-info{flex:1;text-align:left;min-width:0}
+.account-name{font-size:14px;font-weight:600;color:var(--text-white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.account-username{font-size:12px;color:var(--sub-text)}
+.category-radios{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.category-radio{flex:1;min-width:100px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-stroke);border-radius:12px;padding:12px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:8px;color:var(--soft-text);font-size:13px;font-weight:500}
+.category-radio:hover{border-color:var(--glass-stroke-hi)}
+.category-radio.selected{background:var(--text-white);color:var(--pure-black);border-color:var(--text-white)}
+.category-radio-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--sub-text);flex-shrink:0;transition:all 0.2s}
+.category-radio.selected .category-radio-dot{border-color:var(--pure-black);background:var(--pure-black);box-shadow:inset 0 0 0 3px var(--text-white)}
+.issue-form-group{margin-bottom:16px}
+.issue-input,.issue-textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:12px;padding:14px 16px;color:var(--text-white);font-family:var(--font-body);font-size:15px;transition:border-color 0.3s;resize:vertical}
+.issue-input:focus,.issue-textarea:focus{outline:none;border-color:var(--glass-stroke-hi)}
+.issue-textarea{min-height:100px;line-height:1.5}
+
+/* FOOTER */
+.footer{border-top:1px solid var(--hairline);padding:48px 32px 32px;text-align:center}
+.footer-logo{font-family:var(--font-display);font-size:14px;color:var(--soft-text);margin-bottom:20px;letter-spacing:0.04em}
+.footer-links{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.footer-link{color:var(--sub-text);text-decoration:none;font-size:13px;transition:color 0.3s;cursor:pointer}
+.footer-link:hover{color:var(--text-white)}
+.footer-copy{color:var(--dim-text);font-size:11px;font-family:var(--font-mono);letter-spacing:0.04em}
+
+/* MOBILE */
+.mobile-menu{position:fixed;inset:0;background:var(--pure-black);z-index:99;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:20px;opacity:0;pointer-events:none;transition:opacity 0.4s;padding:80px 24px 40px;overflow-y:auto}
+.mobile-menu.open{opacity:1;pointer-events:auto}
+.mobile-menu a{font-family:var(--font-display);font-size:28px;color:var(--text-white);text-decoration:none;font-weight:500}
+
+@media(max-width:768px){
+.nav{padding:14px 16px}
+.nav-links{display:none}
+.nav-logo span:not(.nav-logo-mark){display:none}
+.nav-cta{padding:8px 14px;font-size:12px}
+.menu-toggle{display:flex;align-items:center;justify-content:center;width:40px;height:40px}
+.home-hero{padding:100px 20px 60px}
+.home-stats{gap:32px}
+.features,.legal,.issues-section,.faq-section{padding-left:20px;padding-right:20px}
+.faq-question{font-size:17px;padding:22px 0}
+.faq-answer-inner{padding-right:0}
+}
+
+@media(prefers-reduced-motion:reduce){
+*,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}
+.reveal{opacity:1 !important;transform:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="halftone-bg"><canvas class="halftone-canvas" id="halftoneCanvas"></canvas></div>
+<div class="glow-orb glow-orb-1"></div>
+<div class="glow-orb glow-orb-2"></div>
+<div class="vignette"></div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+<a class="nav-logo" href="#/" data-link><span class="nav-logo-mark">D</span><span>DLavie</span></a>
+<ul class="nav-links">
+<li><a class="nav-link" href="#/" data-link>Home</a></li>
+<li><a class="nav-link" href="#/faq" data-link>FAQ</a></li>
+<li><a class="nav-link" href="#/issues" data-link>Issues</a></li>
+<li><a class="nav-link" href="#/terms" data-link>Terms</a></li>
+<li><a class="nav-link" href="#/privacy" data-link>Privacy</a></li>
+</ul>
+<a href="#/portal" class="nav-cta" data-link>Portal</a>
+<button class="menu-toggle" id="menuToggle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+<a href="#/" data-link>Home</a>
+<a href="#/portal" data-link>Portal</a>
+<a href="#/faq" data-link>FAQ</a>
+<a href="#/issues" data-link>Issues</a>
+<a href="#/terms" data-link>Terms</a>
+<a href="#/privacy" data-link>Privacy</a>
+</div>
+
+<!-- ═══ HOME ═══ -->
+<div class="page" id="page-home">
+<section class="home-hero">
+<div class="home-badge"><span class="home-badge-dot">✓</span><span>DLavie: New FIFA Modding Launcher</span></div>
+<h1 class="home-title" id="typingTarget"></h1>
+<p class="home-subtitle">Launcher komunitas untuk FIFA 16 Mobile mod. Install, patch, dan kelola game dalam satu aplikasi.</p>
+<div class="home-actions">
+<a href="#" class="btn-primary" onclick="downloadLauncher(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download Launcher</a>
+<a href="#/portal" class="btn-secondary" data-link><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>Connect Portal</a>
+</div>
+<div class="home-stats">
+<div class="home-stat"><div class="home-stat-num" data-count="199">0</div><div class="home-stat-label">Versi Terbaru</div></div>
+<div class="home-stat"><div class="home-stat-num" data-count="10">0</div><div class="home-stat-label">Bahasa</div></div>
+<div class="home-stat"><div class="home-stat-num" data-count="3">0</div><div class="home-stat-label">GB Data</div></div>
+</div>
+</section>
+<section class="features">
+<div class="section-label reveal">Fitur</div>
+<h2 class="section-title reveal">Semua dalam satu launcher.</h2>
+<div class="feature-card reveal"><h3>🎮 FIFA 16 Mod Support</h3><p>Install base data FIFA 16 Mobile mod (2.7GB) + patch system via Shizuku/root. Backup, rollback, dan channel system (stable/beta).</p></div>
+<div class="feature-card reveal"><h3>👥 Community Hub</h3><p>Feed komunitas, follow/unfollow, posts, comments, badges, dan presence indicators (online/last seen).</p></div>
+<div class="feature-card reveal"><h3>🔗 DLavie Portal</h3><p>Connect akun launcher ke web DLavie. Buat issue, kelola akun, dan akses FAQ — semua dari satu login.</p></div>
+<div class="feature-card reveal"><h3>🛡️ Admin Dashboard</h3><p>Dev Dashboard untuk admin: manage users, releases, patches, maintenance, notifications, dan issue review.</p></div>
+<div class="feature-card reveal"><h3>📱 Modern UI</h3><p>Pure Monochrome + Halftone design. GSAP animations, Lenis smooth scroll, Material 3, Compose UI.</p></div>
+</section>
+</div>
+
+<!-- ═══ PORTAL ═══ -->
+<div class="page" id="page-portal">
+<section class="portal">
+<div class="portal-card" id="portalContent">
+<div class="portal-logo">D</div>
+<h1 class="portal-title">DLavie Portal</h1>
+<p class="portal-sub">Login atau connect akun DLavie Launcher untuk mengakses semua fitur web.</p>
+<button class="btn-connect" onclick="connectToDLavie()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>Connect to DLavie</button>
+<div class="auth-divider">atau login manual</div>
+<div id="loginForm">
+<div class="auth-form-group"><label class="auth-label">Email</label><input type="email" class="auth-input" id="loginEmail" placeholder="kamu@email.com" /></div>
+<div class="auth-form-group"><label class="auth-label">Password</label><input type="password" class="auth-input" id="loginPassword" placeholder="••••••••" /></div>
+<div class="auth-error" id="loginError"></div>
+<button class="btn-connect" onclick="performLogin()">Masuk</button>
+</div>
+<div id="registerForm" style="display:none;">
+<div class="auth-form-group"><label class="auth-label">Email</label><input type="email" class="auth-input" id="regEmail" placeholder="kamu@email.com" /></div>
+<div class="auth-form-group"><label class="auth-label">Password</label><input type="password" class="auth-input" id="regPassword" placeholder="Min 6 karakter" /></div>
+<div class="auth-form-group"><label class="auth-label">Username</label><input type="text" class="auth-input" id="regUsername" placeholder="3-24 huruf/angka/_" /></div>
+<div class="auth-form-group"><label class="auth-label">Display Name</label><input type="text" class="auth-input" id="regDisplayName" placeholder="Nama tampilan" /></div>
+<div class="auth-error" id="regError"></div>
+<button class="btn-connect" onclick="performRegister()">Daftar</button>
+</div>
+<div class="auth-switch" id="authSwitch">Belum punya akun? <a onclick="switchAuthMode('register')">Daftar di sini</a></div>
+</div>
+</section>
+</div>
+
+<!-- ═══ FAQ ═══ -->
+<div class="page" id="page-faq">
+<section class="home-hero" style="min-height:auto;padding-top:120px;padding-bottom:40px;">
+<div class="home-badge"><span class="home-badge-dot">✓</span><span>DLavie: New FIFA Modding Launcher</span></div>
+<h1 class="home-title" style="font-size:clamp(36px,6vw,80px);" id="faqTyping"></h1>
+<p class="home-subtitle">Semua yang perlu kamu tahu tentang DLavie Launcher.</p>
+<div class="faq-search"><span class="faq-search-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><input type="text" class="faq-search-input" id="searchInput" placeholder="Cari pertanyaan…" /></div>
+</section>
+<section style="padding:0 32px 40px;max-width:1200px;margin:0 auto;">
+<div class="section-label">Kategori</div>
+<div class="categories" id="categories"></div>
+</section>
+<section style="padding:0 32px 120px;max-width:900px;margin:0 auto;">
+<div id="faqList"></div>
+</section>
+</div>
+
+<!-- ═══ ISSUES ═══ -->
+<div class="page" id="page-issues">
+<section class="issues-section">
+<div class="section-label reveal">Issues Komunitas</div>
+<h2 class="section-title reveal">Lihat semua issue dari user DLavie.</h2>
+<p style="color:var(--soft-text);font-size:15px;margin-bottom:32px;">Transparansi penuh — semua issue yang dilaporkan user tampil di sini.</p>
+<div style="margin-bottom:24px;"><a href="#" class="btn-primary" onclick="openCreateIssueFlow(event)">Buat Issue</a></div>
+<div id="issuesList" class="issues-list"><div style="text-align:center;padding:60px;color:var(--sub-text);">Pilih kategori atau buat issue baru.</div></div>
+</section>
+</div>
+
+<!-- ═══ TERMS ═══ -->
+<div class="page" id="page-terms">
+<section class="legal">
+<h1>Terms & Conditions</h1>
+<p class="updated">Last updated: July 7, 2026</p>
+<h2>1. Acceptance of Terms</h2>
+<p>By downloading, installing, or using DLavie Launcher ("the App"), you agree to be bound by these Terms & Conditions. If you do not agree, do not use the App.</p>
+<h2>2. Description of Service</h2>
+<p>DLavie Launcher is a community launcher application for FIFA 16 Mobile modding. The App provides game installation, patch management, community features, and account management.</p>
+<h2>3. User Accounts</h2>
+<ul>
+<li>You must provide accurate information when creating an account.</li>
+<li>You are responsible for maintaining the security of your account.</li>
+<li>One person may not create multiple accounts to manipulate community features.</li>
+<li>Accounts found violating these Terms may be suspended or terminated.</li>
+</ul>
+<h2>4. Acceptable Use</h2>
+<ul>
+<li>Do not use the App to distribute malicious content.</li>
+<li>Do not attempt to reverse engineer, decompile, or modify the App.</li>
+<li>Do not spam, harass, or abuse other users.</li>
+<li>Do not use automated scripts or bots without permission.</li>
+</ul>
+<h2>5. FIFA Modding</h2>
+<p>The App provides modding tools for FIFA 16 Mobile. You acknowledge that:
+<ul>
+<li>Modding is done at your own risk.</li>
+<li>The App is not affiliated with EA Sports.</li>
+<li>Game data modifications may affect gameplay.</li>
+<li>You are responsible for backing up your data.</li>
+</ul></p>
+<h2>6. Privacy</h2>
+<p>Your use of the App is also governed by our Privacy Policy. See the <a href="#/privacy" data-link>Privacy Policy</a> page for details.</p>
+<h2>7. Disclaimer</h2>
+<p>The App is provided "as is" without warranties of any kind. We do not guarantee uninterrupted service or error-free operation.</p>
+<h2>8. Limitation of Liability</h2>
+<p>We shall not be liable for any damages arising from the use of the App, including data loss, game corruption, or account suspension.</p>
+<h2>9. Changes to Terms</h2>
+<p>We may update these Terms at any time. Continued use of the App after changes constitutes acceptance of the new Terms.</p>
+<h2>10. Contact</h2>
+<p>For questions about these Terms, create an issue via the <a href="#/issues" data-link>Issues</a> page.</p>
+</section>
+</div>
+
+<!-- ═══ PRIVACY ═══ -->
+<div class="page" id="page-privacy">
+<section class="legal">
+<h1>Privacy Policy</h1>
+<p class="updated">Last updated: July 7, 2026</p>
+<h2>1. Information We Collect</h2>
+<h3>Account Information</h3>
+<ul>
+<li>Email address (for authentication)</li>
+<li>Username and display name</li>
+<li>Avatar image (if uploaded)</li>
+<li>Bio and country (optional)</li>
+</ul>
+<h3>Device Information</h3>
+<ul>
+<li>Android version (for compatibility)</li>
+<li>App version (for telemetry)</li>
+<li>Device model (for crash reporting, via Firebase Crashlytics)</li>
+</ul>
+<h3>Usage Data</h3>
+<ul>
+<li>App events: app_open, login, patch_apply, game_launch, logout</li>
+<li>Community interactions: posts, comments, follows, likes</li>
+<li>Presence: last_seen_at timestamp</li>
+</ul>
+<h2>2. How We Use Your Information</h2>
+<ul>
+<li>Provide and maintain the App</li>
+<li>Authenticate and authorize user actions</li>
+<li>Display community content (posts, comments, profiles)</li>
+<li>Send push notifications (announcements, ticket replies)</li>
+<li>Analyze app usage to improve features</li>
+<li>Detect and prevent abuse, spam, and fraud</li>
+</ul>
+<h2>3. Data Storage</h2>
+<p>Your data is stored in Supabase (PostgreSQL) hosted on secure cloud infrastructure. Authentication tokens are encrypted using AES-256-GCM on your device.</p>
+<div class="callout">We do NOT store: passwords in plain text (bcrypt hashed), GPS location, contacts, SMS, or browsing history.</div>
+<h2>4. Data Sharing</h2>
+<p>We do not sell or rent your data. We may share data with:
+<ul>
+<li>Firebase (Crashlytics, FCM) — for crash reporting and push notifications</li>
+<li>GitHub — for release downloads (IP address only, no personal data)</li>
+</ul></p>
+<h2>5. Your Rights</h2>
+<ul>
+<li>Access: You can view your data in the Profile screen.</li>
+<li>Correction: You can edit your profile, bio, and avatar.</li>
+<li>Deletion: You can request account deletion via the Issues page.</li>
+<li>Data portability: You can export your posts and comments.</li>
+</ul>
+<h2>6. Data Retention</h2>
+<ul>
+<li>Account data: Retained until account deletion is requested.</li>
+<li>Telemetry events: Retained for 90 days, then automatically purged.</li>
+<li>Crash logs: Retained for 90 days (Firebase Crashlytics default).</li>
+</ul>
+<h2>7. Security</h2>
+<ul>
+<li>Row-Level Security (RLS) on all database tables</li>
+<li>JWT authentication with automatic refresh</li>
+<li>HTTPS for all API communication</li>
+<li>EncryptedSharedPreferences for token storage</li>
+</ul>
+<h2>8. Children's Privacy</h2>
+<p>The App is not directed to children under 13. We do not knowingly collect data from children.</p>
+<h2>9. Changes to This Policy</h2>
+<p>We may update this Privacy Policy at any time. Changes will be posted on this page.</p>
+<h2>10. Contact</h2>
+<p>For privacy questions or data requests, create an issue via the <a href="#/issues" data-link>Issues</a> page.</p>
+</section>
+</div>
+
+<!-- CREATE ISSUE MODAL -->
+<div class="modal-overlay" id="createIssueModal">
+<div class="modal-card">
+<div class="modal-header"><div class="modal-title">Buat Issue</div><button class="modal-close" onclick="closeCreateIssueModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+<p class="modal-subtitle">Laporan Anda akan tampil di halaman Issue untuk semua user DLavie.</p>
+<div class="account-selector"><div class="account-selector-label">Akun</div><div class="account-selector-button"><div class="account-avatar" id="accountAvatar"></div><div class="account-info"><div class="account-name" id="accountName">—</div><div class="account-username" id="accountUsername">—</div></div></div></div>
+<div class="account-selector-label">Kategori</div>
+<div class="category-radios" id="categoryRadios">
+<div class="category-radio selected" data-cat="Bug" onclick="selectCategory(this)"><div class="category-radio-dot"></div>Bug</div>
+<div class="category-radio" data-cat="Feature" onclick="selectCategory(this)"><div class="category-radio-dot"></div>Feature</div>
+<div class="category-radio" data-cat="Question" onclick="selectCategory(this)"><div class="category-radio-dot"></div>Question</div>
+<div class="category-radio" data-cat="Other" onclick="selectCategory(this)"><div class="category-radio-dot"></div>Other</div>
+</div>
+<div class="issue-form-group"><label class="auth-label">Judul Issue</label><input type="text" class="issue-input" id="issueTitle" placeholder="Ringkasan singkat issue Anda" /></div>
+<div class="issue-form-group"><label class="auth-label">Detail Issue</label><textarea class="issue-textarea" id="issueBody" placeholder="Jelaskan issue secara detail…"></textarea></div>
+<div class="auth-error" id="issueError"></div>
+<button class="btn-connect" onclick="submitIssue()">Kirim Issue</button>
+</div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+<div class="footer-logo">DLAVIE · FIFA MOODING LAUNCHER</div>
+<div class="footer-links">
+<a href="#/terms" class="footer-link" data-link>Terms</a>
+<a href="#/privacy" class="footer-link" data-link>Privacy</a>
+<a href="#/faq" class="footer-link" data-link>FAQ</a>
+<a href="#/issues" class="footer-link" data-link>Issues</a>
+</div>
+<div class="footer-copy">© 2026 DLavie Company · FIFA Mooding Launcher</div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════
+const SUPABASE_URL='https://lvmucsxbmadtsgrxuwmo.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';
+const LAUNCHER_APK_URL='https://github.com/drmacze/F16-Launcher/releases/latest/download/DLavie26-Launcher-debug.apk';
+const PORTAL_URL='https://drmacze.github.io/dlavie-web/';
+
+let currentUser=null;
+let selectedCategory='Bug';
+
+// ═══════════════════════════════════════════════════════════════
+// ROUTER (hash-based)
+// ═══════════════════════════════════════════════════════════════
+const routes=['home','portal','faq','issues','terms','privacy'];
+
+function router(){
+const hash=window.location.hash.replace('#/','')||'home';
+const page=routes.includes(hash)?hash:'home';
+routes.forEach(r=>{
+const el=document.getElementById('page-'+r);
+if(el) el.classList.toggle('active',r===page);
+});
+// Update nav active state
+document.querySelectorAll('.nav-link').forEach(l=>{
+const href=l.getAttribute('href');
+l.classList.toggle('active',href==='#/'+page||(page==='home'&&href==='#/'));
+});
+// Page-specific init
+if(page==='home') initHome();
+if(page==='portal') initPortal();
+if(page==='faq') initFAQ();
+if(page==='issues') loadIssues();
+// Close mobile menu
+document.getElementById('mobileMenu').classList.remove('open');
+// Scroll to top
+if(window.lenis) lenis.scrollTo(0,{immediate:true});
+else window.scrollTo(0,0);
+}
+
+// Handle all internal links
+document.addEventListener('click',(e)=>{
+const link=e.target.closest('[data-link]');
+if(link){
+e.preventDefault();
+window.location.hash=link.getAttribute('href');
+}
+});
+
+window.addEventListener('hashchange',router);
+
+// ═══════════════════════════════════════════════════════════════
+// SESSION (SSO — shared localStorage across same origin)
+// ═══════════════════════════════════════════════════════════════
+function saveSession(access,refresh,uid,email){
+localStorage.setItem('dlavie_access',access);
+localStorage.setItem('dlavie_refresh',refresh);
+localStorage.setItem('dlavie_uid',uid);
+localStorage.setItem('dlavie_email',email||'');
+}
+function clearSession(){
+['dlavie_access','dlavie_refresh','dlavie_uid','dlavie_email'].forEach(k=>localStorage.removeItem(k));
+currentUser=null;
+updateNavUser();
+}
+function getStoredSession(){
+const a=localStorage.getItem('dlavie_access'),u=localStorage.getItem('dlavie_uid');
+return(a&&u)?{access:a,uid:u}:null;
+}
+
+async function fetchUserProfile(uid,token){
+try{
+const r=await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${uid}&select=id,username,display_name,avatar_url,role&limit=1`,{headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${token}`}});
+if(!r.ok)return null;
+const d=await r.json();return d[0]||null;
+}catch(e){return null;}
+}
+
+async function restoreSession(){
+const s=getStoredSession();if(!s)return;
+const p=await fetchUserProfile(s.uid,s.access);
+if(p){
+currentUser={id:p.id,email:localStorage.getItem('dlavie_email')||'',username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,role:p.role};
+updateNavUser();
+}else clearSession();
+}
+
+async function autoLoginFromURL(){
+const p=new URLSearchParams(window.location.search);
+const token=p.get('token'),uid=p.get('uid'),email=p.get('email');
+if(!token||!uid)return false;
+saveSession(token,'',uid,email);
+const profile=await fetchUserProfile(uid,token);
+if(profile){
+currentUser={id:profile.id,email:email||'',username:profile.username,display_name:profile.display_name,avatar_url:profile.avatar_url,role:profile.role};
+updateNavUser();
+showToast('Berhasil connect dengan launcher!');
+const cleanUrl=window.location.origin+window.location.pathname;
+window.history.replaceState({},document.title,cleanUrl);
+return true;
+}
+clearSession();return false;
+}
+
+function updateNavUser(){
+const navCta=document.querySelector('.nav-cta');
+if(!navCta)return;
+let b=document.getElementById('navUserBadge');
+if(currentUser){
+if(!b){b=document.createElement('div');b.id='navUserBadge';b.className='nav-user';b.addEventListener('click',(e)=>{e.stopPropagation();alert('Klik Logout untuk keluar:\n\n'+currentUser.display_name+'\n'+currentUser.email);});navCta.parentNode.insertBefore(b,navCta);}
+const i=(currentUser.display_name||currentUser.username||'?')[0].toUpperCase();
+b.innerHTML=`<div class="nav-user-avatar">${currentUser.avatar_url?`<img src="${currentUser.avatar_url}" alt=""/>`:i}</div><span class="nav-user-name">${esc(currentUser.display_name||currentUser.username)}</span>`;
+}else{if(b)b.remove();}
+}
+
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+
+// ═══════════════════════════════════════════════════════════════
+// PORTAL — Connect to DLavie + Login/Register
+// ═══════════════════════════════════════════════════════════════
+function connectToDLavie(){
+const cb=encodeURIComponent(PORTAL_URL);
+const ua=navigator.userAgent||'';
+const isAndroid=/android/i.test(ua);
+const isIOS=/iphone|ipad|ipod/i.test(ua);
+if(!isAndroid&&!isIOS){showPortalInfo();return;}
+let opened=false;
+const vh=()=>{if(document.hidden)opened=true;document.removeEventListener('visibilitychange',vh);};
+document.addEventListener('visibilitychange',vh);
+if(isAndroid){
+window.location.href=`intent://connect?callback=${cb}#Intent;scheme=dlavie;package=com.drmacze.f16launcher;S.browser_fallback_url=${encodeURIComponent(PORTAL_URL+'?connect=fail')};end`;
+}else{
+window.location.href=`dlavie://connect?callback=${cb}`;
+}
+setTimeout(()=>{document.removeEventListener('visibilitychange',vh);if(!opened&&!document.hidden)showPortalInfo();},1500);
+}
+
+function showPortalInfo(){
+const c=document.getElementById('portalContent');
+c.innerHTML=`
+<div class="portal-logo">D</div>
+<h1 class="portal-title">Connect to DLavie</h1>
+<p class="portal-sub">Untuk connect langsung dari launcher, pastikan:</p>
+<div style="margin:20px 0;padding:16px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:12px;text-align:left;">
+<div style="display:flex;gap:12px;margin-bottom:12px;"><div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--text-white);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">1</div><div style="font-size:14px;color:var(--soft-text);"><strong style="color:var(--text-white);">Install DLavie Launcher</strong><br>Download dari tombol di bawah.</div></div>
+<div style="display:flex;gap:12px;margin-bottom:12px;"><div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--text-white);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">2</div><div style="font-size:14px;color:var(--soft-text);"><strong style="color:var(--text-white);">Login di Launcher</strong><br>Buka launcher, login dengan akun DLavie.</div></div>
+<div style="display:flex;gap:12px;"><div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--text-white);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">3</div><div style="font-size:14px;color:var(--soft-text);"><strong style="color:var(--text-white);">Klik "Connect" dari Launcher</strong><br>Launcher akan redirect balik ke sini.</div></div>
+</div>
+<button class="btn-connect" onclick="downloadLauncher();location.reload();" style="margin-bottom:12px;">Download Launcher</button>
+<div class="auth-divider">atau</div>
+<button class="btn-connect" onclick="location.hash='#/portal';location.reload();" style="background:transparent;color:var(--text-white);border:1px solid var(--glass-stroke);">Login Manual</button>
+`;
+}
+
+function switchAuthMode(mode){
+const lf=document.getElementById('loginForm'),rf=document.getElementById('registerForm');
+const sw=document.getElementById('authSwitch');
+if(mode==='register'){lf.style.display='none';rf.style.display='block';sw.innerHTML='Sudah punya akun? <a onclick="switchAuthMode(\'login\')">Masuk di sini</a>';}
+else{lf.style.display='block';rf.style.display='none';sw.innerHTML='Belum punya akun? <a onclick="switchAuthMode(\'register\')">Daftar di sini</a>';}
+}
+
+async function performLogin(){
+const email=document.getElementById('loginEmail').value.trim();
+const pwd=document.getElementById('loginPassword').value;
+const err=document.getElementById('loginError');err.classList.remove('show');
+if(!email||!pwd){err.textContent='Email dan password wajib diisi.';err.classList.add('show');return;}
+try{
+const r=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd})});
+const d=await r.json();
+if(!r.ok)throw new Error(d.error_description||d.error||'Login gagal');
+saveSession(d.access_token,d.refresh_token,d.user.id,d.user.email);
+const p=await fetchUserProfile(d.user.id,d.access_token);
+if(p)currentUser={id:p.id,email:d.user.email,username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,role:p.role};
+updateNavUser();
+showToast('Login berhasil!');
+location.hash='#/';
+}catch(e){err.textContent=e.message;err.classList.add('show');}
+}
+
+async function performRegister(){
+const email=document.getElementById('regEmail').value.trim();
+const pwd=document.getElementById('regPassword').value;
+const un=document.getElementById('regUsername').value.trim();
+const dn=document.getElementById('regDisplayName').value.trim();
+const err=document.getElementById('regError');err.classList.remove('show');
+if(!email||!pwd||!un||!dn){err.textContent='Semua field wajib diisi.';err.classList.add('show');return;}
+if(pwd.length<6){err.textContent='Password minimal 6 karakter.';err.classList.add('show');return;}
+try{
+const r=await fetch(`${SUPABASE_URL}/auth/v1/signup`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd,data:{username:un,display_name:dn}})});
+const d=await r.json();
+if(!r.ok)throw new Error(d.error_description||d.error||'Registrasi gagal');
+if(d.access_token){
+saveSession(d.access_token,d.refresh_token,d.user.id,d.user.email);
+currentUser={id:d.user.id,email:d.user.email,username:un,display_name:dn,avatar_url:null,role:'user'};
+updateNavUser();showToast('Registrasi berhasil!');location.hash='#/';
+}else{err.textContent='Cek email untuk konfirmasi, lalu login.';err.style.color='var(--success)';err.classList.add('show');}
+}catch(e){err.textContent=e.message;err.classList.add('show');}
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DOWNLOAD
+// ═══════════════════════════════════════════════════════════════
+function downloadLauncher(e){
+if(e)e.preventDefault();
+try{const a=document.createElement('a');a.href=LAUNCHER_APK_URL;a.download='DLavie26-Launcher-debug.apk';a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(LAUNCHER_APK_URL,'_blank','noopener');}
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FAQ DATA (migrated from dlavie-faq)
+// ═══════════════════════════════════════════════════════════════
+const FAQ_DATA=[
+{cat:'instalasi',q:'Bagaimana cara install DLavie Launcher?',a:'<p>Buka halaman <a href="#/portal" data-link>Portal</a> → klik <strong>Download Launcher</strong>. Download APK (~26 MB), install (allow unknown source), buka launcher → register/login.</p>'},
+{cat:'instalasi',q:'Kenapa harus uninstall versi lama dulu?',a:'<p>Setiap rilis besar kadang mengubah signing key APK. Android menolak install APK baru kalau signature berbeda.</p>'},
+{cat:'instalasi',q:'Apa persyaratan sistem minimum?',a:'<ul><li><strong>Android 7.0 (SDK 24)</strong> atau lebih baru.</li><li>RAM minimal 3 GB.</li><li>Penyimpanan bebas <strong>3 GB</strong>.</li><li>Shizuku aktif atau root access.</li></ul>'},
+{cat:'akun',q:'Bagaimana cara edit profil?',a:'<p>Profile → <strong>Edit Profile</strong> → form: avatar, nama, telepon, email, username, bio → <strong>Save Changes</strong>.</p>'},
+{cat:'akun',q:'Lupa password, bagaimana reset?',a:'<p>Di layar login launcher, tap <strong>Forgot password?</strong>. Masukkan email → link reset dikirim ke email.</p>'},
+{cat:'akun',q:'Apa itu PIN Launcher?',a:'<p>6-digit PIN untuk mengunci akses launcher. Setup: Profile → Settings → Account & Security → PIN Launcher.</p>'},
+{cat:'akun',q:'Bagaimana cara connect akun ke web DLavie?',a:'<p>Buka <a href="#/portal" data-link>Portal</a> → klik <strong>Connect to DLavie</strong>. Launcher terbuka → auto-connect → redirect balik ke web. Atau login manual dengan email & password.</p>'},
+{cat:'mods',q:'Apa perbedaan base data dan patch?',a:'<p><strong>Base data</strong> = file lengkap (~2.7 GB), di-download sekali. <strong>Patch</strong> = file kecil (5-50 MB) untuk update mod.</p>'},
+{cat:'mods',q:'Apa itu Shizuku?',a:'<p>Shizuku mengizinkan launcher mengakses file system tanpa root. Download dari Play Store, setup via ADB wireless (1 menit).</p>'},
+{cat:'game',q:'Apa beda FIFA 15 dan FIFA 16 di DLavie?',a:'<p>FIFA 16 = game utama dengan full mod system. FIFA 15 = game sekunder, hanya base data install (tanpa patch system).</p>'},
+{cat:'troubleshooting',q:'Launcher tidak menampilkan popup update',a:'<p>Force-close launcher, buka lagi. Atau install manual dari halaman <a href="#/portal" data-link>Portal</a>.</p>'},
+{cat:'troubleshooting',q:'Login gagal terus',a:'<p>Cek: akun terverifikasi, email benar, koneksi internet, atau coba reset password.</p>'},
+{cat:'keamanan',q:'Apakah data saya aman?',a:'<p>Ya. Supabase dengan RLS, JWT auth, HTTPS, EncryptedSharedPreferences. Password di-hash bcrypt. Tidak ada PII selain user_id.</p>'},
+{cat:'keamanan',q:'Bagaimana cara hapus akun permanen?',a:'<p>Buat issue di halaman <a href="#/issues" data-link>Issues</a> dengan kategori "Other" — tulis "Account Deletion Request". Admin akan verifikasi dan hapus dalam 1-2 hari.</p>'},
+];
+
+let currentCat=null,currentSearch='';
+function initFAQ(){
+// Typing
+const tt=document.getElementById('faqTyping');
+if(tt&&!tt.textContent){
+const text='Pertanyaan yang sering ditanyakan.';
+const words=text.split(' ');let idx=0,typed='';
+function typeNext(){
+if(idx>=words.length)return;
+typed+=(idx===0?'':' ')+words[idx];tt.textContent=typed;idx++;
+setTimeout(typeNext,words[idx-1].endsWith('.')?600:350);
+}
+setTimeout(typeNext,800);
+}
+// Categories
+const cats=[...new Set(FAQ_DATA.map(f=>f.cat))];
+const cc=document.getElementById('categories');
+cc.innerHTML=`<button class="category-pill" data-cat="all">Semua <span style="font-size:10px;opacity:0.6">${FAQ_DATA.length}</span></button>`+
+cats.map(c=>`<button class="category-pill" data-cat="${c}">${catLabel(c)} <span style="font-size:10px;opacity:0.6">${FAQ_DATA.filter(f=>f.cat===c).length}</span></button>`).join('');
+cc.querySelectorAll('.category-pill').forEach(p=>p.addEventListener('click',()=>{
+cc.querySelectorAll('.category-pill').forEach(x=>x.classList.remove('active'));
+p.classList.add('active');currentCat=p.dataset.cat;renderFAQ();
+}));
+// Search
+document.getElementById('searchInput').addEventListener('input',(e)=>{currentSearch=e.target.value.toLowerCase().trim();renderFAQ();});
+renderFAQ();
+}
+
+function catLabel(c){return{instalasi:'Instalasi',akun:'Akun',mods:'Mods',game:'Game',troubleshooting:'Troubleshooting',keamanan:'Keamanan'}[c]||c;}
+
+function renderFAQ(){
+const list=document.getElementById('faqList');
+let filtered=FAQ_DATA.filter(f=>{
+const mc=currentCat===null||currentCat==='all'||f.cat===currentCat;
+const ms=currentSearch===''||f.q.toLowerCase().includes(currentSearch)||f.a.toLowerCase().includes(currentSearch);
+return mc&&ms;
+});
+if(currentCat===null&&currentSearch===''){
+list.innerHTML='<div style="text-align:center;padding:60px;color:var(--sub-text);"><div style="font-family:var(--font-display);font-size:22px;color:var(--text-white);margin-bottom:8px;">Pilih kategori di atas</div><p>Atau gunakan kolom pencarian.</p></div>';
+return;
+}
+if(filtered.length===0){list.innerHTML='<div style="text-align:center;padding:60px;color:var(--sub-text);"><div style="font-family:var(--font-display);font-size:22px;color:var(--text-white);margin-bottom:8px;">Tidak ada hasil</div><p>Coba kata kunci lain.</p></div>';return;}
+list.innerHTML=filtered.map(f=>`<article class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('open');var a=this.nextElementSibling;a.style.maxHeight=a.style.maxHeight?'0':a.scrollHeight+'px'"><div class="faq-question-text"><span class="faq-question-cat">${catLabel(f.cat)}</span>${f.q}</div><span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button><div class="faq-answer"><div class="faq-answer-inner">${f.a}</div></div></article>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ISSUES
+// ═══════════════════════════════════════════════════════════════
+function openCreateIssueFlow(e){
+if(e)e.preventDefault();
+if(!currentUser){location.hash='#/portal';localStorage.setItem('dlavie_pending_issue','1');return;}
+openCreateIssueModal();
+}
+
+function openCreateIssueModal(){
+document.getElementById('accountName').textContent=currentUser.display_name||currentUser.username;
+document.getElementById('accountUsername').textContent='@'+(currentUser.username||'—');
+const av=document.getElementById('accountAvatar');
+if(currentUser.avatar_url)av.innerHTML=`<img src="${currentUser.avatar_url}" alt=""/>`;
+else av.textContent=(currentUser.display_name||currentUser.username||'?')[0].toUpperCase();
+document.getElementById('issueTitle').value='';
+document.getElementById('issueBody').value='';
+document.getElementById('issueError').classList.remove('show');
+selectedCategory='Bug';
+document.querySelectorAll('.category-radio').forEach(r=>r.classList.toggle('selected',r.dataset.cat==='Bug'));
+document.getElementById('createIssueModal').classList.add('open');
+}
+function closeCreateIssueModal(){document.getElementById('createIssueModal').classList.remove('open');}
+function selectCategory(el){document.querySelectorAll('.category-radio').forEach(r=>r.classList.remove('selected'));el.classList.add('selected');selectedCategory=el.dataset.cat;}
+
+function generateAutoReply(name,title,id,body,cat){
+const date=new Date().toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+const text=(title+' '+(body||'')).toLowerCase();let note='';
+if(text.match(/crash|force close|fc/))note='\nMohon sertakan: Android version, langkah reproduksi, screenshot.';
+else if(text.match(/login|password|lupa/))note='\nCoba reset password via "Forgot password" di launcher.';
+else if(text.match(/download|install|apk/))note='\nPastikan: koneksi stabil, storage 3GB, izinkan install unknown source.';
+else if(text.match(/patch|mod/))note='\nPastikan Shizuku aktif dan launcher versi terbaru.';
+else if(text.match(/feature|saran/))note='\nTerima kasih atas saran fitur!';
+else if(text.match(/bug|error|gagal/))note='\nMohon sertakan: langkah reproduksi, expected vs actual, screenshot.';
+return `Terima kasih ${name} atas laporan Anda mengenai "${title}".\n\nIssue Anda telah kami terima dan akan direview dalam 1-2 hari kerja.${note}\n\nJika issue ini urgent, tim kami akan memprioritaskan.\n\nSalam hangat,\nDLavie support\n\n───────────────────\nIssue ID: ${id}\nDibuat: ${date}\nStatus: Open`;
+}
+
+async function submitIssue(){
+const title=document.getElementById('issueTitle').value.trim();
+const body=document.getElementById('issueBody').value.trim();
+const err=document.getElementById('issueError');err.classList.remove('show');
+if(!title||!body){err.textContent='Judul dan detail wajib diisi.';err.classList.add('show');return;}
+if(title.length<5){err.textContent='Judul minimal 5 karakter.';err.classList.add('show');return;}
+if(body.length<10){err.textContent='Detail minimal 10 karakter.';err.classList.add('show');return;}
+const last=localStorage.getItem('dlavie_last_issue_time');
+if(last&&Date.now()-parseInt(last)<180000){err.textContent=`Tunggu ${Math.ceil((180000-(Date.now()-parseInt(last)))/1000)} detik lagi.`;err.classList.add('show');return;}
+try{
+const postBody=`[${selectedCategory}]\n${body}`;
+const r=await fetch(`${SUPABASE_URL}/rest/v1/feed_posts`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${localStorage.getItem('dlavie_access')}`,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify({title,body:postBody,type:'issue',author_id:currentUser.id,visibility:'private',pinned:false,official:false,is_draft:false})});
+const d=await r.json();if(!r.ok)throw new Error(d.message||'Gagal');
+const iid=d[0].id,sid=iid.substring(0,8);
+// support_tickets
+try{await fetch(`${SUPABASE_URL}/rest/v1/support_tickets`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${localStorage.getItem('dlavie_access')}`,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({user_id:currentUser.id,category:'DLavie portal',complaint:`[${selectedCategory}] ${title}\n\n${body}`,status:'open',android_version:'Web DLavie'})});}catch(_){}
+// auto-reply
+const reply=generateAutoReply(currentUser.display_name||currentUser.username,title,sid,body,selectedCategory);
+try{await fetch(`${SUPABASE_URL}/rest/v1/feed_comments`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${localStorage.getItem('dlavie_access')}`,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({post_id:iid,user_id:currentUser.id,body:reply})});}catch(_){}
+localStorage.setItem('dlavie_last_issue_time',Date.now().toString());
+closeCreateIssueModal();loadIssues();showToast('Issue berhasil dibuat!');
+}catch(e){err.textContent=e.message;err.classList.add('show');}
+}
+
+async function loadIssues(){
+const el=document.getElementById('issuesList');if(!el)return;
+try{
+const r=await fetch(`${SUPABASE_URL}/rest/v1/feed_posts?type=eq.issue&order=created_at.desc&limit=50&select=id,title,body,author_id,created_at,author:profiles!feed_posts_author_id_fkey(username,display_name,avatar_url)`,{headers:{'apikey':SUPABASE_ANON_KEY}});
+if(!r.ok)throw new Error('Failed');
+const issues=await r.json();
+let cm={};if(issues.length>0){
+const c=await fetch(`${SUPABASE_URL}/rest/v1/feed_comments?post_id=in.(${issues.map(i=>i.id).join(',')})&order=created_at.asc&select=post_id,body,created_at`,{headers:{'apikey':SUPABASE_ANON_KEY}});
+if(c.ok){(await c.json()).forEach(x=>{if(!cm[x.post_id])cm[x.post_id]=[];cm[x.post_id].push(x);});}
+}
+if(issues.length===0){el.innerHTML='<div style="text-align:center;padding:60px;color:var(--sub-text);"><div style="font-family:var(--font-display);font-size:22px;color:var(--text-white);margin-bottom:8px;">Belum ada issue</div><p>Jadilah yang pertama melaporkan issue.</p></div>';return;}
+el.innerHTML=issues.map(i=>{
+const a=i.author||{};const an=a.display_name||a.username||'Anonymous';
+const ai=(an[0]||'?').toUpperCase();const av=a.avatar_url?`<img src="${a.avatar_url}" alt=""/>`:ai;
+const sid=i.id.substring(0,8);let cat='Other',bt=i.body||'';
+const m=bt.match(/^\[(\w+)\]\n/);if(m){cat=m[1];bt=bt.replace(/^\[\w+\]\n/,'');}
+const cc=cat.toLowerCase().replace(/[^a-z]/g,'');
+const time=new Date(i.created_at).toLocaleDateString('id-ID',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+const cs=cm[i.id]||[];
+const rh=cs.length>0?`<div class="issue-card-reply" onclick="this.classList.toggle('expanded')"><div class="issue-card-reply-header"><span class="issue-card-reply-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>DLavie support</span><span class="issue-card-reply-toggle">Lihat balasan</span></div><div class="issue-card-reply-text">${esc(cs[0].body)}</div></div>`:'';
+return `<article class="issue-card"><div class="issue-card-header"><div class="issue-card-avatar">${av}</div><div class="issue-card-meta"><span class="issue-card-author">${esc(an)}</span><span class="issue-card-category ${cc}">${esc(cat)}</span><span class="issue-card-time">${time}</span></div></div><h3 class="issue-card-title">${esc(i.title)}</h3><div class="issue-card-body" onclick="this.classList.toggle('expanded')">${esc(bt)}</div>${rh}<div class="issue-card-id">Issue ID: ${sid}</div></article>`;
+}).join('');
+}catch(e){el.innerHTML=`<div style="text-align:center;padding:60px;color:var(--sub-text);"><div style="font-family:var(--font-display);font-size:22px;color:var(--text-white);margin-bottom:8px;">Gagal memuat</div><p>${esc(e.message)}</p></div>`;}
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════════════════════
+function initHome(){
+const tt=document.getElementById('typingTarget');
+if(tt&&!tt.textContent){
+const text='DLavie Launcher.';let i=0;
+function type(){if(i>=text.length)return;tt.textContent=text.substring(0,++i);setTimeout(type,80+Math.random()*60);}
+setTimeout(type,600);
+}
+// Count-up
+document.querySelectorAll('.home-stat-num').forEach(el=>{
+const target=parseInt(el.dataset.count,10);
+let current=0;const step=target/30;
+const interval=setInterval(()=>{current+=step;if(current>=target){el.textContent=target;clearInterval(interval);}else el.textContent=Math.floor(current);},40);
+});
+// Reveal
+if(window.gsap){
+gsap.utils.toArray('.reveal').forEach(el=>{
+gsap.to(el,{opacity:1,y:0,duration:0.8,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 85%',toggleActions:'play none none none'}});
+});
+}
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════
+function showToast(msg){
+let t=document.getElementById('toast');
+if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text-white);color:var(--pure-black);padding:14px 24px;border-radius:999px;font-size:14px;font-weight:600;z-index:300;opacity:0;transition:opacity 0.3s;pointer-events:none;box-shadow:0 10px 40px rgba(255,255,255,0.2);';document.body.appendChild(t);}
+t.textContent=msg;t.style.opacity='1';
+setTimeout(()=>t.style.opacity='0',3500);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HALFTONE CANVAS (same as FAQ)
+// ═══════════════════════════════════════════════════════════════
+(function(){
+const c=document.getElementById('halftoneCanvas'),ctx=c.getContext('2d');
+let w,h,dpr,t=0,mx=0.5,my=0.5;
+function resize(){dpr=Math.min(window.devicePixelRatio||1,2);w=c.width=window.innerWidth*dpr;h=c.height=window.innerHeight*dpr;c.style.width=window.innerWidth+'px';c.style.height=window.innerHeight+'px';}
+resize();window.addEventListener('resize',resize);
+window.addEventListener('mousemove',e=>{mx=e.clientX/window.innerWidth;my=e.clientY/window.innerHeight;});
+function draw(){
+t+=0.004;ctx.fillStyle='rgba(0,0,0,1)';ctx.fillRect(0,0,w,h);
+const sp=24*dpr,cols=Math.ceil(w/sp)+1,rows=Math.ceil(h/sp)+1;
+const mdx=mx*w,mdy=my*h;
+for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){
+const x=i*sp,y=j*sp,dx=x-mdx,dy=y-mdy,dm=Math.sqrt(dx*dx+dy*dy),mi=Math.max(0,1-dm/(400*dpr));
+const w1=Math.sin(t+i*0.18+j*0.12)*0.5+0.5,w2=Math.sin(t*0.6+(i+j)*0.22)*0.5+0.5,w3=Math.cos(t*0.9+i*0.08-j*0.15)*0.5+0.5;
+const cb=w1*0.5+w2*0.3+w3*0.2,size=0.3*dpr+cb*(4.5-0.3)*dpr*(1+mi*1.8),op=0.08+cb*0.45+mi*0.5;
+ctx.fillStyle=`rgba(255,255,255,${op})`;ctx.beginPath();ctx.arc(x,y,Math.max(0.1,size),0,Math.PI*2);ctx.fill();
+}
+const sY=(t*80*dpr)%(h+400*dpr)-200*dpr;
+const g=ctx.createLinearGradient(0,sY-150*dpr,0,sY+150*dpr);
+g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(0.5,'rgba(255,255,255,0.06)');g.addColorStop(1,'rgba(255,255,255,0)');
+ctx.fillStyle=g;ctx.fillRect(0,sY-150*dpr,w,300*dpr);
+requestAnimationFrame(draw);
+}
+draw();
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// LENIS + GSAP
+// ═══════════════════════════════════════════════════════════════
+if(window.gsap&&window.ScrollTrigger)gsap.registerPlugin(ScrollTrigger);
+if(window.Lenis){
+const lenis=new Lenis({duration:1.2,easing:t=>Math.min(1,1.001-Math.pow(2,-10*t)),smoothWheel:true});
+window.lenis=lenis;
+lenis.on('scroll',()=>{if(window.ScrollTrigger)ScrollTrigger.update();});
+gsap.ticker.add(t=>lenis.raf(t*1000));
+gsap.ticker.lagSmoothing(0);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NAV + MOBILE MENU
+// ═══════════════════════════════════════════════════════════════
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('scrolled',window.scrollY>30);});
+document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('mobileMenu').classList.toggle('open'));
+document.querySelectorAll('.mobile-menu a').forEach(a=>a.addEventListener('click',()=>document.getElementById('mobileMenu').classList.remove('open')));
+
+// ═══════════════════════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════════════════════
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));});
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+(async function init(){
+const auto=await autoLoginFromURL();
+if(!auto) await restoreSession();
+// Check pending issue
+if(localStorage.getItem('dlavie_pending_issue')==='1'&&currentUser){
+localStorage.removeItem('dlavie_pending_issue');
+setTimeout(()=>openCreateIssueModal(),1000);
+}
+router();
+})();
+</script>
+</body>
+</html>
