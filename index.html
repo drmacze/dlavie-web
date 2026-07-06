@@ -234,6 +234,68 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 *,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important}
 .reveal{opacity:1 !important;transform:none !important}
 }
+
+/* FEATURE ICON */
+.feature-icon{width:20px;height:20px;display:inline-block;vertical-align:middle;margin-right:8px;color:var(--text-white);transition:transform 0.3s var(--ease)}
+.feature-card:hover .feature-icon{transform:scale(1.2) rotate(-5deg)}
+
+/* TYPING CURSOR */
+.typing-cursor{display:inline-block;color:var(--text-white);font-weight:300;margin-left:4px;animation:blink 0.9s steps(2) infinite}
+@keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+
+/* PAGE TRANSITIONS */
+.page{animation:page-in 0.5s var(--ease) forwards}
+@keyframes page-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* LAZY LOAD SKELETON */
+.skeleton-card{background:var(--surface-1);border:1px solid var(--glass-stroke);border-radius:16px;padding:16px;overflow:hidden;position:relative}
+.skeleton-card::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.04),transparent);animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.skeleton-line{height:12px;background:rgba(255,255,255,0.06);border-radius:6px;margin-bottom:8px}
+.skeleton-line:last-child{width:60%}
+
+/* STAGGER ANIMATION */
+.stagger-in{opacity:0;transform:translateY(20px);animation:stagger-up 0.6s var(--ease) forwards}
+@keyframes stagger-up{to{opacity:1;transform:translateY(0)}}
+
+/* SMOOTH HOVER SCALE */
+.feature-card,.issue-card,.faq-item{transition:all 0.3s var(--ease)}
+.feature-card:hover{transform:translateY(-2px);border-color:var(--glass-stroke-hi)}
+.issue-card:hover{transform:translateY(-1px)}
+.btn-primary,.btn-secondary,.nav-cta,.btn-connect{transition:all 0.25s var(--ease)}
+.btn-primary:active,.btn-secondary:active,.btn-connect:active{transform:scale(0.97)}
+
+/* NAV LINK UNDERLINE ANIMATION */
+.nav-link{position:relative;overflow:hidden}
+.nav-link::after{content:'';position:absolute;bottom:4px;left:50%;width:0;height:1px;background:var(--text-white);transition:width 0.3s var(--ease),left 0.3s var(--ease)}
+.nav-link:hover::after{width:60%;left:20%}
+.nav-link.active::after{width:60%;left:20%;background:var(--pure-black)}
+
+/* SCROLL INDICATOR */
+.scroll-indicator{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--dim-text);font-size:11px;text-transform:uppercase;letter-spacing:0.12em;opacity:0;animation:fade-in 1s 2s forwards}
+@keyframes fade-in{to{opacity:1}}
+.scroll-indicator-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--dim-text),transparent);animation:scroll-pulse 2s ease-in-out infinite}
+@keyframes scroll-pulse{0%,100%{transform:scaleY(1);transform-origin:top}50%{transform:scaleY(0.5);transform-origin:top}}
+
+/* PORTAL LOGO PULSE */
+.portal-logo{animation:portal-pulse 3s ease-in-out infinite}
+@keyframes portal-pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0.2)}50%{box-shadow:0 0 30px 10px rgba(255,255,255,0.05)}}
+
+/* MODAL SLIDE IN (enhanced) */
+.modal-card{transition:transform 0.4s var(--ease),opacity 0.3s}
+.modal-overlay:not(.open) .modal-card{opacity:0}
+
+/* ACCORDION SMOOTH */
+.faq-answer{transition:max-height 0.4s var(--ease),opacity 0.3s}
+.faq-item:not(.open) .faq-answer{opacity:0}
+.faq-item.open .faq-answer{opacity:1}
+
+/* CATEGORY PILL BOUNCE */
+.category-pill:active{transform:scale(0.95)}
+
+/* INPUT FOCUS GLOW */
+.auth-input:focus,.issue-input:focus,.issue-textarea:focus,.faq-search-input:focus{box-shadow:0 0 0 3px rgba(255,255,255,0.05)}
+
 </style>
 </head>
 <body>
@@ -268,8 +330,8 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <!-- ═══ HOME ═══ -->
 <div class="page" id="page-home">
 <section class="home-hero">
-<div class="home-badge"><span class="home-badge-dot">✓</span><span>DLavie: New FIFA Modding Launcher</span></div>
-<h1 class="home-title" id="typingTarget"></h1>
+<div class="home-badge"><span class="home-badge-dot"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>DLavie: New FIFA Modding Launcher</span></div>
+<h1 class="home-title" id="typingTarget"></h1><span class="typing-cursor" id="typingCursor">|</span>
 <p class="home-subtitle">Launcher komunitas untuk FIFA 16 Mobile mod. Install, patch, dan kelola game dalam satu aplikasi.</p>
 <div class="home-actions">
 <a href="#" class="btn-primary" onclick="downloadLauncher(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download Launcher</a>
@@ -280,15 +342,16 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <div class="home-stat"><div class="home-stat-num" data-count="10">0</div><div class="home-stat-label">Bahasa</div></div>
 <div class="home-stat"><div class="home-stat-num" data-count="3">0</div><div class="home-stat-label">GB Data</div></div>
 </div>
+<div class="scroll-indicator"><span>Scroll</span><div class="scroll-indicator-line"></div></div>
 </section>
 <section class="features">
 <div class="section-label reveal">Fitur</div>
 <h2 class="section-title reveal">Semua dalam satu launcher.</h2>
-<div class="feature-card reveal"><h3>🎮 FIFA 16 Mod Support</h3><p>Install base data FIFA 16 Mobile mod (2.7GB) + patch system via Shizuku/root. Backup, rollback, dan channel system (stable/beta).</p></div>
-<div class="feature-card reveal"><h3>👥 Community Hub</h3><p>Feed komunitas, follow/unfollow, posts, comments, badges, dan presence indicators (online/last seen).</p></div>
-<div class="feature-card reveal"><h3>🔗 DLavie Portal</h3><p>Connect akun launcher ke web DLavie. Buat issue, kelola akun, dan akses FAQ — semua dari satu login.</p></div>
-<div class="feature-card reveal"><h3>🛡️ Admin Dashboard</h3><p>Dev Dashboard untuk admin: manage users, releases, patches, maintenance, notifications, dan issue review.</p></div>
-<div class="feature-card reveal"><h3>📱 Modern UI</h3><p>Pure Monochrome + Halftone design. GSAP animations, Lenis smooth scroll, Material 3, Compose UI.</p></div>
+<div class="feature-card reveal" style="opacity:0;transform:translateY(30px)"><h3><svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 12h4M8 10v4M15 13h.01M18 11h.01M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258A4 4 0 0 0 17.32 5z"/></svg> FIFA 16 Mod Support</h3><p>Install base data FIFA 16 Mobile mod (2.7GB) + patch system via Shizuku/root. Backup, rollback, dan channel system (stable/beta).</p></div>
+<div class="feature-card reveal" style="opacity:0;transform:translateY(30px)"><h3><svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg> Community Hub</h3><p>Feed komunitas, follow/unfollow, posts, comments, badges, dan presence indicators (online/last seen).</p></div>
+<div class="feature-card reveal" style="opacity:0;transform:translateY(30px)"><h3><svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> DLavie Portal</h3><p>Connect akun launcher ke web DLavie. Buat issue, kelola akun, dan akses FAQ — semua dari satu login.</p></div>
+<div class="feature-card reveal" style="opacity:0;transform:translateY(30px)"><h3><svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Admin Dashboard</h3><p>Dev Dashboard untuk admin: manage users, releases, patches, maintenance, notifications, dan issue review.</p></div>
+<div class="feature-card reveal" style="opacity:0;transform:translateY(30px)"><h3><svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Modern UI</h3><p>Pure Monochrome + Halftone design. GSAP animations, Lenis smooth scroll, Material 3, Compose UI.</p></div>
 </section>
 </div>
 
@@ -323,8 +386,8 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <!-- ═══ FAQ ═══ -->
 <div class="page" id="page-faq">
 <section class="home-hero" style="min-height:auto;padding-top:120px;padding-bottom:40px;">
-<div class="home-badge"><span class="home-badge-dot">✓</span><span>DLavie: New FIFA Modding Launcher</span></div>
-<h1 class="home-title" style="font-size:clamp(36px,6vw,80px);" id="faqTyping"></h1>
+<div class="home-badge"><span class="home-badge-dot"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span><span>DLavie: New FIFA Modding Launcher</span></div>
+<h1 class="home-title" style="font-size:clamp(36px,6vw,80px);" id="faqTyping"></h1><span class="typing-cursor" id="faqTypingCursor">|</span>
 <p class="home-subtitle">Semua yang perlu kamu tahu tentang DLavie Launcher.</p>
 <div class="faq-search"><span class="faq-search-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><input type="text" class="faq-search-input" id="searchInput" placeholder="Cari pertanyaan…" /></div>
 </section>
@@ -516,10 +579,19 @@ const routes=['home','portal','faq','issues','terms','privacy'];
 function router(){
 const hash=window.location.hash.replace('#/','')||'home';
 const page=routes.includes(hash)?hash:'home';
+// Fade out current page
+const current=document.querySelector('.page.active');
+if(current){
+current.style.opacity='0';
+current.style.transform='translateY(-10px)';
+}
+setTimeout(()=>{
 routes.forEach(r=>{
 const el=document.getElementById('page-'+r);
 if(el) el.classList.toggle('active',r===page);
+if(r===page){el.style.opacity='';el.style.transform='';}
 });
+},150);
 // Update nav active state
 document.querySelectorAll('.nav-link').forEach(l=>{
 const href=l.getAttribute('href');
@@ -732,7 +804,7 @@ if(tt&&!tt.textContent){
 const text='Pertanyaan yang sering ditanyakan.';
 const words=text.split(' ');let idx=0,typed='';
 function typeNext(){
-if(idx>=words.length)return;
+if(idx>=words.length){var fc=document.getElementById('faqTypingCursor');if(fc)fc.style.animation='blink 1.5s steps(2) infinite';return;}
 typed+=(idx===0?'':' ')+words[idx];tt.textContent=typed;idx++;
 setTimeout(typeNext,words[idx-1].endsWith('.')?600:350);
 }
@@ -766,7 +838,7 @@ list.innerHTML='<div style="text-align:center;padding:60px;color:var(--sub-text)
 return;
 }
 if(filtered.length===0){list.innerHTML='<div style="text-align:center;padding:60px;color:var(--sub-text);"><div style="font-family:var(--font-display);font-size:22px;color:var(--text-white);margin-bottom:8px;">Tidak ada hasil</div><p>Coba kata kunci lain.</p></div>';return;}
-list.innerHTML=filtered.map(f=>`<article class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('open');var a=this.nextElementSibling;a.style.maxHeight=a.style.maxHeight?'0':a.scrollHeight+'px'"><div class="faq-question-text"><span class="faq-question-cat">${catLabel(f.cat)}</span>${f.q}</div><span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button><div class="faq-answer"><div class="faq-answer-inner">${f.a}</div></div></article>`).join('');
+list.innerHTML=filtered.map((f,idx)=>`<article class="faq-item" style="animation:stagger-up 0.5s var(--ease) ${idx*0.06}s both"><button class="faq-question" onclick="this.parentElement.classList.toggle('open');var a=this.nextElementSibling;a.style.maxHeight=a.style.maxHeight?'0':a.scrollHeight+'px'"><div class="faq-question-text"><span class="faq-question-cat">${catLabel(f.cat)}</span>${f.q}</div><span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button><div class="faq-answer"><div class="faq-answer-inner">${f.a}</div></div></article>`).join('');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -832,6 +904,8 @@ closeCreateIssueModal();loadIssues();showToast('Issue berhasil dibuat!');
 
 async function loadIssues(){
 const el=document.getElementById('issuesList');if(!el)return;
+// Show skeleton lazy load
+el.innerHTML=Array(3).fill(0).map(()=>'<div class="skeleton-card"><div class="skeleton-line" style="width:40%"></div><div class="skeleton-line"></div><div class="skeleton-line" style="width:70%"></div></div>').join('');
 try{
 const r=await fetch(`${SUPABASE_URL}/rest/v1/feed_posts?type=eq.issue&order=created_at.desc&limit=50&select=id,title,body,author_id,created_at,author:profiles!feed_posts_author_id_fkey(username,display_name,avatar_url)`,{headers:{'apikey':SUPABASE_ANON_KEY}});
 if(!r.ok)throw new Error('Failed');
@@ -841,7 +915,7 @@ const c=await fetch(`${SUPABASE_URL}/rest/v1/feed_comments?post_id=in.(${issues.
 if(c.ok){(await c.json()).forEach(x=>{if(!cm[x.post_id])cm[x.post_id]=[];cm[x.post_id].push(x);});}
 }
 if(issues.length===0){el.innerHTML='<div style="text-align:center;padding:60px;color:var(--sub-text);"><div style="font-family:var(--font-display);font-size:22px;color:var(--text-white);margin-bottom:8px;">Belum ada issue</div><p>Jadilah yang pertama melaporkan issue.</p></div>';return;}
-el.innerHTML=issues.map(i=>{
+el.innerHTML=issues.map((i,idx)=>{
 const a=i.author||{};const an=a.display_name||a.username||'Anonymous';
 const ai=(an[0]||'?').toUpperCase();const av=a.avatar_url?`<img src="${a.avatar_url}" alt=""/>`:ai;
 const sid=i.id.substring(0,8);let cat='Other',bt=i.body||'';
@@ -850,7 +924,7 @@ const cc=cat.toLowerCase().replace(/[^a-z]/g,'');
 const time=new Date(i.created_at).toLocaleDateString('id-ID',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
 const cs=cm[i.id]||[];
 const rh=cs.length>0?`<div class="issue-card-reply" onclick="this.classList.toggle('expanded')"><div class="issue-card-reply-header"><span class="issue-card-reply-badge"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>DLavie support</span><span class="issue-card-reply-toggle">Lihat balasan</span></div><div class="issue-card-reply-text">${esc(cs[0].body)}</div></div>`:'';
-return `<article class="issue-card"><div class="issue-card-header"><div class="issue-card-avatar">${av}</div><div class="issue-card-meta"><span class="issue-card-author">${esc(an)}</span><span class="issue-card-category ${cc}">${esc(cat)}</span><span class="issue-card-time">${time}</span></div></div><h3 class="issue-card-title">${esc(i.title)}</h3><div class="issue-card-body" onclick="this.classList.toggle('expanded')">${esc(bt)}</div>${rh}<div class="issue-card-id">Issue ID: ${sid}</div></article>`;
+return `<article class="issue-card" style="animation:stagger-up 0.5s var(--ease) ${idx*0.06}s both"><div class="issue-card-header"><div class="issue-card-avatar">${av}</div><div class="issue-card-meta"><span class="issue-card-author">${esc(an)}</span><span class="issue-card-category ${cc}">${esc(cat)}</span><span class="issue-card-time">${time}</span></div></div><h3 class="issue-card-title">${esc(i.title)}</h3><div class="issue-card-body" onclick="this.classList.toggle('expanded')">${esc(bt)}</div>${rh}<div class="issue-card-id">Issue ID: ${sid}</div></article>`;
 }).join('');
 }catch(e){el.innerHTML=`<div style="text-align:center;padding:60px;color:var(--sub-text);"><div style="font-family:var(--font-display);font-size:22px;color:var(--text-white);margin-bottom:8px;">Gagal memuat</div><p>${esc(e.message)}</p></div>`;}
 }
@@ -860,9 +934,14 @@ return `<article class="issue-card"><div class="issue-card-header"><div class="i
 // ═══════════════════════════════════════════════════════════════
 function initHome(){
 const tt=document.getElementById('typingTarget');
+const tc=document.getElementById('typingCursor');
 if(tt&&!tt.textContent){
 const text='DLavie Launcher.';let i=0;
-function type(){if(i>=text.length)return;tt.textContent=text.substring(0,++i);setTimeout(type,80+Math.random()*60);}
+function type(){
+if(i>=text.length){if(tc)tc.style.animation='blink 1.5s steps(2) infinite';return;}
+tt.textContent=text.substring(0,++i);
+setTimeout(type,80+Math.random()*60);
+}
 setTimeout(type,600);
 }
 // Count-up
@@ -871,11 +950,16 @@ const target=parseInt(el.dataset.count,10);
 let current=0;const step=target/30;
 const interval=setInterval(()=>{current+=step;if(current>=target){el.textContent=target;clearInterval(interval);}else el.textContent=Math.floor(current);},40);
 });
-// Reveal
+// Reveal with stagger
 if(window.gsap){
-gsap.utils.toArray('.reveal').forEach(el=>{
-gsap.to(el,{opacity:1,y:0,duration:0.8,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 85%',toggleActions:'play none none none'}});
+gsap.utils.toArray('.reveal').forEach((el,idx)=>{
+gsap.to(el,{opacity:1,y:0,duration:0.8,ease:'power3.out',delay:idx*0.1,scrollTrigger:{trigger:el,start:'top 85%',toggleActions:'play none none reverse'}});
 });
+// Feature cards stagger
+gsap.from('.feature-card',{opacity:0,y:40,duration:0.6,ease:'power3.out',stagger:0.08,scrollTrigger:{trigger:'.features',start:'top 80%'}});
+// Section title
+gsap.from('.section-title',{opacity:0,y:30,duration:0.8,ease:'power3.out',scrollTrigger:{trigger:'.features',start:'top 80%'}});
+gsap.from('.section-label',{opacity:0,x:-20,duration:0.6,ease:'power2.out',scrollTrigger:{trigger:'.features',start:'top 80%'}});
 }
 }
 
@@ -894,24 +978,52 @@ setTimeout(()=>t.style.opacity='0',3500);
 // ═══════════════════════════════════════════════════════════════
 (function(){
 const c=document.getElementById('halftoneCanvas'),ctx=c.getContext('2d');
-let w,h,dpr,t=0,mx=0.5,my=0.5;
+let w,h,dpr,t=0;
+// Auto-drift: particles move on their own without user input
+let autoX=0.5,autoY=0.5,autoVX=0.0003,autoVY=0.0002;
+// Touch/mouse reactive layer
+let mx=0.5,my=0.5,tmx=0.5,tmy=0.5;
 function resize(){dpr=Math.min(window.devicePixelRatio||1,2);w=c.width=window.innerWidth*dpr;h=c.height=window.innerHeight*dpr;c.style.width=window.innerWidth+'px';c.style.height=window.innerHeight+'px';}
 resize();window.addEventListener('resize',resize);
-window.addEventListener('mousemove',e=>{mx=e.clientX/window.innerWidth;my=e.clientY/window.innerHeight;});
+window.addEventListener('mousemove',e=>{tmx=e.clientX/window.innerWidth;tmy=e.clientY/window.innerHeight;});
+window.addEventListener('touchmove',e=>{if(e.touches[0]){tmx=e.touches[0].clientX/window.innerWidth;tmy=e.touches[0].clientY/window.innerHeight;}},{passive:true});
 function draw(){
-t+=0.004;ctx.fillStyle='rgba(0,0,0,1)';ctx.fillRect(0,0,w,h);
-const sp=24*dpr,cols=Math.ceil(w/sp)+1,rows=Math.ceil(h/sp)+1;
-const mdx=mx*w,mdy=my*h;
+t+=0.005;
+// Auto-drift: move the influence point slowly
+autoX+=autoVX;autoY+=autoVY;
+if(autoX<0.3||autoX>0.7)autoVX*=-1;
+if(autoY<0.3||autoY>0.7)autoVY*=-1;
+// Smooth mouse/touch follow
+mx+=(tmx-mx)*0.05;my+=(tmy-my)*0.05;
+// Blend auto-drift with mouse influence
+const fx=(autoX*0.4+mx*0.6)*w, fy=(autoY*0.4+my*0.6)*h;
+
+ctx.fillStyle='rgba(0,0,0,1)';ctx.fillRect(0,0,w,h);
+const sp=22*dpr,cols=Math.ceil(w/sp)+1,rows=Math.ceil(h/sp)+1;
 for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){
-const x=i*sp,y=j*sp,dx=x-mdx,dy=y-mdy,dm=Math.sqrt(dx*dx+dy*dy),mi=Math.max(0,1-dm/(400*dpr));
-const w1=Math.sin(t+i*0.18+j*0.12)*0.5+0.5,w2=Math.sin(t*0.6+(i+j)*0.22)*0.5+0.5,w3=Math.cos(t*0.9+i*0.08-j*0.15)*0.5+0.5;
-const cb=w1*0.5+w2*0.3+w3*0.2,size=0.3*dpr+cb*(4.5-0.3)*dpr*(1+mi*1.8),op=0.08+cb*0.45+mi*0.5;
-ctx.fillStyle=`rgba(255,255,255,${op})`;ctx.beginPath();ctx.arc(x,y,Math.max(0.1,size),0,Math.PI*2);ctx.fill();
+const x=i*sp,y=j*sp;
+// Distance from blended influence point
+const dx=x-fx,dy=y-fy,dm=Math.sqrt(dx*dx+dy*dy),mi=Math.max(0,1-dm/(450*dpr));
+// Multi-wave pattern (auto-moving)
+const w1=Math.sin(t+i*0.18+j*0.12)*0.5+0.5;
+const w2=Math.sin(t*0.6+(i+j)*0.22)*0.5+0.5;
+const w3=Math.cos(t*0.9+i*0.08-j*0.15)*0.5+0.5;
+const cb=w1*0.5+w2*0.3+w3*0.2;
+const size=0.3*dpr+cb*(4.5-0.3)*dpr*(1+mi*2.0);
+const op=0.06+cb*0.4+mi*0.55;
+ctx.fillStyle=`rgba(255,255,255,${op})`;
+ctx.beginPath();ctx.arc(x,y,Math.max(0.1,size),0,Math.PI*2);ctx.fill();
 }
-const sY=(t*80*dpr)%(h+400*dpr)-200*dpr;
+// Scanline drift
+const sY=(t*60*dpr)%(h+400*dpr)-200*dpr;
 const g=ctx.createLinearGradient(0,sY-150*dpr,0,sY+150*dpr);
 g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(0.5,'rgba(255,255,255,0.06)');g.addColorStop(1,'rgba(255,255,255,0)');
 ctx.fillStyle=g;ctx.fillRect(0,sY-150*dpr,w,300*dpr);
+// Second scanline (opposite direction)
+const sY2=h-((t*40*dpr)%(h+400*dpr)-200*dpr);
+const g2=ctx.createLinearGradient(0,sY2-100*dpr,0,sY2+100*dpr);
+g2.addColorStop(0,'rgba(255,255,255,0)');g2.addColorStop(0.5,'rgba(255,255,255,0.03)');g2.addColorStop(1,'rgba(255,255,255,0)');
+ctx.fillStyle=g2;ctx.fillRect(0,sY2-100*dpr,w,200*dpr);
 requestAnimationFrame(draw);
 }
 draw();
