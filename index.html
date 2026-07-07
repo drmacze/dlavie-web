@@ -1074,8 +1074,135 @@ function esc(s){const d=document.createElement('div');d.textContent=s||'';return
 
 // ═══════════════════════════════════════════════════════════════
 // PORTAL — Connect to DLavie + Login/Register
-// v7.9.50 UPGRADE: Better device detection, timeout, error handling,
-// fallback download link, animated connecting state
+// v7.9.52: initPortal() untuk handle state logged-in vs not-logged-in.
+// Jika sudah login: tampilkan profile card + tombol "Connect to DLavie"
+// Jika belum login: tampilkan form login/register + Google sign-in
+// ═══════════════════════════════════════════════════════════════
+function initPortal(){
+const portalContent=document.getElementById('portalContent');
+if(!portalContent)return;
+
+if(currentUser){
+// ── LOGGED IN: tampilkan profile card + Connect to DLavie button ──
+const initial=(currentUser.display_name||currentUser.username||'?')[0].toUpperCase();
+const avatarHTML=currentUser.avatar_url?
+`<img src="${currentUser.avatar_url}" alt="" crossorigin="anonymous" onerror="this.style.display='none';this.parentElement.textContent='${initial}'"/>`:
+initial;
+const roleLabel=(currentUser.role||'member').toLowerCase();
+const roleClass=roleLabel;
+let createdFormatted='—';
+if(currentUser.created_at){
+try{
+const d=new Date(currentUser.created_at);
+createdFormatted=d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+}catch(e){}
+}
+const shortId=(currentUser.id||'').substring(0,8);
+
+portalContent.innerHTML=`
+<div style="text-align:center;">
+<div style="width:96px;height:96px;border-radius:28px;background:linear-gradient(135deg,#fff 0%,#ccc 100%);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:42px;font-weight:700;overflow:hidden;margin:0 auto 20px;box-shadow:0 12px 40px rgba(255,255,255,0.18);">${avatarHTML}</div>
+<h1 class="portal-title" style="font-size:26px;margin-bottom:6px;">${esc(currentUser.display_name||'User')}</h1>
+<p style="color:var(--sub-text);font-family:var(--font-mono);font-size:13px;margin-bottom:14px;">@${esc(currentUser.username||'unknown')}</p>
+<span class="usercard-role ${roleClass}" style="display:inline-block;padding:5px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:24px;">${(currentUser.role||'member').toUpperCase()}</span>
+
+<div style="display:grid;gap:10px;text-align:left;margin-bottom:24px;">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--hairline);border-radius:10px;">
+<span style="font-size:10px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">User ID</span>
+<span style="font-size:11px;color:var(--soft-text);font-family:var(--font-mono);">${shortId}…</span>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--hairline);border-radius:10px;">
+<span style="font-size:10px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">Email</span>
+<span style="font-size:12px;color:var(--soft-text);">${esc(currentUser.email||'—')}</span>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--hairline);border-radius:10px;">
+<span style="font-size:10px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">${currentLang==='en'?'Joined':'Bergabung'}</span>
+<span style="font-size:12px;color:var(--soft-text);">${createdFormatted}</span>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:rgba(0,210,106,0.05);border:1px solid rgba(0,210,106,0.2);border-radius:10px;">
+<span style="font-size:10px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">${currentLang==='en'?'Status':'Status'}</span>
+<span style="font-size:12px;color:var(--success);font-weight:600;">● ${currentLang==='en'?'Online':'Online'}</span>
+</div>
+</div>
+
+<button class="btn-connect" onclick="connectToDLavie()" style="width:100%;margin-bottom:12px;font-size:15px;padding:18px;">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+<span data-i18n="connect_dlavie">${currentLang==='en'?'Connect to Launcher':'Connect to Launcher'}</span>
+</button>
+
+<div style="display:flex;gap:8px;">
+<button class="usercard-btn" onclick="showUserCard(currentUser);initUserCardTilt();" style="flex:1;padding:12px;font-size:12px;">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/></svg>
+${currentLang==='en'?'Show Card':'Lihat Card'}
+</button>
+<button class="usercard-btn" onclick="logoutUser()" style="flex:1;padding:12px;font-size:12px;color:var(--danger);border-color:rgba(255,68,68,0.3);">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+${currentLang==='en'?'Logout':'Keluar'}
+</button>
+</div>
+</div>
+`;
+}else{
+// ── NOT LOGGED IN: tampilkan form login/register + Google ──
+// Reset ke default state (form login visible, register hidden)
+const loginForm=document.getElementById('loginForm');
+const registerForm=document.getElementById('registerForm');
+const authSwitch=document.getElementById('authSwitch');
+if(loginForm)loginForm.style.display='block';
+if(registerForm)registerForm.style.display='none';
+if(authSwitch)authSwitch.innerHTML=currentLang==='en'?
+"Don't have an account? <span onclick=\"switchAuthMode('register')\" style=\"cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)\">Register here</span>":
+'Belum punya akun? <span onclick="switchAuthMode(\'register\')" style="cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)">Daftar di sini</span>';
+
+// Restore original portal HTML (avatar + form) kalau sebelumnya di-replace
+// Cek apakah portalContent masih punya loginForm di dalamnya
+if(!portalContent.querySelector('#loginForm')){
+// Portal content sudah di-replace oleh profile card view, restore ke default
+portalContent.innerHTML=`
+<div class="portal-logo">D</div>
+<h1 class="portal-title" data-i18n="portal_title">DLavie Portal</h1>
+<p class="portal-sub" data-i18n="portal_sub">Login atau connect akun DLavie Launcher untuk mengakses semua fitur web.</p>
+<button class="btn-connect" onclick="connectToDLavie()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg> <span data-i18n="connect_dlavie">Connect to Launcher</span></button>
+<div class="auth-divider" data-i18n="divider_or">atau</div>
+<button class="btn-google" onclick="loginWithGoogle()">
+<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.6 2.84c.87-2.6 3.3-4.53 6.22-4.53z"/></svg>
+<span data-i18n="login_google">Login dengan Google</span>
+</button>
+<div class="auth-divider" data-i18n="divider_email">atau email</div>
+<div id="loginForm">
+<div class="auth-form-group"><label class="auth-label" data-i18n="label_email">Email</label><input type="email" class="auth-input" id="loginEmail" placeholder="kamu@email.com" /></div>
+<div class="auth-form-group"><label class="auth-label" data-i18n="label_password">Password</label><input type="password" class="auth-input" id="loginPassword" placeholder="••••••••" /></div>
+<div class="auth-error" id="loginError"></div>
+<button class="btn-connect" onclick="performLogin()" data-i18n="btn_masuk">Masuk</button>
+</div>
+<div id="registerForm" style="display:none;">
+<div class="auth-form-group"><label class="auth-label" data-i18n="label_email">Email</label><input type="email" class="auth-input" id="regEmail" placeholder="kamu@email.com" /></div>
+<div class="auth-form-group"><label class="auth-label" data-i18n="label_password">Password</label><input type="password" class="auth-input" id="regPassword" placeholder="Min 6 karakter" /></div>
+<div class="auth-form-group"><label class="auth-label" data-i18n="label_username">Username</label><input type="text" class="auth-input" id="regUsername" placeholder="3-24 huruf/angka/_" /></div>
+<div class="auth-form-group"><label class="auth-label" data-i18n="label_displayname">Display Name</label><input type="text" class="auth-input" id="regDisplayName" placeholder="Nama tampilan" /></div>
+<div class="auth-error" id="regError"></div>
+<button class="btn-connect" onclick="performRegister()" data-i18n="btn_daftar">Daftar</button>
+</div>
+<div class="auth-switch" id="authSwitch">Belum punya akun? <a onclick="switchAuthMode('register')">Daftar di sini</a></div>
+`;
+// Apply current language ke new elements
+setTimeout(applyLang,50);
+}
+}
+}
+
+// Logout function — clear session + reload portal page
+function logoutUser(){
+clearSession();
+showToast(currentLang==='en'?'Logged out':'Berhasil keluar');
+// Reload portal page to show login form
+setTimeout(()=>{
+initPortal();
+},300);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PORTAL — Connect to DLavie (existing v7.9.50 logic)
 // ═══════════════════════════════════════════════════════════════
 function connectToDLavie(){
 if(!currentUser){
@@ -1183,13 +1310,20 @@ const btn=document.querySelector('#loginForm .btn-connect');
 if(btn){btn.disabled=true;btn.textContent=currentLang==='en'?'Signing in...':'Masuk...';}
 const r=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd})});
 const d=await r.json();
+if(btn){btn.disabled=false;btn.textContent=currentLang==='en'?'Sign In':'Masuk';}
 if(!r.ok)throw new Error(d.error_description||d.error||'Login gagal');
 saveSession(d.access_token,d.refresh_token,d.user.id,d.user.email);
 const p=await fetchUserProfile(d.user.id,d.access_token);
 if(p)currentUser={id:p.id,email:d.user.email,username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,role:p.role,created_at:p.created_at||null};
 updateNavUser();
-showToast(currentLang==='en'?'Login successful!':'Login berhasil!');
-location.hash='#/';
+// v7.9.52: Tampilkan 3D user card sebagai konfirmasi login berhasil
+// (sebelumnya hanya Google OAuth yang show card — email login tidak)
+setTimeout(()=>{
+showUserCard(currentUser);
+initUserCardTilt();
+},500);
+// Setelah card muncul, biarkan user di halaman portal (jangan redirect ke home)
+// supaya user bisa langsung klik "Connect to DLavie" untuk connect ke launcher
 }catch(e){err.textContent=e.message;err.classList.add('show');}
 }
 
@@ -1212,8 +1346,18 @@ if(btn){btn.disabled=false;btn.textContent=currentLang==='en'?'Register':'Daftar
 if(!r.ok)throw new Error(d.error_description||d.error||'Registrasi gagal');
 if(d.access_token){
 saveSession(d.access_token,d.refresh_token,d.user.id,d.user.email);
-currentUser={id:d.user.id,email:d.user.email,username:un,display_name:dn,avatar_url:null,role:'user'};
-updateNavUser();showToast(currentLang==='en'?'Registration successful!':'Registrasi berhasil!');location.hash='#/';
+// v7.9.52: Fetch profile untuk dapat created_at + role dari DB
+const p=await fetchUserProfile(d.user.id,d.access_token);
+currentUser={id:d.user.id,email:d.user.email,username:un,display_name:dn,avatar_url:p?p.avatar_url:null,role:p?p.role:'user',created_at:p?p.created_at:null};
+updateNavUser();
+// v7.9.52: Tampilkan 3D user card sebagai konfirmasi register berhasil
+// (sebelumnya hanya Google OAuth yang show card — email register tidak)
+setTimeout(()=>{
+showUserCard(currentUser);
+initUserCardTilt();
+},500);
+// Setelah card muncul, biarkan user di halaman portal (jangan redirect ke home)
+// supaya user bisa langsung klik "Connect to DLavie" untuk connect ke launcher
 }else{err.textContent=currentLang==='en'?'Check email for confirmation, then login.':'Cek email untuk konfirmasi, lalu login.';err.style.color='var(--success)';err.classList.add('show');}
 }catch(e){err.textContent=e.message;err.classList.add('show');}
 }
