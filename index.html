@@ -689,8 +689,8 @@ Daftar dengan Google
 // I18N — Internationalization
 // ═══════════════════════════════════════════════════════════════
 const I18N={
-id:{home:'Home',portal:'Portal',faq:'FAQ',news:'News',issues:'Issues',about:'About',terms:'Terms',privacy:'Privacy',download:'Download Launcher',connect:'Connect Portal',search:'Cari pertanyaan…',buatIssue:'Buat Issue',all:'Semua',update:'Update',maintenance:'Maintenance',mechanics:'Mechanics',baca:'Baca selengkapnya',belumAda:'Belum ada berita',pilihKategori:'Pilih kategori di atas',tidakAda:'Tidak ada hasil',loginDenganGoogle:'Login dengan Google',masuk:'Masuk',daftar:'Daftar',daftarDisini:'Daftar di sini',belumPunya:'Belum punya akun?'},
-en:{home:'Home',portal:'Portal',faq:'FAQ',news:'News',issues:'Issues',about:'About',terms:'Terms',privacy:'Privacy',download:'Download Launcher',connect:'Connect Portal',search:'Search questions…',buatIssue:'Create Issue',all:'All',update:'Update',maintenance:'Maintenance',mechanics:'Mechanics',baca:'Read more',belumAda:'No news yet',pilihKategori:'Select a category above',tidakAda:'No results',loginDenganGoogle:'Sign in with Google',masuk:'Sign In',daftar:'Register',daftarDisini:'Register here',belumPunya:"Don't have an account?"}
+id:{home:'Beranda',portal:'Portal',faq:'FAQ',news:'Berita',issues:'Issue',about:'Tentang',terms:'Syarat',privacy:'Privasi',download:'Download Launcher',connect:'Connect Portal',search:'Cari pertanyaan…',buatIssue:'Buat Issue',all:'Semua',update:'Update',maintenance:'Maintenance',mechanics:'Mekanika',baca:'Baca selengkapnya',belumAda:'Belum ada berita',pilihKategori:'Pilih kategori di atas',tidakAda:'Tidak ada hasil',loginDenganGoogle:'Login dengan Google',masuk:'Masuk',daftar:'Daftar',daftarDisini:'Daftar di sini',belumPunya:'Belum punya akun?',portalTitle:'DLavie Portal',portalSub:'Login atau connect akun DLavie Launcher untuk mengakses semua fitur web.',connectDLavie:'Connect to DLavie',atau:'atau',atauEmail:'atau email',authDivider:'atau email',masukBtn:'Masuk',daftarBtn:'Daftar',heroSub:'Launcher komunitas untuk FIFA 16 Mobile mod. Install, patch, dan kelola game dalam satu aplikasi.',featuresLabel:'Fitur',featuresTitle:'Semua dalam satu launcher.',aboutHero:'Launcher komunitas untuk FIFA 16 Mobile modding. Dibuat oleh komunitas, untuk komunitas.'},
+en:{home:'Home',portal:'Portal',faq:'FAQ',news:'News',issues:'Issues',about:'About',terms:'Terms',privacy:'Privacy',download:'Download Launcher',connect:'Connect Portal',search:'Search questions…',buatIssue:'Create Issue',all:'All',update:'Update',maintenance:'Maintenance',mechanics:'Mechanics',baca:'Read more',belumAda:'No news yet',pilihKategori:'Select a category above',tidakAda:'No results',loginDenganGoogle:'Sign in with Google',masuk:'Sign In',daftar:'Register',daftarDisini:'Register here',belumPunya:"Don't have an account?",portalTitle:'DLavie Portal',portalSub:'Login or connect your DLavie Launcher account to access all web features.',connectDLavie:'Connect to DLavie',atau:'or',atauEmail:'or email',authDivider:'or email',masukBtn:'Sign In',daftarBtn:'Register',heroSub:'Community launcher for FIFA 16 Mobile modding. Install, patch, and manage your game in one app.',featuresLabel:'Features',featuresTitle:'Everything in one launcher.',aboutHero:'Community launcher for FIFA 16 Mobile modding. Built by the community, for the community.'}
 };
 let currentLang='id';
 function setLang(lang){
@@ -713,6 +713,18 @@ if(href==='#/about'&&t.about)l.textContent=t.about;
 if(href==='#/terms'&&t.terms)l.textContent=t.terms;
 if(href==='#/privacy'&&t.privacy)l.textContent=t.privacy;
 });
+// Mobile menu links
+document.querySelectorAll('.mobile-menu a').forEach(a=>{
+const href=a.getAttribute('href');
+if(href==='#/'&&t.home)a.textContent=t.home;
+if(href==='#/portal'&&t.portal)a.textContent=t.portal;
+if(href==='#/faq'&&t.faq)a.textContent=t.faq;
+if(href==='#/news'&&t.news)a.textContent=t.news;
+if(href==='#/issues'&&t.issues)a.textContent=t.issues;
+if(href==='#/about'&&t.about)a.textContent=t.about;
+if(href==='#/terms'&&t.terms)a.textContent=t.terms;
+if(href==='#/privacy'&&t.privacy)a.textContent=t.privacy;
+});
 // Footer links
 document.querySelectorAll('.footer-link').forEach(l=>{
 const href=l.getAttribute('href');
@@ -723,16 +735,19 @@ if(href==='#/issues'&&t.issues)l.textContent=t.issues;
 });
 // Buttons
 document.querySelectorAll('.btn-primary').forEach(b=>{
-if(b.textContent.includes('Download')||b.textContent.includes('Unduh'))b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>'+t.download;
+if(b.textContent.includes('Download')||b.textContent.includes('Unduh'))b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> '+t.download;
+if(b.textContent.includes('Buat Issue')||b.textContent.includes('Create Issue'))b.textContent=t.buatIssue;
 });
 document.querySelectorAll('.btn-secondary').forEach(b=>{
-if(b.textContent.includes('Connect')||b.textContent.includes('Portal'))b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>'+t.connect;
+if(b.textContent.includes('Connect')||b.textContent.includes('Portal'))b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg> '+t.connect;
 });
 // Search placeholder
 const si=document.getElementById('searchInput');
 if(si)si.placeholder=t.search;
 // Google button
-document.querySelectorAll('.btn-google').forEach(b=>{b.innerHTML=b.innerHTML.replace(/Login dengan Google|Sign in with Google/g,t.loginDenganGoogle);});
+document.querySelectorAll('.btn-google').forEach(b=>{
+b.innerHTML='<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.6 2.84c.87-2.6 3.3-4.53 6.22-4.53z"/></svg> '+t.loginDenganGoogle;
+});
 // News tabs
 document.querySelectorAll('.news-tab').forEach(t2=>{
 const c=t2.dataset.cat;
@@ -741,6 +756,17 @@ if(c==='update')t2.textContent=t.update;
 if(c==='maintenance')t2.textContent=t.maintenance;
 if(c==='mechanics')t2.textContent=t.mechanics;
 });
+// Portal texts
+const pt=document.querySelector('.portal-title');if(pt&&t.portalTitle)pt.textContent=t.portalTitle;
+const ps=document.querySelector('.portal-sub');if(ps&&t.portalSub)ps.textContent=t.portalSub;
+const hs=document.querySelector('.home-subtitle');if(hs&&t.heroSub)hs.textContent=t.heroSub;
+// Auth divider texts
+document.querySelectorAll('.auth-divider').forEach(d=>{d.textContent=t.atau;});
+// Auth switch
+const sw=document.getElementById('authSwitch');
+// Login/Register buttons
+document.querySelectorAll('#loginForm .btn-connect').forEach(b=>{if(b.textContent.trim()==='Masuk'||b.textContent.trim()==='Sign In')b.textContent=t.masukBtn;});
+document.querySelectorAll('#registerForm .btn-connect').forEach(b=>{if(b.textContent.trim()==='Daftar'||b.textContent.trim()==='Register')b.textContent=t.daftarBtn;});
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -910,8 +936,7 @@ c.innerHTML=`
 function switchAuthMode(mode){
 const lf=document.getElementById('loginForm'),rf=document.getElementById('registerForm');
 const sw=document.getElementById('authSwitch');
-if(mode==='register'){lf.style.display='none';rf.style.display='block';sw.innerHTML='Sudah punya akun? <a onclick="switchAuthMode(\'login\')">Masuk di sini</a>';}
-else{lf.style.display='block';rf.style.display='none';sw.innerHTML='Belum punya akun? <a onclick="switchAuthMode(\'register\')">Daftar di sini</a>';}
+if(mode==='register'){lf.style.display='none';rf.style.display='block';sw.innerHTML=currentLang==='en'?'Already have an account? <span onclick=switchAuthMode(\'login\') style=cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)>Sign in here</span>':'Sudah punya akun? <span onclick=switchAuthMode(\'login\') style=cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)>Masuk di sini</span>';}
 }
 
 async function performLogin(){
