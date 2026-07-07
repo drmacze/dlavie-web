@@ -10,6 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--pure-black:#000;--carbon:#0A0A0A;--surface-1:#0E0E0E;--surface-2:#141414;--text-white:#FFF;--soft-text:#CCC;--sub-text:#888;--dim-text:#555;--glass-stroke:rgba(255,255,255,0.10);--glass-stroke-hi:rgba(255,255,255,0.20);--hairline:rgba(255,255,255,0.05);--danger:#FF4444;--amber:#FFAA00;--success:#00D26A;--font-display:'Clash Display','Space Grotesk',sans-serif;--font-body:'Space Grotesk',sans-serif;--font-mono:'JetBrains Mono',monospace;--ease:cubic-bezier(0.16,1,0.3,1)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -349,6 +350,46 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 .lang-btn.active{background:var(--text-white);color:var(--pure-black)}
 @media(max-width:768px){.lang-selector{bottom:16px;right:16px}.lang-btn{padding:5px 8px;font-size:10px}}
 
+/* ═══ 3D USER CARD (v7.9.51) ═══ */
+.usercard-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(20px);z-index:250;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.4s var(--ease);perspective:1500px}
+.usercard-overlay.open{opacity:1;pointer-events:auto}
+.usercard-scene{width:100%;max-width:420px;transform-style:preserve-3d;transition:transform 0.8s var(--ease);animation:usercard-in 0.7s var(--ease) forwards}
+@keyframes usercard-in{0%{opacity:0;transform:rotateY(-90deg) translateZ(-200px) scale(0.7)}100%{opacity:1;transform:rotateY(0deg) translateZ(0) scale(1)}}
+.usercard{position:relative;background:linear-gradient(145deg,#161616 0%,#0a0a0a 100%);border:1px solid var(--glass-stroke-hi);border-radius:24px;padding:36px 28px 28px;box-shadow:0 30px 80px rgba(0,0,0,0.8),0 0 0 1px rgba(255,255,255,0.05) inset,0 0 60px rgba(255,255,255,0.04);transform-style:preserve-3d;overflow:hidden}
+.usercard::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent 0%,rgba(255,255,255,0.05) 25%,transparent 50%,rgba(255,255,255,0.05) 75%,transparent 100%);animation:usercard-rotate 12s linear infinite;pointer-events:none;opacity:0.6}
+@keyframes usercard-rotate{to{transform:rotate(360deg)}}
+.usercard-inner{position:relative;z-index:2;transform:translateZ(40px)}
+.usercard-header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.usercard-avatar{width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,#fff 0%,#ccc 100%);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:36px;font-weight:700;overflow:hidden;flex-shrink:0;box-shadow:0 8px 24px rgba(255,255,255,0.15);transform:translateZ(60px)}
+.usercard-avatar img{width:100%;height:100%;object-fit:cover}
+.usercard-titles{flex:1;min-width:0}
+.usercard-displayname{font-family:var(--font-display);font-size:22px;font-weight:600;color:var(--text-white);line-height:1.2;margin-bottom:4px;word-break:break-word;transform:translateZ(50px)}
+.usercard-username{font-family:var(--font-mono);font-size:13px;color:var(--sub-text);transform:translateZ(45px)}
+.usercard-role{display:inline-block;padding:4px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:6px;transform:translateZ(55px)}
+.usercard-role.admin{background:linear-gradient(135deg,#FFD700,#FFA500);color:var(--pure-black)}
+.usercard-role.developer{background:linear-gradient(135deg,#00D26A,#00A050);color:var(--pure-black)}
+.usercard-role.moderator{background:linear-gradient(135deg,#9333EA,#6B21A8);color:#fff}
+.usercard-role.member{background:rgba(255,255,255,0.1);color:var(--soft-text);border:1px solid var(--glass-stroke)}
+.usercard-divider{height:1px;background:linear-gradient(90deg,transparent,var(--glass-stroke-hi),transparent);margin:20px 0;transform:translateZ(20px)}
+.usercard-fields{display:grid;grid-template-columns:1fr;gap:14px;transform:translateZ(30px)}
+.usercard-field{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--hairline);border-radius:10px}
+.usercard-field-label{font-size:10px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;flex-shrink:0}
+.usercard-field-value{font-size:12px;color:var(--soft-text);font-family:var(--font-mono);text-align:right;word-break:break-all;line-height:1.4}
+.usercard-field-value.mono{font-size:11px}
+.usercard-footer{display:flex;gap:8px;margin-top:24px;transform:translateZ(35px)}
+.usercard-btn{flex:1;padding:12px 14px;border-radius:12px;border:1px solid var(--glass-stroke-hi);background:rgba(255,255,255,0.05);color:var(--text-white);font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.25s var(--ease);display:flex;align-items:center;justify-content:center;gap:6px}
+.usercard-btn:hover{background:rgba(255,255,255,0.12);transform:translateY(-2px)}
+.usercard-btn:active{transform:scale(0.97)}
+.usercard-btn.primary{background:var(--text-white);color:var(--pure-black);border-color:var(--text-white)}
+.usercard-btn.primary:hover{background:#f0f0f0}
+.usercard-btn svg{width:14px;height:14px}
+.usercard-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;color:var(--text-white);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:all 0.2s}
+.usercard-close:hover{background:rgba(255,255,255,0.18);transform:rotate(90deg)}
+.usercard-badge{position:absolute;top:20px;left:20px;font-family:var(--font-mono);font-size:9px;color:var(--dim-text);letter-spacing:1px;text-transform:uppercase;z-index:5;transform:translateZ(20px)}
+.usercard-success-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;animation:success-pop 0.6s var(--ease) 0.5s forwards;z-index:20}
+@keyframes success-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(0)}60%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+@media(max-width:480px){.usercard{padding:28px 20px 20px}.usercard-avatar{width:64px;height:64px;font-size:28px;border-radius:20px}.usercard-displayname{font-size:18px}}
+
 </style>
 </head>
 <body>
@@ -659,6 +700,24 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 </div>
 </div>
 
+<!-- ═══ 3D USER CARD MODAL (v7.9.51) ═══ -->
+<div class="usercard-overlay" id="userCardModal">
+<div class="usercard-scene" id="userCardScene">
+<div class="usercard" id="userCardContent">
+<button class="usercard-close" onclick="closeUserCard()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+</button>
+<div class="usercard-badge">DLAVIE PORTAL · CONNECTED</div>
+<div class="usercard-success-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" width="28" height="28"><path d="M5 13l4 4L19 7"/></svg>
+</div>
+<div class="usercard-inner" id="userCardInner">
+<!-- Filled dynamically by showUserCard() -->
+</div>
+</div>
+</div>
+</div>
+
 <!-- FOOTER -->
 <footer class="footer">
 <div class="footer-logo">DLAVIE · FIFA MOODING LAUNCHER</div>
@@ -948,7 +1007,7 @@ return(a&&u)?{access:a,uid:u}:null;
 
 async function fetchUserProfile(uid,token){
 try{
-const r=await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${uid}&select=id,username,display_name,avatar_url,role&limit=1`,{headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${token}`}});
+const r=await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${uid}&select=id,username,display_name,avatar_url,role,created_at&limit=1`,{headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${token}`}});
 if(!r.ok)return null;
 const d=await r.json();return d[0]||null;
 }catch(e){return null;}
@@ -958,7 +1017,7 @@ async function restoreSession(){
 const s=getStoredSession();if(!s)return;
 const p=await fetchUserProfile(s.uid,s.access);
 if(p){
-currentUser={id:p.id,email:localStorage.getItem('dlavie_email')||'',username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,role:p.role};
+currentUser={id:p.id,email:localStorage.getItem('dlavie_email')||'',username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,role:p.role,created_at:p.created_at||null};
 updateNavUser();
 }else clearSession();
 }
@@ -970,11 +1029,31 @@ if(!token||!uid)return false;
 saveSession(token,'',uid,email);
 const profile=await fetchUserProfile(uid,token);
 if(profile){
-currentUser={id:profile.id,email:email||'',username:profile.username,display_name:profile.display_name,avatar_url:profile.avatar_url,role:profile.role};
+// v7.9.51 FIX: Clear pending_issue flag — user datang dari launcher,
+// BUKAN dari issue creation flow. Jangan auto-open CreateIssueModal.
+localStorage.removeItem('dlavie_pending_issue');
+
+currentUser={
+id:profile.id,
+email:email||'',
+username:profile.username,
+display_name:profile.display_name,
+avatar_url:profile.avatar_url,
+role:profile.role,
+created_at:profile.created_at||null
+};
 updateNavUser();
-showToast('Berhasil connect dengan launcher!');
 const cleanUrl=window.location.origin+window.location.pathname;
 window.history.replaceState({},document.title,cleanUrl);
+
+// v7.9.51: Tampilkan 3D user card sebagai konfirmasi connect berhasil
+// (bukan toast biasa — user request: langsung muncul card 3D dengan info lengkap)
+setTimeout(()=>{
+showUserCard(currentUser);
+// Tambah mousemove 3D tilt effect untuk card
+initUserCardTilt();
+},600);
+
 return true;
 }
 clearSession();return false;
@@ -1107,7 +1186,7 @@ const d=await r.json();
 if(!r.ok)throw new Error(d.error_description||d.error||'Login gagal');
 saveSession(d.access_token,d.refresh_token,d.user.id,d.user.email);
 const p=await fetchUserProfile(d.user.id,d.access_token);
-if(p)currentUser={id:p.id,email:d.user.email,username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,role:p.role};
+if(p)currentUser={id:p.id,email:d.user.email,username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,role:p.role,created_at:p.created_at||null};
 updateNavUser();
 showToast(currentLang==='en'?'Login successful!':'Login berhasil!');
 location.hash='#/';
@@ -1205,12 +1284,20 @@ async function handleOAuthCallback() {
   // Fetch profile
   const profile = await fetchUserProfile(uid, accessToken);
   if (profile) {
+    // v7.9.51: Clear pending_issue — user datang dari Google OAuth,
+    // bukan dari issue creation flow
+    localStorage.removeItem('dlavie_pending_issue');
     currentUser = {
       id: profile.id, email: email, username: profile.username,
-      display_name: profile.display_name, avatar_url: profile.avatar_url, role: profile.role
+      display_name: profile.display_name, avatar_url: profile.avatar_url,
+      role: profile.role, created_at: profile.created_at || null
     };
     updateNavUser();
-    showToast('Login Google berhasil!');
+    // Tampilkan 3D user card sebagai konfirmasi login Google berhasil
+    setTimeout(()=>{
+      showUserCard(currentUser);
+      initUserCardTilt();
+    }, 800);
   }
 
   // Clean URL hash
@@ -1551,6 +1638,254 @@ document.querySelectorAll('.mobile-menu a').forEach(a=>a.addEventListener('click
 // ═══════════════════════════════════════════════════════════════
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));});
+
+// ═══════════════════════════════════════════════════════════════
+// 3D USER CARD (v7.9.51)
+// Tampilkan card 3D dengan info user lengkap setelah connect dari
+// launcher atau login Google. Card bisa di-download sebagai PNG/JPG
+// dan di-share via Web Share API.
+// ═══════════════════════════════════════════════════════════════
+function showUserCard(user){
+if(!user)return;
+const inner=document.getElementById('userCardInner');
+if(!inner)return;
+
+// Format created_at (ISO string → "12 Jul 2026")
+let createdFormatted='—';
+if(user.created_at){
+try{
+const d=new Date(user.created_at);
+createdFormatted=d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+}catch(e){createdFormatted='—';}
+}
+
+// Initial letter untuk avatar fallback
+const initial=(user.display_name||user.username||'?')[0].toUpperCase();
+const avatarHTML=user.avatar_url?
+`<img src="${user.avatar_url}" alt="" crossorigin="anonymous" onerror="this.style.display='none';this.parentElement.textContent='${initial}'"/>`:
+initial;
+
+// Role label
+const roleLabel=(user.role||'member').toUpperCase();
+
+// Short ID (first 8 chars of UUID)
+const shortId=(user.id||'').substring(0,8);
+
+inner.innerHTML=`
+<div class="usercard-header">
+<div class="usercard-avatar">${avatarHTML}</div>
+<div class="usercard-titles">
+<div class="usercard-displayname">${esc(user.display_name||'User')}</div>
+<div class="usercard-username">@${esc(user.username||'unknown')}</div>
+<span class="usercard-role ${(user.role||'member').toLowerCase()}">${roleLabel}</span>
+</div>
+</div>
+<div class="usercard-divider"></div>
+<div class="usercard-fields">
+<div class="usercard-field">
+<span class="usercard-field-label">User ID</span>
+<span class="usercard-field-value mono">${shortId}…</span>
+</div>
+<div class="usercard-field">
+<span class="usercard-field-label">Email</span>
+<span class="usercard-field-value">${esc(user.email||'—')}</span>
+</div>
+<div class="usercard-field">
+<span class="usercard-field-label">Bergabung</span>
+<span class="usercard-field-value">${createdFormatted}</span>
+</div>
+<div class="usercard-field">
+<span class="usercard-field-label">Status</span>
+<span class="usercard-field-value" style="color:var(--success)">● Online</span>
+</div>
+</div>
+<div class="usercard-footer">
+<button class="usercard-btn" onclick="downloadUserCard('png')" id="userCardDlPng">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+PNG
+</button>
+<button class="usercard-btn" onclick="downloadUserCard('jpg')" id="userCardDlJpg">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+JPG
+</button>
+<button class="usercard-btn primary" onclick="shareUserCard()" id="userCardShare">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+Share
+</button>
+</div>
+`;
+
+// Open modal
+const modal=document.getElementById('userCardModal');
+modal.classList.add('open');
+
+// Auto-close on overlay click
+modal.onclick=(e)=>{
+if(e.target===modal)closeUserCard();
+};
+}
+
+function closeUserCard(){
+const modal=document.getElementById('userCardModal');
+if(modal){
+modal.classList.remove('open');
+// Reset tilt transform
+const scene=document.getElementById('userCardScene');
+if(scene)scene.style.transform='';
+}
+}
+
+// 3D Tilt effect — card mengikuti gerakan mouse (parallax)
+function initUserCardTilt(){
+const modal=document.getElementById('userCardModal');
+const scene=document.getElementById('userCardScene');
+if(!modal||!scene)return;
+
+const onMove=(e)=>{
+if(!modal.classList.contains('open'))return;
+const rect=modal.getBoundingClientRect();
+const x=(e.clientX-rect.left)/rect.width-0.5;  // -0.5 to 0.5
+const y=(e.clientY-rect.top)/rect.height-0.5;
+const rotY=x*20;  // max 20deg
+const rotX=-y*15;  // max 15deg
+scene.style.transform=`rotateY(${rotY}deg) rotateX(${rotX}deg)`;
+};
+
+const onLeave=()=>{
+scene.style.transform='rotateY(0deg) rotateX(0deg)';
+};
+
+modal.addEventListener('mousemove',onMove);
+modal.addEventListener('mouseleave',onLeave);
+// Remove setelah modal close (cleanup)
+const observer=new MutationObserver(()=>{
+if(!modal.classList.contains('open')){
+onLeave();
+modal.removeEventListener('mousemove',onMove);
+modal.removeEventListener('mouseleave',onLeave);
+observer.disconnect();
+}
+});
+observer.observe(modal,{attributes:true,attributeFilter:['class']});
+}
+
+// Download card sebagai PNG atau JPG menggunakan html2canvas
+async function downloadUserCard(format){
+const card=document.getElementById('userCardContent');
+if(!card)return;
+const btn= format==='png'?document.getElementById('userCardDlPng'):document.getElementById('userCardDlJpg');
+if(btn){
+const origText=btn.innerHTML;
+btn.innerHTML='<span>Generating...</span>';
+btn.disabled=true;
+}
+try{
+if(typeof html2canvas==='undefined'){
+showToast('Library html2canvas belum termuat. Refresh halaman.');
+return;
+}
+const canvas=await html2canvas(card,{
+backgroundColor:'#0a0a0a',
+scale:2,  // higher resolution
+useCORS:true,  // allow cross-origin images (avatar from Supabase)
+allowTaint:true,
+logging:false,
+removeContainer:true,
+});
+const mime=format==='jpg'?'image/jpeg':'image/png';
+const dataUrl=canvas.toDataURL(mime,0.95);
+const filename=`DLavie-Card-${(currentUser.username||'user').replace(/[^a-zA-Z0-9_]/g,'_')}.${format}`;
+// Trigger download
+const a=document.createElement('a');
+a.href=dataUrl;
+a.download=filename;
+document.body.appendChild(a);
+a.click();
+setTimeout(()=>document.body.removeChild(a),1500);
+showToast(currentLang==='en'?`Card saved as ${format.toUpperCase()}`:`Card tersimpan sebagai ${format.toUpperCase()}`);
+}catch(e){
+console.error('[downloadUserCard]',e);
+showToast('Gagal download card: '+e.message);
+}finally{
+if(btn){
+btn.disabled=false;
+if(format==='png'){
+btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>PNG';
+}else{
+btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>JPG';
+}
+}
+}
+}
+
+// Share card via Web Share API (mobile-friendly)
+async function shareUserCard(){
+const btn=document.getElementById('userCardShare');
+if(btn){
+const origText=btn.innerHTML;
+btn.innerHTML='<span>Sharing...</span>';
+btn.disabled=true;
+}
+try{
+const card=document.getElementById('userCardContent');
+const canvas=await html2canvas(card,{
+backgroundColor:'#0a0a0a',
+scale:2,
+useCORS:true,
+allowTaint:true,
+logging:false,
+});
+canvas.toBlob(async(blob)=>{
+if(!blob){
+showToast('Gagal generate card untuk share.');
+if(btn)btn.innerHTML=origText,btn.disabled=false;
+return;
+}
+const file=new File([blob],`DLavie-Card-${currentUser.username||'user'}.png`,{type:'image/png'});
+const shareData={
+title:`DLavie Card — ${currentUser.display_name||currentUser.username}`,
+text:`Lihat profil DLavie saya! @${currentUser.username||'unknown'}`,
+};
+// Web Share API with file support (mobile only, mostly)
+if(navigator.canShare&&navigator.canShare({files:[file]})){
+shareData.files=[file];
+try{
+await navigator.share(shareData);
+showToast(currentLang==='en'?'Card shared!':'Card dibagikan!');
+}catch(e){
+if(e.name!=='AbortError')showToast('Share dibatalkan.');
+}
+}else if(navigator.share){
+// Web Share API without file (text only)
+try{
+await navigator.share(shareData);
+}catch(e){
+if(e.name!=='AbortError')showToast('Share dibatalkan.');
+}
+}else{
+// Fallback: download the PNG + copy text
+const a=document.createElement('a');
+a.href=canvas.toDataURL('image/png');
+a.download=`DLavie-Card-${currentUser.username||'user'}.png`;
+document.body.appendChild(a);
+a.click();
+setTimeout(()=>document.body.removeChild(a),1500);
+const profileUrl=`${window.location.origin}/#/portal`;
+try{
+await navigator.clipboard.writeText(`${shareData.text} — ${profileUrl}`);
+showToast(currentLang==='en'?'Card downloaded + link copied!':'Card didownload + link disalin!');
+}catch(_){
+showToast(currentLang==='en'?'Card downloaded!':'Card didownload!');
+}
+}
+if(btn){btn.innerHTML=origText;btn.disabled=false;}
+},'image/png');
+}catch(e){
+console.error('[shareUserCard]',e);
+showToast('Gagal share: '+e.message);
+if(btn){btn.innerHTML=origText;btn.disabled=false;}
+}
+}
 
 // ═══════════════════════════════════════════════════════════════
 // INIT
