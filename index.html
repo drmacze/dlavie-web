@@ -303,6 +303,52 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 .btn-google:active{transform:scale(0.97)}
 .btn-google svg{width:18px;height:18px}
 
+
+/* NEWS */
+.news-section{padding:80px 32px 120px;max-width:900px;margin:0 auto}
+.news-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.news-tab{background:rgba(255,255,255,0.03);border:1px solid var(--glass-stroke);color:var(--soft-text);padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.3s var(--ease)}
+.news-tab:hover{border-color:var(--glass-stroke-hi);color:var(--text-white)}
+.news-tab.active{background:var(--text-white);color:var(--pure-black);border-color:var(--text-white)}
+.news-card{background:var(--surface-1);border:1px solid var(--glass-stroke);border-radius:16px;padding:20px;margin-bottom:16px;transition:all 0.3s var(--ease)}
+.news-card:hover{transform:translateY(-2px);border-color:var(--glass-stroke-hi)}
+.news-card-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.news-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em}
+.news-badge.update{background:rgba(0,210,106,0.15);color:#00D26A}
+.news-badge.maintenance{background:rgba(255,170,0,0.15);color:#FFAA00}
+.news-badge.mechanics{background:rgba(100,149,237,0.15);color:#6495ED}
+.news-badge.all{background:rgba(255,255,255,0.08);color:#CCC}
+.news-time{font-size:11px;color:var(--sub-text);font-family:var(--font-mono);margin-left:auto}
+.news-card h3{font-family:var(--font-display);font-size:17px;font-weight:600;margin-bottom:8px}
+.news-card p{color:var(--soft-text);font-size:14px;line-height:1.6}
+.news-card .news-body{margin-top:8px;color:var(--soft-text);font-size:13px;line-height:1.6;white-space:pre-wrap;display:none}
+.news-card.expanded .news-body{display:block}
+.news-toggle{font-size:12px;color:var(--sub-text);cursor:pointer;margin-top:8px;font-weight:600}
+.news-toggle:hover{color:var(--text-white)}
+
+/* ABOUT */
+.about-section{padding:120px 32px 80px;max-width:800px;margin:0 auto}
+.about-hero{text-align:center;margin-bottom:48px}
+.about-logo{width:80px;height:80px;border-radius:20px;background:var(--text-white);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:40px;margin:0 auto 24px;animation:portal-pulse 3s ease-in-out infinite}
+.about-title{font-family:var(--font-display);font-size:clamp(32px,5vw,48px);font-weight:600;letter-spacing:-0.02em;margin-bottom:16px}
+.about-sub{color:var(--soft-text);font-size:16px;line-height:1.6;max-width:600px;margin:0 auto}
+.about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:48px 0}
+.about-stat-card{background:var(--surface-1);border:1px solid var(--glass-stroke);border-radius:16px;padding:24px;text-align:center}
+.about-stat-num{font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--text-white)}
+.about-stat-label{font-size:12px;color:var(--sub-text);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px}
+.about-text h2{font-family:var(--font-display);font-size:22px;font-weight:600;margin-top:32px;margin-bottom:12px}
+.about-text p{color:var(--soft-text);font-size:15px;line-height:1.7;margin-bottom:16px}
+.about-text ul{margin-bottom:16px;list-style:none;padding:0}
+.about-text li{color:var(--soft-text);font-size:15px;line-height:1.7;padding-left:24px;position:relative;margin-bottom:8px}
+.about-text li::before{content:'';position:absolute;left:0;top:11px;width:12px;height:1px;background:var(--sub-text)}
+
+/* LANGUAGE SELECTOR */
+.lang-selector{position:fixed;bottom:20px;right:20px;z-index:150;background:var(--surface-1);border:1px solid var(--glass-stroke-hi);border-radius:12px;padding:4px;display:flex;gap:2px;box-shadow:0 10px 30px rgba(0,0,0,0.5);backdrop-filter:blur(20px)}
+.lang-btn{background:none;border:none;color:var(--sub-text);padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:var(--font-mono)}
+.lang-btn:hover{color:var(--text-white);background:rgba(255,255,255,0.06)}
+.lang-btn.active{background:var(--text-white);color:var(--pure-black)}
+@media(max-width:768px){.lang-selector{bottom:16px;right:16px}.lang-btn{padding:5px 8px;font-size:10px}}
+
 </style>
 </head>
 <body>
@@ -318,9 +364,11 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <ul class="nav-links">
 <li><a class="nav-link" href="#/" data-link>Home</a></li>
 <li><a class="nav-link" href="#/faq" data-link>FAQ</a></li>
+<li><a class="nav-link" href="#/news" data-link>News</a></li>
 <li><a class="nav-link" href="#/issues" data-link>Issues</a></li>
 <li><a class="nav-link" href="#/terms" data-link>Terms</a></li>
 <li><a class="nav-link" href="#/privacy" data-link>Privacy</a></li>
+<li><a class="nav-link" href="#/about" data-link>About</a></li>
 </ul>
 <a href="#/portal" class="nav-cta" data-link>Portal</a>
 <button class="menu-toggle" id="menuToggle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
@@ -329,9 +377,11 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <a href="#/" data-link>Home</a>
 <a href="#/portal" data-link>Portal</a>
 <a href="#/faq" data-link>FAQ</a>
+<a href="#/news" data-link>News</a>
 <a href="#/issues" data-link>Issues</a>
 <a href="#/terms" data-link>Terms</a>
 <a href="#/privacy" data-link>Privacy</a>
+<a href="#/about" data-link>About</a>
 </div>
 
 <!-- ═══ HOME ═══ -->
@@ -428,6 +478,57 @@ Daftar dengan Google
 </section>
 </div>
 
+
+<!-- ═══ NEWS ═══ -->
+<div class="page" id="page-news">
+<section class="news-section">
+<div class="section-label reveal">News & Updates</div>
+<h2 class="section-title reveal">Berita terbaru DLavie.</h2>
+<div class="news-tabs" id="newsTabs">
+<div class="news-tab active" data-cat="all" onclick="filterNews('all')">All</div>
+<div class="news-tab" data-cat="update" onclick="filterNews('update')">Update</div>
+<div class="news-tab" data-cat="maintenance" onclick="filterNews('maintenance')">Maintenance</div>
+<div class="news-tab" data-cat="mechanics" onclick="filterNews('mechanics')">Mechanics</div>
+</div>
+<div id="newsList"></div>
+</section>
+</div>
+
+<!-- ═══ ABOUT ═══ -->
+<div class="page" id="page-about">
+<section class="about-section">
+<div class="about-hero reveal">
+<div class="about-logo">D</div>
+<h1 class="about-title">DLavie</h1>
+<p class="about-sub">Launcher komunitas untuk FIFA 16 Mobile modding. Dibuat oleh komunitas, untuk komunitas.</p>
+</div>
+<div class="about-grid reveal">
+<div class="about-stat-card"><div class="about-stat-num">199</div><div class="about-stat-label">Versi</div></div>
+<div class="about-stat-card"><div class="about-stat-num">10</div><div class="about-stat-label">Bahasa</div></div>
+<div class="about-stat-card"><div class="about-stat-num">3GB</div><div class="about-stat-label">Data</div></div>
+<div class="about-stat-card"><div class="about-stat-num">32</div><div class="about-stat-label">FAQ</div></div>
+</div>
+<div class="about-text reveal">
+<h2>Tentang DLavie</h2>
+<p>DLavie Launcher adalah aplikasi launcher Android untuk komunitas FIFA 16 Mobile modding. Launcher ini menyediakan sistem instalasi game, patch management, community hub, dan account management dalam satu aplikasi.</p>
+<h2>Misi Kami</h2>
+<p>Memberikan pengalaman modding FIFA 16 Mobile yang mudah, aman, dan terstruktur bagi seluruh komunitas. Kami berkomitmen untuk terus mengembangkan launcher dengan fitur-fitur modern dan UI yang clean.</p>
+<h2>Fitur Utama</h2>
+<ul>
+<li><strong>FIFA 16 Mod Support</strong> — Install base data + patch system via Shizuku/root</li>
+<li><strong>Community Hub</strong> — Feed, follow/unfollow, posts, comments, badges</li>
+<li><strong>DLavie Portal</strong> — Connect akun launcher ke web DLavie</li>
+<li><strong>Admin Dashboard</strong> — Manage users, releases, patches, maintenance</li>
+<li><strong>Modern UI</strong> — Pure Monochrome + Halftone, GSAP animations, Lenis scroll</li>
+</ul>
+<h2>Privacy & Security</h2>
+<p>Data Anda aman bersama kami. Kami menggunakan Supabase dengan Row-Level Security, JWT authentication, HTTPS, dan EncryptedSharedPreferences. Password di-hash dengan bcrypt. Kami tidak menyimpan GPS, kontak, SMS, atau riwayat browsing.</p>
+<h2>Kontak</h2>
+<p>Untuk pertanyaan atau dukungan, buat issue di halaman <a href="#/issues" data-link>Issues</a> atau connect via <a href="#/portal" data-link>DLavie Portal</a>.</p>
+</div>
+</section>
+</div>
+
 <!-- ═══ TERMS ═══ -->
 <div class="page" id="page-terms">
 <section class="legal">
@@ -468,7 +569,8 @@ Daftar dengan Google
 <h2>9. Changes to Terms</h2>
 <p>We may update these Terms at any time. Continued use of the App after changes constitutes acceptance of the new Terms.</p>
 <h2>10. Contact</h2>
-<p>For questions about these Terms, create an issue via the <a href="#/issues" data-link>Issues</a> page.</p>
+<p>For questions about these Terms, create an issue via the <a href="#/news" data-link>News</a>
+<a href="#/issues" data-link>Issues</a> page.</p>
 </section>
 </div>
 
@@ -540,7 +642,8 @@ Daftar dengan Google
 <h2>9. Changes to This Policy</h2>
 <p>We may update this Privacy Policy at any time. Changes will be posted on this page.</p>
 <h2>10. Contact</h2>
-<p>For privacy questions or data requests, create an issue via the <a href="#/issues" data-link>Issues</a> page.</p>
+<p>For privacy questions or data requests, create an issue via the <a href="#/news" data-link>News</a>
+<a href="#/issues" data-link>Issues</a> page.</p>
 </section>
 </div>
 
@@ -576,7 +679,73 @@ Daftar dengan Google
 <div class="footer-copy">© 2026 DLavie Company · FIFA Mooding Launcher</div>
 </footer>
 
+
+<!-- LANGUAGE SELECTOR -->
+<div class="lang-selector" id="langSelector">
+<button class="lang-btn active" onclick="setLang('id')">ID</button>
+<button class="lang-btn" onclick="setLang('en')">EN</button>
+</div>
+
 <script>
+
+// ═══════════════════════════════════════════════════════════════
+// I18N — Internationalization
+// ═══════════════════════════════════════════════════════════════
+const I18N={
+id:{home:'Home',portal:'Portal',faq:'FAQ',news:'News',issues:'Issues',about:'About',terms:'Terms',privacy:'Privacy',download:'Download Launcher',connect:'Connect Portal',search:'Cari pertanyaan…',buatIssue:'Buat Issue',all:'Semua',update:'Update',maintenance:'Maintenance',mechanics:'Mechanics',baca:'Baca selengkapnya',belumAda:'Belum ada berita',pilihKategori:'Pilih kategori di atas',tidakAda:'Tidak ada hasil',loginDenganGoogle:'Login dengan Google',masuk:'Masuk',daftar:'Daftar',daftarDisini:'Daftar di sini',belumPunya:'Belum punya akun?'},
+en:{home:'Home',portal:'Portal',faq:'FAQ',news:'News',issues:'Issues',about:'About',terms:'Terms',privacy:'Privacy',download:'Download Launcher',connect:'Connect Portal',search:'Search questions…',buatIssue:'Create Issue',all:'All',update:'Update',maintenance:'Maintenance',mechanics:'Mechanics',baca:'Read more',belumAda:'No news yet',pilihKategori:'Select a category above',tidakAda:'No results',loginDenganGoogle:'Sign in with Google',masuk:'Sign In',daftar:'Register',daftarDisini:'Register here',belumPunya:"Don't have an account?"}
+};
+let currentLang='id';
+function setLang(lang){
+currentLang=lang;
+localStorage.setItem('dlavie_lang',lang);
+document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase()===lang));
+applyLang();
+}
+function applyLang(){
+const t=I18N[currentLang]||I18N.id;
+// Nav links
+document.querySelectorAll('.nav-link').forEach(l=>{
+const href=l.getAttribute('href');
+if(href==='#/'&&t.home)l.textContent=t.home;
+if(href==='#/portal'&&t.portal)l.textContent=t.portal;
+if(href==='#/faq'&&t.faq)l.textContent=t.faq;
+if(href==='#/news'&&t.news)l.textContent=t.news;
+if(href==='#/issues'&&t.issues)l.textContent=t.issues;
+if(href==='#/about'&&t.about)l.textContent=t.about;
+if(href==='#/terms'&&t.terms)l.textContent=t.terms;
+if(href==='#/privacy'&&t.privacy)l.textContent=t.privacy;
+});
+// Footer links
+document.querySelectorAll('.footer-link').forEach(l=>{
+const href=l.getAttribute('href');
+if(href==='#/terms'&&t.terms)l.textContent=t.terms;
+if(href==='#/privacy'&&t.privacy)l.textContent=t.privacy;
+if(href==='#/faq'&&t.faq)l.textContent=t.faq;
+if(href==='#/issues'&&t.issues)l.textContent=t.issues;
+});
+// Buttons
+document.querySelectorAll('.btn-primary').forEach(b=>{
+if(b.textContent.includes('Download')||b.textContent.includes('Unduh'))b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>'+t.download;
+});
+document.querySelectorAll('.btn-secondary').forEach(b=>{
+if(b.textContent.includes('Connect')||b.textContent.includes('Portal'))b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>'+t.connect;
+});
+// Search placeholder
+const si=document.getElementById('searchInput');
+if(si)si.placeholder=t.search;
+// Google button
+document.querySelectorAll('.btn-google').forEach(b=>{b.innerHTML=b.innerHTML.replace(/Login dengan Google|Sign in with Google/g,t.loginDenganGoogle);});
+// News tabs
+document.querySelectorAll('.news-tab').forEach(t2=>{
+const c=t2.dataset.cat;
+if(c==='all')t2.textContent=t.all;
+if(c==='update')t2.textContent=t.update;
+if(c==='maintenance')t2.textContent=t.maintenance;
+if(c==='mechanics')t2.textContent=t.mechanics;
+});
+}
+
 // ═══════════════════════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════════════════════
@@ -591,7 +760,7 @@ let selectedCategory='Bug';
 // ═══════════════════════════════════════════════════════════════
 // ROUTER (hash-based)
 // ═══════════════════════════════════════════════════════════════
-const routes=['home','portal','faq','issues','terms','privacy'];
+const routes=['home','portal','faq','issues','news','about','terms','privacy'];
 
 function router(){
 const hash=window.location.hash.replace('#/','')||'home';
@@ -619,6 +788,7 @@ if(page==='home') initHome();
 if(page==='portal') initPortal();
 if(page==='faq') initFAQ();
 if(page==='issues') loadIssues();
+if(page==='news') initNews();
 // Close mobile menu
 document.getElementById('mobileMenu').classList.remove('open');
 // Scroll to top
@@ -843,6 +1013,51 @@ async function handleOAuthCallback() {
   return true;
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+// NEWS
+// ═══════════════════════════════════════════════════════════════
+const NEWS_DATA=[
+{cat:'update',title:'v199 — Portal Connect Fix + Multi-Account',date:'2026-07-07',body:'FIX: Portal connected status now updates correctly after connect via web.\nNEW: Multi-account switcher.\nFIX: Edit Profile button navigation.\nFIX: FAQ button now opens web DLavie.'},
+{cat:'update',title:'v195 — DLavie Portal Connect + Profile UI',date:'2026-07-06',body:'NEW: DLavie Portal Connect — klik Connect to DLavie di web untuk auto-login via launcher.\nNEW: DLavie Portal status card di Profile screen dengan gradient + glow design.'},
+{cat:'update',title:'v188 — Issue System + Smart Auto-Reply',date:'2026-07-06',body:'NEW: Issue system di web FAQ. User bisa buat issue, auto-reply dengan keyword detection.\nNEW: Anti-spam validation (rate limit + min length).\nNEW: DevHub Issues page untuk admin.'},
+{cat:'maintenance',title:'Scheduled Maintenance — July 5',date:'2026-07-05',body:'Maintenance dijadwalkan untuk update infrastructure.\nDurasi: 30 menit.\nMode offline play tetap tersedia.'},
+{cat:'mechanics',title:'Patch System v3 — ZIP Engine',date:'2026-07-04',body:'NEW: ZIP patch engine dengan SHA256 verification.\nPatch sekarang support inline + ZIP format.\nAuto-backup sebelum apply patch.\nRollback system untuk restore versi lama.'},
+{cat:'mechanics',title:'Shizuku Integration — No Root Required',date:'2026-07-03',body:'DLavie Launcher sekarang support Shizuku untuk akses file system tanpa root.\nSetup: download Shizuku dari Play Store, ikuti instruksi ADB wireless (1 menit).\nSemua operasi patch sekarang work tanpa root.'},
+{cat:'update',title:'v186 — Edit Profile Fix + Onboarding Modal',date:'2026-07-04',body:'FIX: Edit Profile button now opens dedicated EditProfileScreen (was opening Settings).\nNEW: Onboarding modal (post-login) — pilih user type + use case.\nNEW: 8 i18n keys (EN + ID).'},
+{cat:'maintenance',title:'Server Migration — Supabase Upgrade',date:'2026-07-02',body:'Migrasi server ke Supabase infrastructure baru.\nDowntime: <5 menit.\nSemua data preserved.'},
+{cat:'mechanics',title:'FIFA 16 Android 16 Compatibility',date:'2026-07-01',body:'targetSdkVersion updated to 34 (Android 14 compatible).\nFix: "versi aplikasi tidak kompatible" popup on Android 14/15/16.\nminSdkVersion tetap 23 (Android 6.0).'},
+];
+
+let currentNewsCat='all';
+function initNews(){
+renderNews();
+}
+function filterNews(cat){
+currentNewsCat=cat;
+document.querySelectorAll('.news-tab').forEach(t=>t.classList.toggle('active',t.dataset.cat===cat));
+renderNews();
+}
+function renderNews(){
+const list=document.getElementById('newsList');
+const filtered=currentNewsCat==='all'?NEWS_DATA:NEWS_DATA.filter(n=>n.cat===currentNewsCat);
+if(filtered.length===0){list.innerHTML='<div style="text-align:center;padding:60px;color:var(--sub-text);">Tidak ada berita.</div>';return;}
+list.innerHTML=filtered.map((n,idx)=>{
+const cfg={update:{icon:'M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z',label:'Update'},maintenance:{icon:'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z',label:'Maintenance'},mechanics:{icon:'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z',label:'Mechanics'},all:{icon:'M4 6h16M4 12h16M4 18h16',label:'All'}}[n.cat]||{icon:'M4 6h16M4 12h16M4 18h16',label:n.cat};
+return '<div class="news-card" style="animation:stagger-up 0.5s var(--ease) '+idx*0.06+'s both" onclick="this.classList.toggle('expanded')">'+
+'<div class="news-card-header">'+
+'<span class="news-badge '+n.cat+'"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="'+cfg.icon+'"/></svg>'+cfg.label+'</span>'+
+'<span class="news-time">'+n.date+'</span>'+
+'</div>'+
+'<h3>'+n.title+'</h3>'+
+'<p>'+n.body.split('\n')[0]+'</p>'+
+'<div class="news-body">'+n.body.replace(/\n/g,'\n')+'</div>'+
+'<div class="news-toggle">'+(n.body.includes('\n')?'Baca selengkapnya ▼':'')+'</div>'+
+'</div>';
+}).join('');
+}
+
+
 // ═══════════════════════════════════════════════════════════════
 // DOWNLOAD
 // ═══════════════════════════════════════════════════════════════
@@ -868,7 +1083,8 @@ const FAQ_DATA=[
 {cat:'troubleshooting',q:'Launcher tidak menampilkan popup update',a:'<p>Force-close launcher, buka lagi. Atau install manual dari halaman <a href="#/portal" data-link>Portal</a>.</p>'},
 {cat:'troubleshooting',q:'Login gagal terus',a:'<p>Cek: akun terverifikasi, email benar, koneksi internet, atau coba reset password.</p>'},
 {cat:'keamanan',q:'Apakah data saya aman?',a:'<p>Ya. Supabase dengan RLS, JWT auth, HTTPS, EncryptedSharedPreferences. Password di-hash bcrypt. Tidak ada PII selain user_id.</p>'},
-{cat:'keamanan',q:'Bagaimana cara hapus akun permanen?',a:'<p>Buat issue di halaman <a href="#/issues" data-link>Issues</a> dengan kategori "Other" — tulis "Account Deletion Request". Admin akan verifikasi dan hapus dalam 1-2 hari.</p>'},
+{cat:'keamanan',q:'Bagaimana cara hapus akun permanen?',a:'<p>Buat issue di halaman <a href="#/news" data-link>News</a>
+<a href="#/issues" data-link>Issues</a> dengan kategori "Other" — tulis "Account Deletion Request". Admin akan verifikasi dan hapus dalam 1-2 hari.</p>'},
 ];
 
 let currentCat=null,currentSearch='';
@@ -1145,6 +1361,9 @@ if(localStorage.getItem('dlavie_pending_issue')==='1'&&currentUser){
 localStorage.removeItem('dlavie_pending_issue');
 setTimeout(()=>openCreateIssueModal(),1000);
 }
+// Restore language preference
+const savedLang=localStorage.getItem('dlavie_lang')||'id';
+setLang(savedLang);
 router();
 })();
 </script>
