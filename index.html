@@ -418,7 +418,7 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <div class="portal-logo">D</div>
 <h1 class="portal-title" data-i18n="portal_title">DLavie Portal</h1>
 <p class="portal-sub" data-i18n="portal_sub">Login atau connect akun DLavie Launcher untuk mengakses semua fitur web.</p>
-<button class="btn-connect" onclick="connectToDLavie()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg data-i18n="connect_dlavie">Connect to Launcher</button>
+<button class="btn-connect" onclick="connectToDLavie()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg> <span data-i18n="connect_dlavie">Connect to Launcher</span></button>
 <div class="auth-divider" data-i18n="divider_or">atau</div>
 <button class="btn-google" onclick="loginWithGoogle()">
 <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.6 2.84c.87-2.6 3.3-4.53 6.22-4.53z"/></svg>
@@ -432,11 +432,6 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <button class="btn-connect" onclick="performLogin()" data-i18n="btn_masuk">Masuk</button>
 </div>
 <div id="registerForm" style="display:none;">
-<button class="btn-google" onclick="loginWithGoogle()">
-<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.6 2.84c.87-2.6 3.3-4.53 6.22-4.53z"/></svg>
-Daftar dengan Google
-</button>
-<div class="auth-divider" data-i18n="divider_email">atau email</div>
 <div class="auth-form-group"><label class="auth-label" data-i18n="label_email">Email</label><input type="email" class="auth-input" id="regEmail" placeholder="kamu@email.com" /></div>
 <div class="auth-form-group"><label class="auth-label" data-i18n="label_password">Password</label><input type="password" class="auth-input" id="regPassword" placeholder="Min 6 karakter" /></div>
 <div class="auth-form-group"><label class="auth-label" data-i18n="label_username">Username</label><input type="text" class="auth-input" id="regUsername" placeholder="3-24 huruf/angka/_" /></div>
@@ -444,7 +439,7 @@ Daftar dengan Google
 <div class="auth-error" id="regError"></div>
 <button class="btn-connect" onclick="performRegister()" data-i18n="btn_daftar">Daftar</button>
 </div>
-<div class="auth-switch" id="authSwitch">Belum punya akun? <a onclick="switchAuthMode('register')">Daftar di sini</a><br><span style="font-size:11px;color:var(--dim-text);margin-top:8px;display:block">Atau login/register dengan Google di atas</span></div>
+<div class="auth-switch" id="authSwitch">Belum punya akun? <a onclick="switchAuthMode('register')">Daftar di sini</a></div>
 </div>
 </section>
 </div>
@@ -684,6 +679,16 @@ Daftar dengan Google
 </div>
 
 <script>
+
+// ═══════════════════════════════════════════════════════════════
+// SUPABASE CONFIG — wajib dideklarasikan sebelum dipakai dimanapun
+// ═══════════════════════════════════════════════════════════════
+// BUG FIX: Sebelumnya SUPABASE_URL & SUPABASE_ANON_KEY TIDAK PERNAH
+// dideklarasikan, padahal dipakai di login, register, OAuth, fetchUserProfile,
+// submitIssue, loadIssues, dll. Akibatnya semua function yang akses
+// SUPABASE_URL throw ReferenceError -> button login/register diam.
+const SUPABASE_URL='https://lvmucsxbmadtsgrxuwmo.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';
 
 // ═══════════════════════════════════════════════════════════════
 // I18N — Internationalization
@@ -990,45 +995,66 @@ function esc(s){const d=document.createElement('div');d.textContent=s||'';return
 
 // ═══════════════════════════════════════════════════════════════
 // PORTAL — Connect to DLavie + Login/Register
+// v7.9.50 UPGRADE: Better device detection, timeout, error handling,
+// fallback download link, animated connecting state
 // ═══════════════════════════════════════════════════════════════
 function connectToDLavie(){
 if(!currentUser){
-showToast('Login dulu sebelum connect ke launcher.');
+showToast(currentLang==='en'?'Please login before connecting to launcher.':'Login dulu sebelum connect ke launcher.');
 location.hash='#/portal';
 return;
 }
 const token=localStorage.getItem('dlavie_access');
 const uid=localStorage.getItem('dlavie_uid');
 const refresh=localStorage.getItem('dlavie_refresh')||'';
-if(!token||!uid){showToast('Sesi tidak valid. Login ulang.');return;}
+if(!token||!uid){
+showToast(currentLang==='en'?'Session invalid. Please login again.':'Sesi tidak valid. Login ulang.');
+clearSession();
+location.hash='#/portal';
+return;
+}
 
 const ua=navigator.userAgent||'';
 const isAndroid=/android/i.test(ua);
 const isIOS=/iphone|ipad|ipod/i.test(ua);
-if(!isAndroid&&!isIOS){showPortalInfo();return;}
+const isDesktop=!isAndroid&&!isIOS;
+
+// Show connecting state with spinner
+const c=document.getElementById('portalContent');
+const originalHTML=c.innerHTML;
+c.innerHTML=`
+<div class="portal-logo" style="animation:pulse 1.5s ease-in-out infinite;">D</div>
+<h1 class="portal-title">${currentLang==='en'?'Connecting...':'Menghubungkan...'}</h1>
+<p class="portal-sub">${currentLang==='en'?'Opening DLavie Launcher app...':'Membuka aplikasi DLavie Launcher...'}</p>
+<div style="margin:24px auto;width:40px;height:40px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--text-white);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+<p style="color:var(--dim-text);font-size:12px;">${currentLang==='en'?'If nothing happens, the launcher may not be installed.':'Jika tidak terjadi apa-apa, launcher mungkin belum terinstall.'}</p>
+<button class="btn-connect" onclick="location.reload()" style="margin-top:16px;">${currentLang==='en'?'Cancel':'Batal'}</button>
+<style>@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}</style>
+`;
 
 // Mark portal as connected in web
 localStorage.setItem('dlavie_portal_connected','true');
-showToast('Menghubungkan ke launcher...');
 
 let opened=false;
 const vh=()=>{if(document.hidden)opened=true;document.removeEventListener('visibilitychange',vh);};
 document.addEventListener('visibilitychange',vh);
 
 if(isAndroid){
-// Send token+uid TO launcher via intent
-window.location.href=`intent://connect?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}&refresh=${encodeURIComponent(refresh)}#Intent;scheme=dlavie;package=com.drmacze.f16launcher;S.browser_fallback_url=${encodeURIComponent(PORTAL_URL+'?connect=fail')};end`;
-}else{
+// Android: try intent:// scheme first (better than dlavie:// because
+// it can specify fallback URL if app not installed)
+window.location.href=`intent://connect?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}&refresh=${encodeURIComponent(refresh)}#Intent;scheme=dlavie;package=com.drmacze.f16launcher;S.browser_fallback_url=${encodeURIComponent(location.origin+'/?connect=fail')};end`;
+}else if(isIOS){
 // iOS: send via custom scheme
 window.location.href=`dlavie://connect?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}&refresh=${encodeURIComponent(refresh)}`;
 }
 
+// After 2.5s, if app didn't open, show fallback info
 setTimeout(()=>{
 document.removeEventListener('visibilitychange',vh);
 if(!opened&&!document.hidden){
 showPortalInfo();
 }
-},2000);
+},2500);
 }
 
 function showPortalInfo(){
@@ -1051,15 +1077,31 @@ c.innerHTML=`
 function switchAuthMode(mode){
 const lf=document.getElementById('loginForm'),rf=document.getElementById('registerForm');
 const sw=document.getElementById('authSwitch');
-if(mode==='register'){lf.style.display='none';rf.style.display='block';sw.innerHTML=currentLang==='en'?'Already have an account? <span onclick=switchAuthMode(\'login\') style=cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)>Sign in here</span>':'Sudah punya akun? <span onclick=switchAuthMode(\'login\') style=cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)>Masuk di sini</span>';}
+if(mode==='register'){
+lf.style.display='none';
+rf.style.display='block';
+sw.innerHTML=currentLang==='en'?
+'Already have an account? <span onclick="switchAuthMode(\'login\')" style="cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)">Sign in here</span>':
+'Sudah punya akun? <span onclick="switchAuthMode(\'login\')" style="cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)">Masuk di sini</span>';
+}else{
+// mode === 'login' (default)
+lf.style.display='block';
+rf.style.display='none';
+sw.innerHTML=currentLang==='en'?
+"Don't have an account? <span onclick=\"switchAuthMode('register')\" style=\"cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)\">Register here</span>":
+'Belum punya akun? <span onclick="switchAuthMode(\'register\')" style="cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)">Daftar di sini</span>';
+}
 }
 
 async function performLogin(){
 const email=document.getElementById('loginEmail').value.trim();
 const pwd=document.getElementById('loginPassword').value;
 const err=document.getElementById('loginError');err.classList.remove('show');
-if(!email||!pwd){err.textContent='Email dan password wajib diisi.';err.classList.add('show');return;}
+if(!email||!pwd){err.textContent=currentLang==='en'?'Email and password are required.':'Email dan password wajib diisi.';err.classList.add('show');return;}
+if(typeof SUPABASE_URL==='undefined'||!SUPABASE_URL){err.textContent='Config error: SUPABASE_URL belum dimuat. Refresh halaman.';err.classList.add('show');return;}
 try{
+const btn=document.querySelector('#loginForm .btn-connect');
+if(btn){btn.disabled=true;btn.textContent=currentLang==='en'?'Signing in...':'Masuk...';}
 const r=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd})});
 const d=await r.json();
 if(!r.ok)throw new Error(d.error_description||d.error||'Login gagal');
@@ -1067,7 +1109,7 @@ saveSession(d.access_token,d.refresh_token,d.user.id,d.user.email);
 const p=await fetchUserProfile(d.user.id,d.access_token);
 if(p)currentUser={id:p.id,email:d.user.email,username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,role:p.role};
 updateNavUser();
-showToast('Login berhasil!');
+showToast(currentLang==='en'?'Login successful!':'Login berhasil!');
 location.hash='#/';
 }catch(e){err.textContent=e.message;err.classList.add('show');}
 }
@@ -1078,29 +1120,57 @@ const pwd=document.getElementById('regPassword').value;
 const un=document.getElementById('regUsername').value.trim();
 const dn=document.getElementById('regDisplayName').value.trim();
 const err=document.getElementById('regError');err.classList.remove('show');
-if(!email||!pwd||!un||!dn){err.textContent='Semua field wajib diisi.';err.classList.add('show');return;}
-if(pwd.length<6){err.textContent='Password minimal 6 karakter.';err.classList.add('show');return;}
+if(!email||!pwd||!un||!dn){err.textContent=currentLang==='en'?'All fields are required.':'Semua field wajib diisi.';err.classList.add('show');return;}
+if(pwd.length<6){err.textContent=currentLang==='en'?'Password min 6 characters.':'Password minimal 6 karakter.';err.classList.add('show');return;}
+if(un.length<3||un.length>24||!/^[a-zA-Z0-9_]+$/.test(un)){err.textContent=currentLang==='en'?'Username 3-24 chars, letters/numbers/_ only.':'Username 3-24 huruf/angka/_.';err.classList.add('show');return;}
+if(typeof SUPABASE_URL==='undefined'||!SUPABASE_URL){err.textContent='Config error: SUPABASE_URL belum dimuat. Refresh halaman.';err.classList.add('show');return;}
 try{
+const btn=document.querySelector('#registerForm .btn-connect');
+if(btn){btn.disabled=true;btn.textContent=currentLang==='en'?'Registering...':'Mendaftarkan...';}
 const r=await fetch(`${SUPABASE_URL}/auth/v1/signup`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd,data:{username:un,display_name:dn}})});
 const d=await r.json();
+if(btn){btn.disabled=false;btn.textContent=currentLang==='en'?'Register':'Daftar';}
 if(!r.ok)throw new Error(d.error_description||d.error||'Registrasi gagal');
 if(d.access_token){
 saveSession(d.access_token,d.refresh_token,d.user.id,d.user.email);
 currentUser={id:d.user.id,email:d.user.email,username:un,display_name:dn,avatar_url:null,role:'user'};
-updateNavUser();showToast('Registrasi berhasil!');location.hash='#/';
-}else{err.textContent='Cek email untuk konfirmasi, lalu login.';err.style.color='var(--success)';err.classList.add('show');}
+updateNavUser();showToast(currentLang==='en'?'Registration successful!':'Registrasi berhasil!');location.hash='#/';
+}else{err.textContent=currentLang==='en'?'Check email for confirmation, then login.':'Cek email untuk konfirmasi, lalu login.';err.style.color='var(--success)';err.classList.add('show');}
 }catch(e){err.textContent=e.message;err.classList.add('show');}
 }
 
 // ═══════════════════════════════════════════════════════════════
 // GOOGLE OAUTH LOGIN
+// v7.9.50: Tambah error handling + loading state + scopes
 // ═══════════════════════════════════════════════════════════════
 function loginWithGoogle() {
-  // Supabase OAuth: redirect to Google login, then back to our site
-  // with access_token in URL hash (#access_token=...&refresh_token=...)
-  const redirectTo = encodeURIComponent(window.location.origin + window.location.pathname);
-  const authUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${redirectTo}`;
-  window.location.href = authUrl;
+  try {
+    if (typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) {
+      showToast('Error: SUPABASE_URL belum dikonfigurasi. Refresh halaman.');
+      console.error('[loginWithGoogle] SUPABASE_URL is', typeof SUPABASE_URL);
+      return;
+    }
+    // Visual feedback: button loading state
+    const btn = event && event.currentTarget ? event.currentTarget : null;
+    if (btn) {
+      btn.disabled = true;
+      const origHTML = btn.innerHTML;
+      btn.innerHTML = '<span>Mengarahkan ke Google...</span>';
+      setTimeout(() => { btn.disabled = false; btn.innerHTML = origHTML; }, 3000);
+    }
+
+    // Supabase OAuth: redirect to Google login, then back to our site
+    // with access_token in URL hash (#access_token=...&refresh_token=...)
+    const redirectTo = encodeURIComponent(window.location.origin + window.location.pathname);
+    // Tambah scopes untuk dapat email + profile info
+    const scopes = encodeURIComponent('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile');
+    const authUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${redirectTo}&scopes=${scopes}`;
+    console.log('[loginWithGoogle] Redirecting to:', authUrl);
+    window.location.href = authUrl;
+  } catch (e) {
+    console.error('[loginWithGoogle] Error:', e);
+    showToast('Gagal redirect ke Google: ' + e.message);
+  }
 }
 
 // Parse OAuth callback (hash fragment: #access_token=...&refresh_token=...)
