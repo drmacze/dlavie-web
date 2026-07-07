@@ -908,6 +908,21 @@ window.location.hash=link.getAttribute('href');
 window.addEventListener('hashchange',router);
 
 // ═══════════════════════════════════════════════════════════════
+// GLOBAL STATE — explicitly declared (fix: previously implicit globals)
+// ═══════════════════════════════════════════════════════════════
+// BUG FIX: Sebelumnya variabel ini hanya di-assign (tanpa let/var/const)
+// di dalam function. JavaScript non-strict mode sebenarnya bikin mereka
+// global implicit — TAPI hanya setelah function tersebut dipanggil.
+// Jika user belum pernah login/logout/clearSession, currentUser = undefined.
+// Saat user klik "Buat Issue" → openCreateIssueFlow() akses currentUser
+// → ReferenceError → button diam, tidak ada apa-apa terjadi.
+// Fix: declare explicitly di top-level supaya selalu ada nilainya.
+let currentUser=null;       // di-set di setSession/restoreSession/clearSession
+let currentLang='id';       // di-set di setLang
+let currentNewsCat='all';   // di-set di filterNews
+let selectedCategory='Bug'; // di-set di openCreateIssueModal/selectCategory
+
+// ═══════════════════════════════════════════════════════════════
 // SESSION (SSO — shared localStorage across same origin)
 // ═══════════════════════════════════════════════════════════════
 function saveSession(access,refresh,uid,email){
