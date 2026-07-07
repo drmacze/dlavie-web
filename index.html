@@ -855,13 +855,32 @@ sw.innerHTML=currentLang==='en'
 ?"Don't have an account? <span onclick=switchAuthMode('register') style=cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)>Register here</span>"
 :"Belum punya akun? <span onclick=switchAuthMode('register') style=cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)>Daftar di sini</span>";
 }
-// Nav active state
-document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
-const hash=window.location.hash||'#/';
-document.querySelectorAll('.nav-link').forEach(l=>{
-if(l.getAttribute('href')===hash)l.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ROUTER
+// ═══════════════════════════════════════════════════════════════
+function router(){
+const hash=window.location.hash.replace('#/','')||'home';
+const page=routes.includes(hash)?hash:'home';
+// Fade out current page
+const current=document.querySelector('.page.active');
+if(current){
+current.style.opacity='0';
+current.style.transform='translateY(-10px)';
+}
+setTimeout(()=>{
+routes.forEach(r=>{
+const el=document.getElementById('page-'+r);
+if(el)el.classList.toggle('active',r===page);
+if(r===page){el.style.opacity='';el.style.transform='';}
 });
-setTimeout(applyLang,100);
+},150);
+// Update nav active state
+document.querySelectorAll('.nav-link').forEach(l=>{
+const href=l.getAttribute('href');
+l.classList.toggle('active',href==='#/'+page||(page==='home'&&href==='#/'));
+});
 // Page-specific init
 if(page==='home') initHome();
 if(page==='portal') initPortal();
