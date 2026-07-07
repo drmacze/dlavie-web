@@ -1794,7 +1794,10 @@ removeContainer:true,
 });
 const mime=format==='jpg'?'image/jpeg':'image/png';
 const dataUrl=canvas.toDataURL(mime,0.95);
-const filename=`DLavie-Card-${(currentUser.username||'user').replace(/[^a-zA-Z0-9_]/g,'_')}.${format}`;
+// v7.9.51 fix: currentUser bisa null kalau user belum login tapi card
+// di-show via test/showUserCard mock. Fallback ke 'user'.
+const uname=(currentUser&&currentUser.username)?currentUser.username:'user';
+const filename=`DLavie-Card-${uname.replace(/[^a-zA-Z0-9_]/g,'_')}.${format}`;
 // Trigger download
 const a=document.createElement('a');
 a.href=dataUrl;
@@ -1838,13 +1841,17 @@ logging:false,
 canvas.toBlob(async(blob)=>{
 if(!blob){
 showToast('Gagal generate card untuk share.');
-if(btn)btn.innerHTML=origText,btn.disabled=false;
+if(btn){btn.innerHTML=origText;btn.disabled=false;}
 return;
 }
-const file=new File([blob],`DLavie-Card-${currentUser.username||'user'}.png`,{type:'image/png'});
+// v7.9.51 fix: currentUser bisa null. Fallback ke 'user'.
+const u=currentUser||{};
+const uname=u.username||'user';
+const dname=u.display_name||uname;
+const file=new File([blob],`DLavie-Card-${uname}.png`,{type:'image/png'});
 const shareData={
-title:`DLavie Card — ${currentUser.display_name||currentUser.username}`,
-text:`Lihat profil DLavie saya! @${currentUser.username||'unknown'}`,
+title:`DLavie Card — ${dname}`,
+text:`Lihat profil DLavie saya! @${uname}`,
 };
 // Web Share API with file support (mobile only, mostly)
 if(navigator.canShare&&navigator.canShare({files:[file]})){
@@ -1866,7 +1873,7 @@ if(e.name!=='AbortError')showToast('Share dibatalkan.');
 // Fallback: download the PNG + copy text
 const a=document.createElement('a');
 a.href=canvas.toDataURL('image/png');
-a.download=`DLavie-Card-${currentUser.username||'user'}.png`;
+a.download=`DLavie-Card-${uname}.png`;
 document.body.appendChild(a);
 a.click();
 setTimeout(()=>document.body.removeChild(a),1500);
