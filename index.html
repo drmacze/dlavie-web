@@ -418,7 +418,7 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <div class="portal-logo">D</div>
 <h1 class="portal-title" data-i18n="portal_title">DLavie Portal</h1>
 <p class="portal-sub" data-i18n="portal_sub">Login atau connect akun DLavie Launcher untuk mengakses semua fitur web.</p>
-<button class="btn-connect" onclick="connectToDLavie()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg data-i18n="connect_dlavie">Connect to DLavie</button>
+<button class="btn-connect" onclick="connectToDLavie()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg data-i18n="connect_dlavie">Connect to Launcher</button>
 <div class="auth-divider" data-i18n="divider_or">atau</div>
 <button class="btn-google" onclick="loginWithGoogle()">
 <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.6 2.84c.87-2.6 3.3-4.53 6.22-4.53z"/></svg>
@@ -977,20 +977,43 @@ function esc(s){const d=document.createElement('div');d.textContent=s||'';return
 // PORTAL — Connect to DLavie + Login/Register
 // ═══════════════════════════════════════════════════════════════
 function connectToDLavie(){
-const cb=encodeURIComponent(PORTAL_URL);
+if(!currentUser){
+showToast('Login dulu sebelum connect ke launcher.');
+location.hash='#/portal';
+return;
+}
+const token=localStorage.getItem('dlavie_access');
+const uid=localStorage.getItem('dlavie_uid');
+const refresh=localStorage.getItem('dlavie_refresh')||'';
+if(!token||!uid){showToast('Sesi tidak valid. Login ulang.');return;}
+
 const ua=navigator.userAgent||'';
 const isAndroid=/android/i.test(ua);
 const isIOS=/iphone|ipad|ipod/i.test(ua);
 if(!isAndroid&&!isIOS){showPortalInfo();return;}
+
+// Mark portal as connected in web
+localStorage.setItem('dlavie_portal_connected','true');
+showToast('Menghubungkan ke launcher...');
+
 let opened=false;
 const vh=()=>{if(document.hidden)opened=true;document.removeEventListener('visibilitychange',vh);};
 document.addEventListener('visibilitychange',vh);
+
 if(isAndroid){
-window.location.href=`intent://connect?callback=${cb}#Intent;scheme=dlavie;package=com.drmacze.f16launcher;S.browser_fallback_url=${encodeURIComponent(PORTAL_URL+'?connect=fail')};end`;
+// Send token+uid TO launcher via intent
+window.location.href=`intent://connect?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}&refresh=${encodeURIComponent(refresh)}#Intent;scheme=dlavie;package=com.drmacze.f16launcher;S.browser_fallback_url=${encodeURIComponent(PORTAL_URL+'?connect=fail')};end`;
 }else{
-window.location.href=`dlavie://connect?callback=${cb}`;
+// iOS: send via custom scheme
+window.location.href=`dlavie://connect?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}&refresh=${encodeURIComponent(refresh)}`;
 }
-setTimeout(()=>{document.removeEventListener('visibilitychange',vh);if(!opened&&!document.hidden)showPortalInfo();},1500);
+
+setTimeout(()=>{
+document.removeEventListener('visibilitychange',vh);
+if(!opened&&!document.hidden){
+showPortalInfo();
+}
+},2000);
 }
 
 function showPortalInfo(){
