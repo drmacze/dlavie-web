@@ -1258,9 +1258,96 @@ window.location.href=`dlavie://connect?token=${encodeURIComponent(token)}&uid=${
 setTimeout(()=>{
 document.removeEventListener('visibilitychange',vh);
 if(!opened&&!document.hidden){
-showPortalInfo();
+// v7.9.53: Show manual connect modal dengan token + URL + download link
+// (sebelumnya hanya showPortalInfo yang general)
+showManualConnectModal(token,uid,refresh);
 }
 },2500);
+}
+
+// v7.9.53: Manual Connect Modal — tampilkan token + connect URL + download link
+// Berguna untuk:
+// - Launcher versi lama yang tidak ada deep link handler
+// - Device yang block custom scheme (dlavie://)
+// - User yang mau copy URL untuk paste di launcher field "Connect Manual"
+function showManualConnectModal(token,uid,refresh){
+const c=document.getElementById('portalContent');
+const connectUrl=`dlavie://connect?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}&refresh=${encodeURIComponent(refresh||'')}`;
+c.innerHTML=`
+<div class="portal-logo">D</div>
+<h1 class="portal-title">${currentLang==='en'?'Connect Manual':'Connect Manual'}</h1>
+<p class="portal-sub">${currentLang==='en'?"If launcher didn't open automatically, use one of these methods:":'Jika launcher tidak terbuka otomatis, gunakan salah satu cara ini:'}</p>
+
+<div style="margin:20px 0;padding:16px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:12px;text-align:left;">
+<div style="font-size:11px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:10px;">${currentLang==='en'?'Method 1: Copy Connect URL':'Cara 1: Copy URL Connect'}</div>
+<div style="font-size:12px;color:var(--soft-text);margin-bottom:8px;line-height:1.5;">
+${currentLang==='en'?'Copy URL below, open launcher, tap "Connect Manual", paste URL.':'Copy URL di bawah, buka launcher, tap "Connect Manual", paste URL.'}
+</div>
+<textarea readonly id="manualConnectUrl" style="width:100%;height:80px;background:rgba(0,0,0,0.4);border:1px solid var(--glass-stroke);border-radius:8px;color:var(--soft-text);font-family:var(--font-mono);font-size:10px;padding:10px;resize:none;word-break:break-all;" onclick="this.select()">${connectUrl}</textarea>
+<button class="btn-connect" onclick="copyToClipboard(document.getElementById('manualConnectUrl').value)" style="margin-top:8px;padding:10px 16px;font-size:12px;">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+${currentLang==='en'?'Copy URL':'Copy URL'}
+</button>
+</div>
+
+<div style="margin:20px 0;padding:16px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:12px;text-align:left;">
+<div style="font-size:11px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:10px;">${currentLang==='en'?'Method 2: Download Latest Launcher':'Cara 2: Download Launcher Terbaru'}</div>
+<div style="font-size:12px;color:var(--soft-text);margin-bottom:8px;line-height:1.5;">
+${currentLang==='en'?'If you have launcher v212 or older, deep link may not work. Update to latest version.':'Kalau launcher kamu v212 atau lebih lama, deep link mungkin tidak jalan. Update ke versi terbaru.'}
+</div>
+<button class="btn-connect" onclick="downloadLatestLauncher()" style="padding:10px 16px;font-size:12px;background:var(--success);color:var(--pure-black);border-color:var(--success);">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+${currentLang==='en'?'Download Launcher v218+':'Download Launcher v218+'}
+</button>
+</div>
+
+<div style="margin:20px 0;padding:16px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:12px;text-align:left;">
+<div style="font-size:11px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:10px;">${currentLang==='en'?'Method 3: Retry Connect':'Cara 3: Coba Connect Lagi'}</div>
+<div style="font-size:12px;color:var(--soft-text);margin-bottom:8px;line-height:1.5;">
+${currentLang==='en'?'Make sure launcher is installed, then retry.':'Pastikan launcher terinstall, lalu coba lagi.'}
+</div>
+<button class="btn-connect" onclick="connectToDLavie()" style="padding:10px 16px;font-size:12px;">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+${currentLang==='en'?'Retry Connect':'Coba Lagi'}
+</button>
+</div>
+
+<button class="btn-connect" onclick="initPortal()" style="background:transparent;color:var(--soft-text);border:1px solid var(--glass-stroke);margin-top:12px;">
+${currentLang==='en'?'Back to Portal':'Kembali ke Portal'}
+</button>
+`;
+}
+
+// v7.9.53: Copy text to clipboard dengan fallback
+function copyToClipboard(text){
+if(navigator.clipboard&&navigator.clipboard.writeText){
+navigator.clipboard.writeText(text).then(()=>{
+showToast(currentLang==='en'?'Copied to clipboard!':'Tersalin ke clipboard!');
+}).catch(()=>{
+// Fallback: select + execCommand
+const ta=document.createElement('textarea');
+ta.value=text;
+document.body.appendChild(ta);
+ta.select();
+try{document.execCommand('copy');showToast(currentLang==='en'?'Copied!':'Tersalin!');}catch(_){showToast('Gagal copy. Copy manual.');}
+document.body.removeChild(ta);
+});
+}else{
+// Fallback for older browsers
+const ta=document.createElement('textarea');
+ta.value=text;
+document.body.appendChild(ta);
+ta.select();
+try{document.execCommand('copy');showToast(currentLang==='en'?'Copied!':'Tersalin!');}catch(_){showToast('Gagal copy. Copy manual.');}
+document.body.removeChild(ta);
+}
+}
+
+// v7.9.53: Download latest launcher APK from GitHub Releases
+function downloadLatestLauncher(){
+const url='https://github.com/drmacze/F16-Launcher/releases/latest';
+window.open(url,'_blank','noopener');
+showToast(currentLang==='en'?'Opening download page...':'Membuka halaman download...');
 }
 
 function showPortalInfo(){
