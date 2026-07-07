@@ -914,12 +914,12 @@ window.addEventListener('hashchange',router);
 // di dalam function. JavaScript non-strict mode sebenarnya bikin mereka
 // global implicit — TAPI hanya setelah function tersebut dipanggil.
 // Jika user belum pernah login/logout/clearSession, currentUser = undefined.
-// Saat user klik "Buat Issue" → openCreateIssueFlow() akses currentUser
-// → ReferenceError → button diam, tidak ada apa-apa terjadi.
+// Saat user klik "Buat Issue" -> openCreateIssueFlow() akses currentUser
+// -> ReferenceError -> button diam, tidak ada apa-apa terjadi.
 // Fix: declare explicitly di top-level supaya selalu ada nilainya.
+// (currentLang & currentNewsCat SUDAH dideklarasikan di tempat lain,
+// jangan re-declare -> SyntaxError. currentUser & selectedCategory belum.)
 let currentUser=null;       // di-set di setSession/restoreSession/clearSession
-let currentLang='id';       // di-set di setLang
-let currentNewsCat='all';   // di-set di filterNews
 let selectedCategory='Bug'; // di-set di openCreateIssueModal/selectCategory
 
 // ═══════════════════════════════════════════════════════════════
