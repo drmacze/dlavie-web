@@ -860,6 +860,7 @@ sw.innerHTML=currentLang==='en'
 // ═══════════════════════════════════════════════════════════════
 // ROUTER
 // ═══════════════════════════════════════════════════════════════
+const routes=["home","portal","faq","issues","news","about","terms","privacy"];
 function router(){
 const hash=window.location.hash.replace('#/','')||'home';
 const page=routes.includes(hash)?hash:'home';
