@@ -10,7 +10,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--pure-black:#000;--carbon:#0A0A0A;--surface-1:#0E0E0E;--surface-2:#141414;--text-white:#FFF;--soft-text:#CCC;--sub-text:#888;--dim-text:#555;--glass-stroke:rgba(255,255,255,0.10);--glass-stroke-hi:rgba(255,255,255,0.20);--hairline:rgba(255,255,255,0.05);--danger:#FF4444;--amber:#FFAA00;--success:#00D26A;--font-display:'Clash Display','Space Grotesk',sans-serif;--font-body:'Space Grotesk',sans-serif;--font-mono:'JetBrains Mono',monospace;--ease:cubic-bezier(0.16,1,0.3,1)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -97,6 +96,25 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 .portal-logo{width:64px;height:64px;border-radius:16px;background:var(--text-white);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:32px;margin:0 auto 24px}
 .portal-title{font-family:var(--font-display);font-size:28px;font-weight:600;margin-bottom:8px}
 .portal-sub{color:var(--soft-text);font-size:14px;margin-bottom:32px;line-height:1.5}
+
+/* v7.9.62: Compact Profile Card (Photo 1 style) — tampil saat user logged in di Portal */
+.compact-profile-card{display:flex;flex-direction:column;align-items:center;padding:8px 0}
+.compact-avatar-wrap{margin-bottom:20px;position:relative}
+.compact-avatar{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0.04));border:2px solid var(--glass-stroke-hi);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.compact-avatar img{width:100%;height:100%;object-fit:cover}
+.compact-avatar-letter{font-family:var(--font-display);font-size:42px;font-weight:700;color:var(--text-white)}
+.compact-name{font-family:var(--font-display);font-size:22px;font-weight:600;color:var(--text-white);margin-bottom:4px;display:flex;align-items:center;gap:6px;justify-content:center}
+.compact-verified{width:18px;height:18px;color:#4CAF50;flex-shrink:0}
+.compact-handle{color:var(--soft-text);font-size:13px;font-family:var(--font-body);margin-bottom:12px}
+.compact-bio{color:var(--sub-text);font-size:13px;line-height:1.5;max-width:320px;text-align:center;margin-bottom:24px;padding:0 12px;word-break:break-word}
+.compact-stats{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;justify-content:center}
+.compact-stat{display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:999px;font-size:12px;color:var(--soft-text)}
+.compact-stat svg{width:14px;height:14px;flex-shrink:0}
+.compact-stat-role{color:var(--text-white);border-color:var(--glass-stroke-hi)}
+.compact-connect-btn{margin-bottom:12px}
+.compact-logout-btn{width:100%;background:transparent;color:var(--sub-text);border:1px solid var(--glass-stroke);border-radius:12px;padding:12px;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.compact-logout-btn:hover{color:#ff6b6b;border-color:rgba(255,107,107,0.4);background:rgba(255,107,107,0.06)}
+.compact-logout-btn svg{width:16px;height:16px}
 
 /* AUTH form (shared with portal) */
 .auth-form-group{margin-bottom:16px;text-align:left}
@@ -350,46 +368,6 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 .lang-btn.active{background:var(--text-white);color:var(--pure-black)}
 @media(max-width:768px){.lang-selector{bottom:16px;right:16px}.lang-btn{padding:5px 8px;font-size:10px}}
 
-/* ═══ 3D USER CARD (v7.9.51) ═══ */
-.usercard-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(20px);z-index:250;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.4s var(--ease);perspective:1500px}
-.usercard-overlay.open{opacity:1;pointer-events:auto}
-.usercard-scene{width:100%;max-width:420px;transform-style:preserve-3d;transition:transform 0.8s var(--ease);animation:usercard-in 0.7s var(--ease) forwards}
-@keyframes usercard-in{0%{opacity:0;transform:rotateY(-90deg) translateZ(-200px) scale(0.7)}100%{opacity:1;transform:rotateY(0deg) translateZ(0) scale(1)}}
-.usercard{position:relative;background:linear-gradient(145deg,#161616 0%,#0a0a0a 100%);border:1px solid var(--glass-stroke-hi);border-radius:24px;padding:36px 28px 28px;box-shadow:0 30px 80px rgba(0,0,0,0.8),0 0 0 1px rgba(255,255,255,0.05) inset,0 0 60px rgba(255,255,255,0.04);transform-style:preserve-3d;overflow:hidden}
-.usercard::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent 0%,rgba(255,255,255,0.05) 25%,transparent 50%,rgba(255,255,255,0.05) 75%,transparent 100%);animation:usercard-rotate 12s linear infinite;pointer-events:none;opacity:0.6}
-@keyframes usercard-rotate{to{transform:rotate(360deg)}}
-.usercard-inner{position:relative;z-index:2;transform:translateZ(40px)}
-.usercard-header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
-.usercard-avatar{width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,#fff 0%,#ccc 100%);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:36px;font-weight:700;overflow:hidden;flex-shrink:0;box-shadow:0 8px 24px rgba(255,255,255,0.15);transform:translateZ(60px)}
-.usercard-avatar img{width:100%;height:100%;object-fit:cover}
-.usercard-titles{flex:1;min-width:0}
-.usercard-displayname{font-family:var(--font-display);font-size:22px;font-weight:600;color:var(--text-white);line-height:1.2;margin-bottom:4px;word-break:break-word;transform:translateZ(50px)}
-.usercard-username{font-family:var(--font-mono);font-size:13px;color:var(--sub-text);transform:translateZ(45px)}
-.usercard-role{display:inline-block;padding:4px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-top:6px;transform:translateZ(55px)}
-.usercard-role.admin{background:linear-gradient(135deg,#FFD700,#FFA500);color:var(--pure-black)}
-.usercard-role.developer{background:linear-gradient(135deg,#00D26A,#00A050);color:var(--pure-black)}
-.usercard-role.moderator{background:linear-gradient(135deg,#9333EA,#6B21A8);color:#fff}
-.usercard-role.member{background:rgba(255,255,255,0.1);color:var(--soft-text);border:1px solid var(--glass-stroke)}
-.usercard-divider{height:1px;background:linear-gradient(90deg,transparent,var(--glass-stroke-hi),transparent);margin:20px 0;transform:translateZ(20px)}
-.usercard-fields{display:grid;grid-template-columns:1fr;gap:14px;transform:translateZ(30px)}
-.usercard-field{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--hairline);border-radius:10px}
-.usercard-field-label{font-size:10px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;flex-shrink:0}
-.usercard-field-value{font-size:12px;color:var(--soft-text);font-family:var(--font-mono);text-align:right;word-break:break-all;line-height:1.4}
-.usercard-field-value.mono{font-size:11px}
-.usercard-footer{display:flex;gap:8px;margin-top:24px;transform:translateZ(35px)}
-.usercard-btn{flex:1;padding:12px 14px;border-radius:12px;border:1px solid var(--glass-stroke-hi);background:rgba(255,255,255,0.05);color:var(--text-white);font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.25s var(--ease);display:flex;align-items:center;justify-content:center;gap:6px}
-.usercard-btn:hover{background:rgba(255,255,255,0.12);transform:translateY(-2px)}
-.usercard-btn:active{transform:scale(0.97)}
-.usercard-btn.primary{background:var(--text-white);color:var(--pure-black);border-color:var(--text-white)}
-.usercard-btn.primary:hover{background:#f0f0f0}
-.usercard-btn svg{width:14px;height:14px}
-.usercard-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;color:var(--text-white);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:all 0.2s}
-.usercard-close:hover{background:rgba(255,255,255,0.18);transform:rotate(90deg)}
-.usercard-badge{position:absolute;top:20px;left:20px;font-family:var(--font-mono);font-size:9px;color:var(--dim-text);letter-spacing:1px;text-transform:uppercase;z-index:5;transform:translateZ(20px)}
-.usercard-success-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;animation:success-pop 0.6s var(--ease) 0.5s forwards;z-index:20}
-@keyframes success-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(0)}60%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
-@media(max-width:480px){.usercard{padding:28px 20px 20px}.usercard-avatar{width:64px;height:64px;font-size:28px;border-radius:20px}.usercard-displayname{font-size:18px}}
-
 </style>
 </head>
 <body>
@@ -431,7 +409,7 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <h1 class="home-title" id="typingTarget"></h1><span class="typing-cursor" id="typingCursor">|</span>
 <p class="home-subtitle" data-i18n="hero_sub">Launcher komunitas untuk FIFA 16 Mobile mod. Install, patch, dan kelola game dalam satu aplikasi.</p>
 <div class="home-actions">
-<a href="#" class="btn-primary" onclick="downloadLauncher(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> <span data-i18n="btn_download">Download Launcher</span> <span id="launcherVersionBadge" style="display:none;background:rgba(0,0,0,0.2);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;margin-left:4px;"></span></a>
+<a href="#" class="btn-primary" onclick="downloadLauncher(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> <span data-i18n="btn_download">Download Launcher</span></a>
 <a href="#/portal" class="btn-secondary" data-link><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg><span data-i18n="btn_connect">Connect Portal</span></a>
 </div>
 <div class="home-stats">
@@ -459,7 +437,7 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <div class="portal-logo">D</div>
 <h1 class="portal-title" data-i18n="portal_title">DLavie Portal</h1>
 <p class="portal-sub" data-i18n="portal_sub">Login atau connect akun DLavie Launcher untuk mengakses semua fitur web.</p>
-<button class="btn-connect" onclick="connectToDLavie()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg> <span data-i18n="connect_dlavie">Connect to Launcher</span></button>
+<button class="btn-connect" onclick="connectToDLavie()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg data-i18n="connect_dlavie">Connect to DLavie</button>
 <div class="auth-divider" data-i18n="divider_or">atau</div>
 <button class="btn-google" onclick="loginWithGoogle()">
 <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.6 2.84c.87-2.6 3.3-4.53 6.22-4.53z"/></svg>
@@ -473,6 +451,11 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <button class="btn-connect" onclick="performLogin()" data-i18n="btn_masuk">Masuk</button>
 </div>
 <div id="registerForm" style="display:none;">
+<button class="btn-google" onclick="loginWithGoogle()">
+<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.6 2.84c.87-2.6 3.3-4.53 6.22-4.53z"/></svg>
+Daftar dengan Google
+</button>
+<div class="auth-divider" data-i18n="divider_email">atau email</div>
 <div class="auth-form-group"><label class="auth-label" data-i18n="label_email">Email</label><input type="email" class="auth-input" id="regEmail" placeholder="kamu@email.com" /></div>
 <div class="auth-form-group"><label class="auth-label" data-i18n="label_password">Password</label><input type="password" class="auth-input" id="regPassword" placeholder="Min 6 karakter" /></div>
 <div class="auth-form-group"><label class="auth-label" data-i18n="label_username">Username</label><input type="text" class="auth-input" id="regUsername" placeholder="3-24 huruf/angka/_" /></div>
@@ -480,7 +463,7 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <div class="auth-error" id="regError"></div>
 <button class="btn-connect" onclick="performRegister()" data-i18n="btn_daftar">Daftar</button>
 </div>
-<div class="auth-switch" id="authSwitch">Belum punya akun? <a onclick="switchAuthMode('register')">Daftar di sini</a></div>
+<div class="auth-switch" id="authSwitch">Belum punya akun? <a onclick="switchAuthMode('register')">Daftar di sini</a><br><span style="font-size:11px;color:var(--dim-text);margin-top:8px;display:block">Atau login/register dengan Google di atas</span></div>
 </div>
 </section>
 </div>
@@ -700,24 +683,6 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 </div>
 </div>
 
-<!-- ═══ 3D USER CARD MODAL (v7.9.51) ═══ -->
-<div class="usercard-overlay" id="userCardModal">
-<div class="usercard-scene" id="userCardScene">
-<div class="usercard" id="userCardContent">
-<button class="usercard-close" onclick="closeUserCard()">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-</button>
-<div class="usercard-badge">DLAVIE PORTAL · CONNECTED</div>
-<div class="usercard-success-icon">
-<svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" width="28" height="28"><path d="M5 13l4 4L19 7"/></svg>
-</div>
-<div class="usercard-inner" id="userCardInner">
-<!-- Filled dynamically by showUserCard() -->
-</div>
-</div>
-</div>
-</div>
-
 <!-- FOOTER -->
 <footer class="footer">
 <div class="footer-logo">DLAVIE · FIFA MOODING LAUNCHER</div>
@@ -740,16 +705,6 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <script>
 
 // ═══════════════════════════════════════════════════════════════
-// SUPABASE CONFIG — wajib dideklarasikan sebelum dipakai dimanapun
-// ═══════════════════════════════════════════════════════════════
-// BUG FIX: Sebelumnya SUPABASE_URL & SUPABASE_ANON_KEY TIDAK PERNAH
-// dideklarasikan, padahal dipakai di login, register, OAuth, fetchUserProfile,
-// submitIssue, loadIssues, dll. Akibatnya semua function yang akses
-// SUPABASE_URL throw ReferenceError -> button login/register diam.
-const SUPABASE_URL='https://lvmucsxbmadtsgrxuwmo.supabase.co';
-const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';
-
-// ═══════════════════════════════════════════════════════════════
 // I18N — Internationalization
 // ═══════════════════════════════════════════════════════════════
 const I18N={
@@ -770,6 +725,7 @@ feat_sync_title:'Cross-Platform Sync',feat_sync_desc:'Connect akun launcher ke w
 // Portal
 portal_title:'DLavie Portal',portal_sub:'Login atau connect akun DLavie Launcher untuk mengakses semua fitur web.',
 connect_dlavie:'Connect to DLavie',login_google:'<span data-i18n="login_google">Login dengan Google</span>',divider_or:'atau',divider_email:'atau email',
+btn_logout:'Logout',
 label_email:'Email',label_password:'Password',label_username:'Username',label_displayname:'Display Name',
 btn_masuk:'Masuk',btn_daftar:'Daftar',
 switch_noaccount:'Belum punya akun?',switch_register:'Daftar di sini',switch_haveaccount:'Sudah punya akun?',switch_login:'Masuk di sini',
@@ -837,6 +793,7 @@ feat_sync_title:'Cross-Platform Sync',feat_sync_desc:'Connect your launcher acco
 // Portal
 portal_title:'DLavie Portal',portal_sub:'Login or connect your DLavie Launcher account to access all web features.',
 connect_dlavie:'Connect to DLavie',login_google:'Sign in with Google',divider_or:'or',divider_email:'or email',
+btn_logout:'Logout',
 label_email:'Email',label_password:'Password',label_username:'Username',label_displayname:'Display Name',
 btn_masuk:'Sign In',btn_daftar:'Register',
 switch_noaccount:"Don't have an account?",switch_register:'Register here',switch_haveaccount:'Already have an account?',switch_login:'Sign in here',
@@ -972,21 +929,6 @@ window.location.hash=link.getAttribute('href');
 window.addEventListener('hashchange',router);
 
 // ═══════════════════════════════════════════════════════════════
-// GLOBAL STATE — explicitly declared (fix: previously implicit globals)
-// ═══════════════════════════════════════════════════════════════
-// BUG FIX: Sebelumnya variabel ini hanya di-assign (tanpa let/var/const)
-// di dalam function. JavaScript non-strict mode sebenarnya bikin mereka
-// global implicit — TAPI hanya setelah function tersebut dipanggil.
-// Jika user belum pernah login/logout/clearSession, currentUser = undefined.
-// Saat user klik "Buat Issue" -> openCreateIssueFlow() akses currentUser
-// -> ReferenceError -> button diam, tidak ada apa-apa terjadi.
-// Fix: declare explicitly di top-level supaya selalu ada nilainya.
-// (currentLang & currentNewsCat SUDAH dideklarasikan di tempat lain,
-// jangan re-declare -> SyntaxError. currentUser & selectedCategory belum.)
-let currentUser=null;       // di-set di setSession/restoreSession/clearSession
-let selectedCategory='Bug'; // di-set di openCreateIssueModal/selectCategory
-
-// ═══════════════════════════════════════════════════════════════
 // SESSION (SSO — shared localStorage across same origin)
 // ═══════════════════════════════════════════════════════════════
 function saveSession(access,refresh,uid,email){
@@ -1000,6 +942,13 @@ function clearSession(){
 currentUser=null;
 updateNavUser();
 }
+// v7.9.62: logout() function — clear session + redirect to portal page
+function logout(){
+clearSession();
+showToast(currentLang==='en'?'Logged out successfully.':'Berhasil logout.');
+location.hash='#/portal';
+setTimeout(()=>{initPortal();},200);
+}
 function getStoredSession(){
 const a=localStorage.getItem('dlavie_access'),u=localStorage.getItem('dlavie_uid');
 return(a&&u)?{access:a,uid:u}:null;
@@ -1007,7 +956,8 @@ return(a&&u)?{access:a,uid:u}:null;
 
 async function fetchUserProfile(uid,token){
 try{
-const r=await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${uid}&select=id,username,display_name,avatar_url,role,created_at&limit=1`,{headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${token}`}});
+// v7.9.62: include cover_url + bio untuk profile display
+const r=await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${uid}&select=id,username,display_name,avatar_url,cover_url,bio,role&limit=1`,{headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${token}`}});
 if(!r.ok)return null;
 const d=await r.json();return d[0]||null;
 }catch(e){return null;}
@@ -1017,7 +967,7 @@ async function restoreSession(){
 const s=getStoredSession();if(!s)return;
 const p=await fetchUserProfile(s.uid,s.access);
 if(p){
-currentUser={id:p.id,email:localStorage.getItem('dlavie_email')||'',username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,role:p.role,created_at:p.created_at||null};
+currentUser={id:p.id,email:localStorage.getItem('dlavie_email')||'',username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,cover_url:p.cover_url||'',bio:p.bio||'',role:p.role};
 updateNavUser();
 }else clearSession();
 }
@@ -1029,31 +979,11 @@ if(!token||!uid)return false;
 saveSession(token,'',uid,email);
 const profile=await fetchUserProfile(uid,token);
 if(profile){
-// v7.9.51 FIX: Clear pending_issue flag — user datang dari launcher,
-// BUKAN dari issue creation flow. Jangan auto-open CreateIssueModal.
-localStorage.removeItem('dlavie_pending_issue');
-
-currentUser={
-id:profile.id,
-email:email||'',
-username:profile.username,
-display_name:profile.display_name,
-avatar_url:profile.avatar_url,
-role:profile.role,
-created_at:profile.created_at||null
-};
+currentUser={id:profile.id,email:email||'',username:profile.username,display_name:profile.display_name,avatar_url:profile.avatar_url,cover_url:profile.cover_url||'',bio:profile.bio||'',role:profile.role};
 updateNavUser();
+showToast('Berhasil connect dengan launcher!');
 const cleanUrl=window.location.origin+window.location.pathname;
 window.history.replaceState({},document.title,cleanUrl);
-
-// v7.9.51: Tampilkan 3D user card sebagai konfirmasi connect berhasil
-// (bukan toast biasa — user request: langsung muncul card 3D dengan info lengkap)
-setTimeout(()=>{
-showUserCard(currentUser);
-// Tambah mousemove 3D tilt effect untuk card
-initUserCardTilt();
-},600);
-
 return true;
 }
 clearSession();return false;
@@ -1074,347 +1004,47 @@ function esc(s){const d=document.createElement('div');d.textContent=s||'';return
 
 // ═══════════════════════════════════════════════════════════════
 // PORTAL — Connect to DLavie + Login/Register
-// v7.9.52: initPortal() untuk handle state logged-in vs not-logged-in.
-// Jika sudah login: tampilkan profile card + tombol "Connect to DLavie"
-// Jika belum login: tampilkan form login/register + Google sign-in
 // ═══════════════════════════════════════════════════════════════
-function initPortal(){
-const portalContent=document.getElementById('portalContent');
-if(!portalContent)return;
-
-if(currentUser){
-// ── LOGGED IN: tampilkan profile card + Connect to DLavie button ──
-const initial=(currentUser.display_name||currentUser.username||'?')[0].toUpperCase();
-const avatarHTML=currentUser.avatar_url?
-`<img src="${currentUser.avatar_url}" alt="" crossorigin="anonymous" onerror="this.style.display='none';this.parentElement.textContent='${initial}'"/>`:
-initial;
-const roleLabel=(currentUser.role||'member').toLowerCase();
-const roleClass=roleLabel;
-let createdFormatted='—';
-if(currentUser.created_at){
-try{
-const d=new Date(currentUser.created_at);
-createdFormatted=d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
-}catch(e){}
-}
-const shortId=(currentUser.id||'').substring(0,8);
-
-portalContent.innerHTML=`
-<style>
-.dlavie-profile-card{position:relative;background:var(--surface-1);border:1px solid var(--glass-stroke-hi);border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.5)}
-.dlavie-profile-hero{position:relative;padding:32px 24px 24px;background:linear-gradient(135deg,rgba(255,255,255,0.06) 0%,rgba(255,255,255,0.01) 100%);border-bottom:1px solid var(--hairline);text-align:center;overflow:hidden}
-.dlavie-profile-hero::before{content:'';position:absolute;top:-60%;left:-60%;width:220%;height:220%;background:conic-gradient(from 0deg,transparent 0%,rgba(255,255,255,0.04) 25%,transparent 50%,rgba(255,255,255,0.04) 75%,transparent 100%);animation:dlavie-profile-rotate 15s linear infinite;pointer-events:none}
-@keyframes dlavie-profile-rotate{to{transform:rotate(360deg)}}
-.dlavie-profile-hero::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent)}
-.dlavie-profile-hero>*{position:relative;z-index:2}
-.dlavie-profile-avatar-wrap{position:relative;width:88px;height:88px;margin:0 auto 16px}
-.dlavie-profile-avatar-ring{position:absolute;inset:-4px;border-radius:28px;background:conic-gradient(from 0deg,#fff,transparent 30%,#fff 60%,transparent 90%,#fff);animation:dlavie-profile-rotate 6s linear infinite;opacity:0.6}
-.dlavie-profile-avatar{position:relative;width:88px;height:88px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:40px;font-weight:700;color:var(--pure-black);overflow:hidden;box-shadow:0 8px 30px rgba(255,255,255,0.2);background:linear-gradient(135deg,#fff 0%,#e0e0e0 100%)}
-.dlavie-profile-avatar img{width:100%;height:100%;object-fit:cover}
-.dlavie-profile-status-dot{position:absolute;bottom:4px;right:4px;width:18px;height:18px;border-radius:50%;background:var(--success);border:3px solid var(--surface-1);box-shadow:0 0 12px rgba(0,210,106,0.6);animation:dlavie-profile-pulse 2s ease-in-out infinite}
-@keyframes dlavie-profile-pulse{0%,100%{box-shadow:0 0 12px rgba(0,210,106,0.6)}50%{box-shadow:0 0 20px rgba(0,210,106,0.9)}}
-.dlavie-profile-name{font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--text-white);margin-bottom:4px;letter-spacing:-0.02em}
-.dlavie-profile-username{font-family:var(--font-mono);font-size:13px;color:var(--sub-text);margin-bottom:12px}
-.dlavie-profile-role-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase}
-.dlavie-profile-role-admin{background:linear-gradient(135deg,#FFD700,#FFA500);color:var(--pure-black)}
-.dlavie-profile-role-developer{background:linear-gradient(135deg,#00D26A,#00A050);color:var(--pure-black)}
-.dlavie-profile-role-moderator{background:linear-gradient(135deg,#9333EA,#6B21A8);color:#fff}
-.dlavie-profile-role-member{background:rgba(255,255,255,0.08);color:var(--soft-text);border:1px solid var(--glass-stroke)}
-.dlavie-profile-body{padding:20px 24px 24px}
-.dlavie-profile-info-row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid var(--hairline);border-radius:12px;margin-bottom:8px;transition:all 0.2s}
-.dlavie-profile-info-row:hover{background:rgba(255,255,255,0.04);border-color:var(--glass-stroke)}
-.dlavie-profile-info-label{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600}
-.dlavie-profile-info-label svg{width:12px;height:12px;opacity:0.6}
-.dlavie-profile-info-value{font-size:12px;color:var(--soft-text);font-family:var(--font-mono);text-align:right;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dlavie-profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:16px 0}
-.dlavie-profile-stat{padding:12px 8px;background:rgba(255,255,255,0.02);border:1px solid var(--hairline);border-radius:12px;text-align:center}
-.dlavie-profile-stat-num{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text-white);margin-bottom:2px}
-.dlavie-profile-stat-label{font-size:9px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.5px;font-weight:600}
-.dlavie-profile-actions{display:flex;gap:8px;margin-top:16px}
-.dlavie-profile-btn{flex:1;padding:14px 12px;border-radius:14px;border:none;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.25s var(--ease);display:flex;align-items:center;justify-content:center;gap:8px}
-.dlavie-profile-btn-primary{background:var(--text-white);color:var(--pure-black)}
-.dlavie-profile-btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(255,255,255,0.2)}
-.dlavie-profile-btn-secondary{background:rgba(255,255,255,0.05);color:var(--text-white);border:1px solid var(--glass-stroke)}
-.dlavie-profile-btn-secondary:hover{background:rgba(255,255,255,0.1);border-color:var(--glass-stroke-hi)}
-.dlavie-profile-btn-danger{background:rgba(255,68,68,0.08);color:var(--danger);border:1px solid rgba(255,68,68,0.2)}
-.dlavie-profile-btn-danger:hover{background:rgba(255,68,68,0.15)}
-.dlavie-profile-btn svg{width:16px;height:16px}
-.dlavie-profile-connect-banner{margin-top:12px;padding:12px 16px;background:linear-gradient(135deg,rgba(0,210,106,0.08),rgba(0,210,106,0.02));border:1px solid rgba(0,210,106,0.2);border-radius:14px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--soft-text)}
-.dlavie-profile-connect-banner svg{width:16px;height:16px;color:var(--success);flex-shrink:0}
-</style>
-
-<div class="dlavie-profile-card">
-<div class="dlavie-profile-hero">
-<div class="dlavie-profile-avatar-wrap">
-<div class="dlavie-profile-avatar-ring"></div>
-<div class="dlavie-profile-avatar">${avatarHTML}</div>
-<div class="dlavie-profile-status-dot"></div>
-</div>
-<div class="dlavie-profile-name">${esc(currentUser.display_name||'User')}</div>
-<div class="dlavie-profile-username">@${esc(currentUser.username||'unknown')}</div>
-<span class="dlavie-profile-role-badge dlavie-profile-role-${roleClass}">${(currentUser.role||'member').toUpperCase()}</span>
-</div>
-
-<div class="dlavie-profile-body">
-<div class="dlavie-profile-stats">
-<div class="dlavie-profile-stat">
-<div class="dlavie-profile-stat-num">${shortId}</div>
-<div class="dlavie-profile-stat-label">User ID</div>
-</div>
-<div class="dlavie-profile-stat">
-<div class="dlavie-profile-stat-num">${createdFormatted.split(' ')[0]||'—'}</div>
-<div class="dlavie-profile-stat-label">${currentLang==='en'?'Joined':'Bergabung'}</div>
-</div>
-<div class="dlavie-profile-stat">
-<div class="dlavie-profile-stat-num" style="color:var(--success)">●</div>
-<div class="dlavie-profile-stat-label">Online</div>
-</div>
-</div>
-
-<div class="dlavie-profile-info-row">
-<span class="dlavie-profile-info-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${currentLang==='en'?'Email':'Email'}</span>
-<span class="dlavie-profile-info-value">${esc(currentUser.email||'—')}</span>
-</div>
-<div class="dlavie-profile-info-row">
-<span class="dlavie-profile-info-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>${currentLang==='en'?'Joined':'Bergabung'}</span>
-<span class="dlavie-profile-info-value">${createdFormatted}</span>
-</div>
-<div class="dlavie-profile-info-row">
-<span class="dlavie-profile-info-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${currentLang==='en'?'Account':'Akun'}</span>
-<span class="dlavie-profile-info-value">${(currentUser.role||'member').toUpperCase()} • ID: ${shortId}…</span>
-</div>
-
-<div class="dlavie-profile-connect-banner">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
-<span>${currentLang==='en'?'Click "Connect to Launcher" to sync your account with DLavie Launcher app':'Klik "Connect to Launcher" untuk sync akun dengan aplikasi DLavie Launcher'}</span>
-</div>
-
-<div class="dlavie-profile-actions">
-<button class="dlavie-profile-btn dlavie-profile-btn-primary" onclick="connectToDLavie()">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
-${currentLang==='en'?'Connect to Launcher':'Connect to Launcher'}
-</button>
-</div>
-
-<div class="dlavie-profile-actions" style="margin-top:8px;">
-<button class="dlavie-profile-btn dlavie-profile-btn-secondary" onclick="showUserCard(currentUser);initUserCardTilt();" style="font-size:12px;padding:12px;">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/></svg>
-${currentLang==='en'?'View Card':'Lihat Card'}
-</button>
-<button class="dlavie-profile-btn dlavie-profile-btn-danger" onclick="logoutUser()" style="font-size:12px;padding:12px;">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-${currentLang==='en'?'Logout':'Keluar'}
-</button>
-</div>
-</div>
-</div>
-`;
-}else{
-// ── NOT LOGGED IN: tampilkan form login/register + Google ──
-// Reset ke default state (form login visible, register hidden)
-const loginForm=document.getElementById('loginForm');
-const registerForm=document.getElementById('registerForm');
-const authSwitch=document.getElementById('authSwitch');
-if(loginForm)loginForm.style.display='block';
-if(registerForm)registerForm.style.display='none';
-if(authSwitch)authSwitch.innerHTML=currentLang==='en'?
-"Don't have an account? <span onclick=\"switchAuthMode('register')\" style=\"cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)\">Register here</span>":
-'Belum punya akun? <span onclick="switchAuthMode(\'register\')" style="cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)">Daftar di sini</span>';
-
-// Restore original portal HTML (avatar + form) kalau sebelumnya di-replace
-// Cek apakah portalContent masih punya loginForm di dalamnya
-if(!portalContent.querySelector('#loginForm')){
-// Portal content sudah di-replace oleh profile card view, restore ke default
-portalContent.innerHTML=`
-<div class="portal-logo">D</div>
-<h1 class="portal-title" data-i18n="portal_title">DLavie Portal</h1>
-<p class="portal-sub" data-i18n="portal_sub">Login atau connect akun DLavie Launcher untuk mengakses semua fitur web.</p>
-<button class="btn-connect" onclick="connectToDLavie()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg> <span data-i18n="connect_dlavie">Connect to Launcher</span></button>
-<div class="auth-divider" data-i18n="divider_or">atau</div>
-<button class="btn-google" onclick="loginWithGoogle()">
-<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.6 2.84c.87-2.6 3.3-4.53 6.22-4.53z"/></svg>
-<span data-i18n="login_google">Login dengan Google</span>
-</button>
-<div class="auth-divider" data-i18n="divider_email">atau email</div>
-<div id="loginForm">
-<div class="auth-form-group"><label class="auth-label" data-i18n="label_email">Email</label><input type="email" class="auth-input" id="loginEmail" placeholder="kamu@email.com" /></div>
-<div class="auth-form-group"><label class="auth-label" data-i18n="label_password">Password</label><input type="password" class="auth-input" id="loginPassword" placeholder="••••••••" /></div>
-<div class="auth-error" id="loginError"></div>
-<button class="btn-connect" onclick="performLogin()" data-i18n="btn_masuk">Masuk</button>
-</div>
-<div id="registerForm" style="display:none;">
-<div class="auth-form-group"><label class="auth-label" data-i18n="label_email">Email</label><input type="email" class="auth-input" id="regEmail" placeholder="kamu@email.com" /></div>
-<div class="auth-form-group"><label class="auth-label" data-i18n="label_password">Password</label><input type="password" class="auth-input" id="regPassword" placeholder="Min 6 karakter" /></div>
-<div class="auth-form-group"><label class="auth-label" data-i18n="label_username">Username</label><input type="text" class="auth-input" id="regUsername" placeholder="3-24 huruf/angka/_" /></div>
-<div class="auth-form-group"><label class="auth-label" data-i18n="label_displayname">Display Name</label><input type="text" class="auth-input" id="regDisplayName" placeholder="Nama tampilan" /></div>
-<div class="auth-error" id="regError"></div>
-<button class="btn-connect" onclick="performRegister()" data-i18n="btn_daftar">Daftar</button>
-</div>
-<div class="auth-switch" id="authSwitch">Belum punya akun? <a onclick="switchAuthMode('register')">Daftar di sini</a></div>
-`;
-// Apply current language ke new elements
-setTimeout(applyLang,50);
-}
-}
-}
-
-// Logout function — clear session + reload portal page
-function logoutUser(){
-clearSession();
-showToast(currentLang==='en'?'Logged out':'Berhasil keluar');
-// Reload portal page to show login form
-setTimeout(()=>{
-initPortal();
-},300);
-}
-
-// ═══════════════════════════════════════════════════════════════
-// PORTAL — Connect to DLavie (existing v7.9.50 logic)
-// ═══════════════════════════════════════════════════════════════
+// v7.9.62 FIX: connectToDLavie() sekarang mengirim token+uid+refresh
+// langsung ke launcher (NEW flow). Sebelumnya pakai OLD flow (?callback=URL)
+// yang menyebabkan:
+//   1. Launcher tidak terima token → pakai token lama/akun berbeda
+//   2. Atau launcher kirim token lamanya balik ke web → overwrite session web!
+//   3. User bingung: "saya login dev di portal, tapi launcher profile beda"
+//
+// Sekarang: web kirim CURRENT session (token+uid+refresh) ke launcher.
+// Launcher save token tersebut → loadMyProfile() → dapat profile yang sama.
 function connectToDLavie(){
-if(!currentUser){
-showToast(currentLang==='en'?'Please login before connecting to launcher.':'Login dulu sebelum connect ke launcher.');
-location.hash='#/portal';
-return;
-}
-const token=localStorage.getItem('dlavie_access');
-const uid=localStorage.getItem('dlavie_uid');
-const refresh=localStorage.getItem('dlavie_refresh')||'';
-if(!token||!uid){
-showToast(currentLang==='en'?'Session invalid. Please login again.':'Sesi tidak valid. Login ulang.');
-clearSession();
-location.hash='#/portal';
-return;
-}
-
 const ua=navigator.userAgent||'';
 const isAndroid=/android/i.test(ua);
 const isIOS=/iphone|ipad|ipod/i.test(ua);
-const isDesktop=!isAndroid&&!isIOS;
+if(!isAndroid&&!isIOS){showPortalInfo();return;}
 
-// Show connecting state with spinner
-const c=document.getElementById('portalContent');
-const originalHTML=c.innerHTML;
-c.innerHTML=`
-<div class="portal-logo" style="animation:pulse 1.5s ease-in-out infinite;">D</div>
-<h1 class="portal-title">${currentLang==='en'?'Connecting...':'Menghubungkan...'}</h1>
-<p class="portal-sub">${currentLang==='en'?'Opening DLavie Launcher app...':'Membuka aplikasi DLavie Launcher...'}</p>
-<div style="margin:24px auto;width:40px;height:40px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--text-white);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-<p style="color:var(--dim-text);font-size:12px;">${currentLang==='en'?'If nothing happens, the launcher may not be installed.':'Jika tidak terjadi apa-apa, launcher mungkin belum terinstall.'}</p>
-<button class="btn-connect" onclick="location.reload()" style="margin-top:16px;">${currentLang==='en'?'Cancel':'Batal'}</button>
-<style>@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}</style>
-`;
+// v7.9.62: Ambil CURRENT session dari localStorage (bukan dari currentUser object
+// yang mungkin stale). Ini memastikan token yang dikirim adalah token yang valid.
+const accessToken=localStorage.getItem('dlavie_access')||'';
+const refreshToken=localStorage.getItem('dlavie_refresh')||'';
+const uid=localStorage.getItem('dlavie_uid')||'';
 
-// Mark portal as connected in web
-localStorage.setItem('dlavie_portal_connected','true');
+if(!accessToken||!uid){
+showToast('Silakan login dulu sebelum connect ke launcher.');
+location.hash='#/portal';
+return;
+}
 
 let opened=false;
 const vh=()=>{if(document.hidden)opened=true;document.removeEventListener('visibilitychange',vh);};
 document.addEventListener('visibilitychange',vh);
 
 if(isAndroid){
-// Android: try intent:// scheme first (better than dlavie:// because
-// it can specify fallback URL if app not installed)
-window.location.href=`intent://connect?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}&refresh=${encodeURIComponent(refresh)}#Intent;scheme=dlavie;package=com.drmacze.f16launcher;S.browser_fallback_url=${encodeURIComponent(location.origin+'/?connect=fail')};end`;
-}else if(isIOS){
-// iOS: send via custom scheme
-window.location.href=`dlavie://connect?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}&refresh=${encodeURIComponent(refresh)}`;
-}
-
-// After 2.5s, if app didn't open, show fallback info
-setTimeout(()=>{
-document.removeEventListener('visibilitychange',vh);
-if(!opened&&!document.hidden){
-// v7.9.53: Show manual connect modal dengan token + URL + download link
-// (sebelumnya hanya showPortalInfo yang general)
-showManualConnectModal(token,uid,refresh);
-}
-},2500);
-}
-
-// v7.9.53: Manual Connect Modal — tampilkan token + connect URL + download link
-// Berguna untuk:
-// - Launcher versi lama yang tidak ada deep link handler
-// - Device yang block custom scheme (dlavie://)
-// - User yang mau copy URL untuk paste di launcher field "Connect Manual"
-function showManualConnectModal(token,uid,refresh){
-const c=document.getElementById('portalContent');
-const connectUrl=`dlavie://connect?token=${encodeURIComponent(token)}&uid=${encodeURIComponent(uid)}&refresh=${encodeURIComponent(refresh||'')}`;
-c.innerHTML=`
-<div class="portal-logo">D</div>
-<h1 class="portal-title">${currentLang==='en'?'Connect Manual':'Connect Manual'}</h1>
-<p class="portal-sub">${currentLang==='en'?"If launcher didn't open automatically, use one of these methods:":'Jika launcher tidak terbuka otomatis, gunakan salah satu cara ini:'}</p>
-
-<div style="margin:20px 0;padding:16px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:12px;text-align:left;">
-<div style="font-size:11px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:10px;">${currentLang==='en'?'Method 1: Copy Connect URL':'Cara 1: Copy URL Connect'}</div>
-<div style="font-size:12px;color:var(--soft-text);margin-bottom:8px;line-height:1.5;">
-${currentLang==='en'?'Copy URL below, open launcher, tap "Connect Manual", paste URL.':'Copy URL di bawah, buka launcher, tap "Connect Manual", paste URL.'}
-</div>
-<textarea readonly id="manualConnectUrl" style="width:100%;height:80px;background:rgba(0,0,0,0.4);border:1px solid var(--glass-stroke);border-radius:8px;color:var(--soft-text);font-family:var(--font-mono);font-size:10px;padding:10px;resize:none;word-break:break-all;" onclick="this.select()">${connectUrl}</textarea>
-<button class="btn-connect" onclick="copyToClipboard(document.getElementById('manualConnectUrl').value)" style="margin-top:8px;padding:10px 16px;font-size:12px;">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-${currentLang==='en'?'Copy URL':'Copy URL'}
-</button>
-</div>
-
-<div style="margin:20px 0;padding:16px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:12px;text-align:left;">
-<div style="font-size:11px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:10px;">${currentLang==='en'?'Method 2: Download Latest Launcher':'Cara 2: Download Launcher Terbaru'}</div>
-<div style="font-size:12px;color:var(--soft-text);margin-bottom:8px;line-height:1.5;">
-${currentLang==='en'?'If you have launcher v212 or older, deep link may not work. Update to latest version.':'Kalau launcher kamu v212 atau lebih lama, deep link mungkin tidak jalan. Update ke versi terbaru.'}
-</div>
-<button class="btn-connect" onclick="downloadLatestLauncher()" style="padding:10px 16px;font-size:12px;background:var(--success);color:var(--pure-black);border-color:var(--success);">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-${currentLang==='en'?'Download Launcher v218+':'Download Launcher v218+'}
-</button>
-</div>
-
-<div style="margin:20px 0;padding:16px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:12px;text-align:left;">
-<div style="font-size:11px;color:var(--dim-text);text-transform:uppercase;letter-spacing:0.8px;font-weight:600;margin-bottom:10px;">${currentLang==='en'?'Method 3: Retry Connect':'Cara 3: Coba Connect Lagi'}</div>
-<div style="font-size:12px;color:var(--soft-text);margin-bottom:8px;line-height:1.5;">
-${currentLang==='en'?'Make sure launcher is installed, then retry.':'Pastikan launcher terinstall, lalu coba lagi.'}
-</div>
-<button class="btn-connect" onclick="connectToDLavie()" style="padding:10px 16px;font-size:12px;">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
-${currentLang==='en'?'Retry Connect':'Coba Lagi'}
-</button>
-</div>
-
-<button class="btn-connect" onclick="initPortal()" style="background:transparent;color:var(--soft-text);border:1px solid var(--glass-stroke);margin-top:12px;">
-${currentLang==='en'?'Back to Portal':'Kembali ke Portal'}
-</button>
-`;
-}
-
-// v7.9.53: Copy text to clipboard dengan fallback
-function copyToClipboard(text){
-if(navigator.clipboard&&navigator.clipboard.writeText){
-navigator.clipboard.writeText(text).then(()=>{
-showToast(currentLang==='en'?'Copied to clipboard!':'Tersalin ke clipboard!');
-}).catch(()=>{
-// Fallback: select + execCommand
-const ta=document.createElement('textarea');
-ta.value=text;
-document.body.appendChild(ta);
-ta.select();
-try{document.execCommand('copy');showToast(currentLang==='en'?'Copied!':'Tersalin!');}catch(_){showToast('Gagal copy. Copy manual.');}
-document.body.removeChild(ta);
-});
+// Android: pakai intent:// scheme dengan token+uid+refresh sebagai query params
+window.location.href=`intent://connect?token=${encodeURIComponent(accessToken)}&uid=${encodeURIComponent(uid)}&refresh=${encodeURIComponent(refreshToken)}#Intent;scheme=dlavie;package=com.drmacze.f16launcher;S.browser_fallback_url=${encodeURIComponent(PORTAL_URL+'?connect=fail')};end`;
 }else{
-// Fallback for older browsers
-const ta=document.createElement('textarea');
-ta.value=text;
-document.body.appendChild(ta);
-ta.select();
-try{document.execCommand('copy');showToast(currentLang==='en'?'Copied!':'Tersalin!');}catch(_){showToast('Gagal copy. Copy manual.');}
-document.body.removeChild(ta);
-}
+// iOS/other: pakai custom URL scheme langsung
+window.location.href=`dlavie://connect?token=${encodeURIComponent(accessToken)}&uid=${encodeURIComponent(uid)}&refresh=${encodeURIComponent(refreshToken)}`;
 }
 
-// v7.9.53: Download latest launcher APK from GitHub Releases
-function downloadLatestLauncher(){
-const url='https://github.com/drmacze/F16-Launcher/releases/latest';
-window.open(url,'_blank','noopener');
-showToast(currentLang==='en'?'Opening download page...':'Membuka halaman download...');
+setTimeout(()=>{document.removeEventListener('visibilitychange',vh);if(!opened&&!document.hidden)showPortalInfo();},1500);
 }
 
 function showPortalInfo(){
@@ -1437,47 +1067,24 @@ c.innerHTML=`
 function switchAuthMode(mode){
 const lf=document.getElementById('loginForm'),rf=document.getElementById('registerForm');
 const sw=document.getElementById('authSwitch');
-if(mode==='register'){
-lf.style.display='none';
-rf.style.display='block';
-sw.innerHTML=currentLang==='en'?
-'Already have an account? <span onclick="switchAuthMode(\'login\')" style="cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)">Sign in here</span>':
-'Sudah punya akun? <span onclick="switchAuthMode(\'login\')" style="cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)">Masuk di sini</span>';
-}else{
-// mode === 'login' (default)
-lf.style.display='block';
-rf.style.display='none';
-sw.innerHTML=currentLang==='en'?
-"Don't have an account? <span onclick=\"switchAuthMode('register')\" style=\"cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)\">Register here</span>":
-'Belum punya akun? <span onclick="switchAuthMode(\'register\')" style="cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)">Daftar di sini</span>';
-}
+if(mode==='register'){lf.style.display='none';rf.style.display='block';sw.innerHTML=currentLang==='en'?'Already have an account? <span onclick=switchAuthMode(\'login\') style=cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)>Sign in here</span>':'Sudah punya akun? <span onclick=switchAuthMode(\'login\') style=cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)>Masuk di sini</span>';}
 }
 
 async function performLogin(){
 const email=document.getElementById('loginEmail').value.trim();
 const pwd=document.getElementById('loginPassword').value;
 const err=document.getElementById('loginError');err.classList.remove('show');
-if(!email||!pwd){err.textContent=currentLang==='en'?'Email and password are required.':'Email dan password wajib diisi.';err.classList.add('show');return;}
-if(typeof SUPABASE_URL==='undefined'||!SUPABASE_URL){err.textContent='Config error: SUPABASE_URL belum dimuat. Refresh halaman.';err.classList.add('show');return;}
+if(!email||!pwd){err.textContent='Email dan password wajib diisi.';err.classList.add('show');return;}
 try{
-const btn=document.querySelector('#loginForm .btn-connect');
-if(btn){btn.disabled=true;btn.textContent=currentLang==='en'?'Signing in...':'Masuk...';}
 const r=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd})});
 const d=await r.json();
-if(btn){btn.disabled=false;btn.textContent=currentLang==='en'?'Sign In':'Masuk';}
 if(!r.ok)throw new Error(d.error_description||d.error||'Login gagal');
 saveSession(d.access_token,d.refresh_token,d.user.id,d.user.email);
 const p=await fetchUserProfile(d.user.id,d.access_token);
-if(p)currentUser={id:p.id,email:d.user.email,username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,role:p.role,created_at:p.created_at||null};
+if(p)currentUser={id:p.id,email:d.user.email,username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,cover_url:p.cover_url||'',bio:p.bio||'',role:p.role};
 updateNavUser();
-// v7.9.52: Tampilkan 3D user card sebagai konfirmasi login berhasil
-// (sebelumnya hanya Google OAuth yang show card — email login tidak)
-setTimeout(()=>{
-showUserCard(currentUser);
-initUserCardTilt();
-},500);
-// Setelah card muncul, biarkan user di halaman portal (jangan redirect ke home)
-// supaya user bisa langsung klik "Connect to DLavie" untuk connect ke launcher
+showToast('Login berhasil!');
+location.hash='#/';
 }catch(e){err.textContent=e.message;err.classList.add('show');}
 }
 
@@ -1487,67 +1094,29 @@ const pwd=document.getElementById('regPassword').value;
 const un=document.getElementById('regUsername').value.trim();
 const dn=document.getElementById('regDisplayName').value.trim();
 const err=document.getElementById('regError');err.classList.remove('show');
-if(!email||!pwd||!un||!dn){err.textContent=currentLang==='en'?'All fields are required.':'Semua field wajib diisi.';err.classList.add('show');return;}
-if(pwd.length<6){err.textContent=currentLang==='en'?'Password min 6 characters.':'Password minimal 6 karakter.';err.classList.add('show');return;}
-if(un.length<3||un.length>24||!/^[a-zA-Z0-9_]+$/.test(un)){err.textContent=currentLang==='en'?'Username 3-24 chars, letters/numbers/_ only.':'Username 3-24 huruf/angka/_.';err.classList.add('show');return;}
-if(typeof SUPABASE_URL==='undefined'||!SUPABASE_URL){err.textContent='Config error: SUPABASE_URL belum dimuat. Refresh halaman.';err.classList.add('show');return;}
+if(!email||!pwd||!un||!dn){err.textContent='Semua field wajib diisi.';err.classList.add('show');return;}
+if(pwd.length<6){err.textContent='Password minimal 6 karakter.';err.classList.add('show');return;}
 try{
-const btn=document.querySelector('#registerForm .btn-connect');
-if(btn){btn.disabled=true;btn.textContent=currentLang==='en'?'Registering...':'Mendaftarkan...';}
 const r=await fetch(`${SUPABASE_URL}/auth/v1/signup`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd,data:{username:un,display_name:dn}})});
 const d=await r.json();
-if(btn){btn.disabled=false;btn.textContent=currentLang==='en'?'Register':'Daftar';}
 if(!r.ok)throw new Error(d.error_description||d.error||'Registrasi gagal');
 if(d.access_token){
 saveSession(d.access_token,d.refresh_token,d.user.id,d.user.email);
-// v7.9.52: Fetch profile untuk dapat created_at + role dari DB
-const p=await fetchUserProfile(d.user.id,d.access_token);
-currentUser={id:d.user.id,email:d.user.email,username:un,display_name:dn,avatar_url:p?p.avatar_url:null,role:p?p.role:'user',created_at:p?p.created_at:null};
-updateNavUser();
-// v7.9.52: Tampilkan 3D user card sebagai konfirmasi register berhasil
-// (sebelumnya hanya Google OAuth yang show card — email register tidak)
-setTimeout(()=>{
-showUserCard(currentUser);
-initUserCardTilt();
-},500);
-// Setelah card muncul, biarkan user di halaman portal (jangan redirect ke home)
-// supaya user bisa langsung klik "Connect to DLavie" untuk connect ke launcher
-}else{err.textContent=currentLang==='en'?'Check email for confirmation, then login.':'Cek email untuk konfirmasi, lalu login.';err.style.color='var(--success)';err.classList.add('show');}
+currentUser={id:d.user.id,email:d.user.email,username:un,display_name:dn,avatar_url:null,cover_url:'',bio:'',role:'user'};
+updateNavUser();showToast('Registrasi berhasil!');location.hash='#/';
+}else{err.textContent='Cek email untuk konfirmasi, lalu login.';err.style.color='var(--success)';err.classList.add('show');}
 }catch(e){err.textContent=e.message;err.classList.add('show');}
 }
 
 // ═══════════════════════════════════════════════════════════════
 // GOOGLE OAUTH LOGIN
-// v7.9.50: Tambah error handling + loading state + scopes
 // ═══════════════════════════════════════════════════════════════
 function loginWithGoogle() {
-  try {
-    if (typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) {
-      showToast('Error: SUPABASE_URL belum dikonfigurasi. Refresh halaman.');
-      console.error('[loginWithGoogle] SUPABASE_URL is', typeof SUPABASE_URL);
-      return;
-    }
-    // Visual feedback: button loading state
-    const btn = event && event.currentTarget ? event.currentTarget : null;
-    if (btn) {
-      btn.disabled = true;
-      const origHTML = btn.innerHTML;
-      btn.innerHTML = '<span>Mengarahkan ke Google...</span>';
-      setTimeout(() => { btn.disabled = false; btn.innerHTML = origHTML; }, 3000);
-    }
-
-    // Supabase OAuth: redirect to Google login, then back to our site
-    // with access_token in URL hash (#access_token=...&refresh_token=...)
-    const redirectTo = encodeURIComponent(window.location.origin + window.location.pathname);
-    // Tambah scopes untuk dapat email + profile info
-    const scopes = encodeURIComponent('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile');
-    const authUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${redirectTo}&scopes=${scopes}`;
-    console.log('[loginWithGoogle] Redirecting to:', authUrl);
-    window.location.href = authUrl;
-  } catch (e) {
-    console.error('[loginWithGoogle] Error:', e);
-    showToast('Gagal redirect ke Google: ' + e.message);
-  }
+  // Supabase OAuth: redirect to Google login, then back to our site
+  // with access_token in URL hash (#access_token=...&refresh_token=...)
+  const redirectTo = encodeURIComponent(window.location.origin + window.location.pathname);
+  const authUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${redirectTo}`;
+  window.location.href = authUrl;
 }
 
 // Parse OAuth callback (hash fragment: #access_token=...&refresh_token=...)
@@ -1582,20 +1151,12 @@ async function handleOAuthCallback() {
   // Fetch profile
   const profile = await fetchUserProfile(uid, accessToken);
   if (profile) {
-    // v7.9.51: Clear pending_issue — user datang dari Google OAuth,
-    // bukan dari issue creation flow
-    localStorage.removeItem('dlavie_pending_issue');
     currentUser = {
       id: profile.id, email: email, username: profile.username,
-      display_name: profile.display_name, avatar_url: profile.avatar_url,
-      role: profile.role, created_at: profile.created_at || null
+      display_name: profile.display_name, avatar_url: profile.avatar_url, role: profile.role
     };
     updateNavUser();
-    // Tampilkan 3D user card sebagai konfirmasi login Google berhasil
-    setTimeout(()=>{
-      showUserCard(currentUser);
-      initUserCardTilt();
-    }, 800);
+    showToast('Login Google berhasil!');
   }
 
   // Clean URL hash
@@ -1652,68 +1213,12 @@ return '<div class="news-card" style="animation:stagger-up 0.5s var(--ease) '+id
 
 
 // ═══════════════════════════════════════════════════════════════
-// DOWNLOAD — auto-update ke versi terbaru via GitHub Releases API
-// v7.9.55 FIX: Sebelumnya LAUNCHER_APK_URL tidak pernah dideklarasikan
-//   → ReferenceError → button diam. Sekarang deklarasi + fetch dinamis.
+// DOWNLOAD
 // ═══════════════════════════════════════════════════════════════
-
-// Default URL (static fallback) — kalau API fetch gagal, pakai URL ini
-let LAUNCHER_APK_URL='https://github.com/drmacze/F16-Launcher/releases/latest/download/DLavie26-Launcher-debug.apk';
-let LAUNCHER_VERSION_INFO={tag:'latest',name:'DLavie Launcher',code:0};
-
-// Auto-fetch versi terbaru dari GitHub Releases API saat web load
-// lalu update LAUNCHER_APK_URL ke URL release yang spesifik (bukan /latest/)
-async function fetchLatestLauncherRelease(){
-try{
-const r=await fetch('https://api.github.com/repos/drmacze/F16-Launcher/releases/latest',{headers:{'Accept':'application/vnd.github+json'}});
-if(!r.ok)return;
-const d=await r.json();
-LAUNCHER_VERSION_INFO={tag:d.tag_name||'latest',name:d.name||'DLavie Launcher',code:parseInt((d.tag_name||'v0').replace('v',''))||0};
-// Cari APK asset di release
-const apkAsset=d.assets&&d.assets.find(a=>a.name&&a.name.endsWith('.apk'));
-if(apkAsset&&apkAsset.browser_download_url){
-LAUNCHER_APK_URL=apkAsset.browser_download_url;
-console.log('[DLavie] Latest launcher:',LAUNCHER_VERSION_INFO.tag,'→',LAUNCHER_APK_URL);
-}
-// Update UI: tampilkan versi terbaru di tombol download (kalau element ada)
-const versionLabel=document.getElementById('launcherVersionLabel');
-if(versionLabel&&LAUNCHER_VERSION_INFO.tag){
-versionLabel.textContent=`${LAUNCHER_VERSION_INFO.tag} • ${LAUNCHER_VERSION_INFO.name}`;
-}
-const versionBadge=document.getElementById('launcherVersionBadge');
-if(versionBadge&&LAUNCHER_VERSION_INFO.tag){
-versionBadge.style.display='inline-block';
-versionBadge.textContent=LAUNCHER_VERSION_INFO.tag;
-}
-}catch(e){
-console.warn('[DLavie] Cannot fetch latest release, using fallback URL:',e);
-// Fallback URL sudah set di atas (releases/latest/download/...)
-}
-}
-
 function downloadLauncher(e){
 if(e)e.preventDefault();
-try{
-const a=document.createElement('a');
-a.href=LAUNCHER_APK_URL;
-a.download='DLavie26-Launcher-debug.apk';
-a.rel='noopener';
-a.style.display='none';
-document.body.appendChild(a);
-a.click();
-setTimeout(()=>document.body.removeChild(a),1500);
-showToast(currentLang==='en'?'Downloading latest launcher...':'Mengunduh launcher terbaru...');
-}catch(err){
-console.error('[downloadLauncher]',err);
-// Last resort: open GitHub releases page
-window.open('https://github.com/drmacze/F16-Launcher/releases/latest','_blank','noopener');
-showToast('Buka halaman download di GitHub...');
+try{const a=document.createElement('a');a.href=LAUNCHER_APK_URL;a.download='DLavie26-Launcher-debug.apk';a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(LAUNCHER_APK_URL,'_blank','noopener');}
 }
-}
-
-// Trigger fetch saat script load (non-blocking)
-fetchLatestLauncherRelease();
-
 
 // ═══════════════════════════════════════════════════════════════
 // FAQ DATA (migrated from dlavie-faq)
@@ -1869,6 +1374,88 @@ return `<article class="issue-card" style="animation:stagger-up 0.5s var(--ease)
 }
 
 // ═══════════════════════════════════════════════════════════════
+// PORTAL — initPortal (v7.9.62: compact profile card when logged in)
+// ═══════════════════════════════════════════════════════════════
+// Sebelumnya: portal page selalu show login form, bahkan kalau sudah login.
+// Sekarang: kalau currentUser ada, render compact profile card (Photo 1 style).
+// Card compact: avatar + name + verified badge + bio + stats + logout button.
+function initPortal(){
+const c=document.getElementById('portalContent');
+if(!c)return;
+if(currentUser){
+// ── LOGGED IN: Compact profile card (Photo 1 style) ──
+const initial=(currentUser.display_name||currentUser.username||'?')[0].toUpperCase();
+const isDev=currentUser.role==='developer'||currentUser.role==='admin';
+const avatarHtml=currentUser.avatar_url?`<img src="${currentUser.avatar_url}" alt=""/>`:`<span class="compact-avatar-letter">${initial}</span>`;
+c.innerHTML=`
+<div class="compact-profile-card">
+<div class="compact-avatar-wrap">
+<div class="compact-avatar">${avatarHtml}</div>
+</div>
+<h2 class="compact-name">
+${esc(currentUser.display_name||currentUser.username||'DLavie User')}
+${isDev?'<svg class="compact-verified" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.5 4.5L6 4l-1 3.5L1.5 9L3 12l-1.5 3l3.5 1.5L6 20l3.5-.5L12 22l2.5-2.5L18 20l1-3.5L22.5 15L21 12l1.5-3L19 7.5L18 4l-3.5.5L12 2zm-1.5 14L6 11.5l1.5-1.5l3 3l6-6l1.5 1.5l-7.5 7.5z"/></svg>':''}
+</h2>
+<p class="compact-handle">@${esc(currentUser.username||'unknown')}</p>
+<p class="compact-bio">${esc(currentUser.bio&&currentUser.bio!=='null'?currentUser.bio:(currentUser.email||''))}</p>
+<div class="compact-stats">
+<div class="compact-stat">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+<span>Portal User</span>
+</div>
+<div class="compact-stat compact-stat-role">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+<span>${esc(currentUser.role||'user')}</span>
+</div>
+</div>
+<button class="btn-connect compact-connect-btn" onclick="connectToDLavie()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+<span data-i18n="connect_dlavie">Connect to DLavie</span>
+</button>
+<button class="compact-logout-btn" onclick="logout()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+<span data-i18n="btn_logout">Logout</span>
+</button>
+</div>
+`;
+}else{
+// ── NOT LOGGED IN: Show login form (original HTML) ──
+c.innerHTML=`
+<div class="portal-logo">D</div>
+<h1 class="portal-title" data-i18n="portal_title">DLavie Portal</h1>
+<p class="portal-sub" data-i18n="portal_sub">Login atau connect akun DLavie Launcher untuk mengakses semua fitur web.</p>
+<button class="btn-connect" onclick="connectToDLavie()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg data-i18n="connect_dlavie">Connect to DLavie</button>
+<div class="auth-divider" data-i18n="divider_or">atau</div>
+<button class="btn-google" onclick="loginWithGoogle()">
+<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.6 2.84c.87-2.6 3.3-4.53 6.22-4.53z"/></svg>
+<span data-i18n="login_google">Login dengan Google</span>
+</button>
+<div class="auth-divider" data-i18n="divider_email">atau email</div>
+<div id="loginForm">
+<div class="auth-form-group"><label class="auth-label" data-i18n="label_email">Email</label><input type="email" class="auth-input" id="loginEmail" placeholder="kamu@email.com" /></div>
+<div class="auth-form-group"><label class="auth-label" data-i18n="label_password">Password</label><input type="password" class="auth-input" id="loginPassword" placeholder="••••••••" /></div>
+<div class="auth-error" id="loginError"></div>
+<button class="btn-connect" onclick="performLogin()" data-i18n="btn_masuk">Masuk</button>
+</div>
+<div id="registerForm" style="display:none;">
+<button class="btn-google" onclick="loginWithGoogle()">
+<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.6 2.84c.87-2.6 3.3-4.53 6.22-4.53z"/></svg>
+Daftar dengan Google
+</button>
+<div class="auth-divider" data-i18n="divider_email">atau email</div>
+<div class="auth-form-group"><label class="auth-label" data-i18n="label_email">Email</label><input type="email" class="auth-input" id="regEmail" placeholder="kamu@email.com" /></div>
+<div class="auth-form-group"><label class="auth-label" data-i18n="label_password">Password</label><input type="password" class="auth-input" id="regPassword" placeholder="Min 6 karakter" /></div>
+<div class="auth-form-group"><label class="auth-label" data-i18n="label_username">Username</label><input type="text" class="auth-input" id="regUsername" placeholder="3-24 huruf/angka/_" /></div>
+<div class="auth-form-group"><label class="auth-label" data-i18n="label_displayname">Display Name</label><input type="text" class="auth-input" id="regDisplayName" placeholder="Nama tampilan" /></div>
+<div class="auth-error" id="regError"></div>
+<button class="btn-connect" onclick="performRegister()" data-i18n="btn_daftar">Daftar</button>
+</div>
+<div class="auth-switch" id="authSwitch">Belum punya akun? <a onclick="switchAuthMode('register')">Daftar di sini</a><br><span style="font-size:11px;color:var(--dim-text);margin-top:8px;display:block">Atau login/register dengan Google di atas</span></div>
+`;
+}
+}
+
+// ═══════════════════════════════════════════════════════════════
 // HOME
 // ═══════════════════════════════════════════════════════════════
 function initHome(){
@@ -1992,261 +1579,6 @@ document.querySelectorAll('.mobile-menu a').forEach(a=>a.addEventListener('click
 // ═══════════════════════════════════════════════════════════════
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));});
-
-// ═══════════════════════════════════════════════════════════════
-// 3D USER CARD (v7.9.51)
-// Tampilkan card 3D dengan info user lengkap setelah connect dari
-// launcher atau login Google. Card bisa di-download sebagai PNG/JPG
-// dan di-share via Web Share API.
-// ═══════════════════════════════════════════════════════════════
-function showUserCard(user){
-if(!user)return;
-const inner=document.getElementById('userCardInner');
-if(!inner)return;
-
-// Format created_at (ISO string → "12 Jul 2026")
-let createdFormatted='—';
-if(user.created_at){
-try{
-const d=new Date(user.created_at);
-createdFormatted=d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
-}catch(e){createdFormatted='—';}
-}
-
-// Initial letter untuk avatar fallback
-const initial=(user.display_name||user.username||'?')[0].toUpperCase();
-const avatarHTML=user.avatar_url?
-`<img src="${user.avatar_url}" alt="" crossorigin="anonymous" onerror="this.style.display='none';this.parentElement.textContent='${initial}'"/>`:
-initial;
-
-// Role label
-const roleLabel=(user.role||'member').toUpperCase();
-
-// Short ID (first 8 chars of UUID)
-const shortId=(user.id||'').substring(0,8);
-
-inner.innerHTML=`
-<div class="usercard-header">
-<div class="usercard-avatar">${avatarHTML}</div>
-<div class="usercard-titles">
-<div class="usercard-displayname">${esc(user.display_name||'User')}</div>
-<div class="usercard-username">@${esc(user.username||'unknown')}</div>
-<span class="usercard-role ${(user.role||'member').toLowerCase()}">${roleLabel}</span>
-</div>
-</div>
-<div class="usercard-divider"></div>
-<div class="usercard-fields">
-<div class="usercard-field">
-<span class="usercard-field-label">User ID</span>
-<span class="usercard-field-value mono">${shortId}…</span>
-</div>
-<div class="usercard-field">
-<span class="usercard-field-label">Email</span>
-<span class="usercard-field-value">${esc(user.email||'—')}</span>
-</div>
-<div class="usercard-field">
-<span class="usercard-field-label">Bergabung</span>
-<span class="usercard-field-value">${createdFormatted}</span>
-</div>
-<div class="usercard-field">
-<span class="usercard-field-label">Status</span>
-<span class="usercard-field-value" style="color:var(--success)">● Online</span>
-</div>
-</div>
-<div class="usercard-footer">
-<button class="usercard-btn" onclick="downloadUserCard('png')" id="userCardDlPng">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-PNG
-</button>
-<button class="usercard-btn" onclick="downloadUserCard('jpg')" id="userCardDlJpg">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-JPG
-</button>
-<button class="usercard-btn primary" onclick="shareUserCard()" id="userCardShare">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-Share
-</button>
-</div>
-`;
-
-// Open modal
-const modal=document.getElementById('userCardModal');
-modal.classList.add('open');
-
-// Auto-close on overlay click
-modal.onclick=(e)=>{
-if(e.target===modal)closeUserCard();
-};
-}
-
-function closeUserCard(){
-const modal=document.getElementById('userCardModal');
-if(modal){
-modal.classList.remove('open');
-// Reset tilt transform
-const scene=document.getElementById('userCardScene');
-if(scene)scene.style.transform='';
-}
-}
-
-// 3D Tilt effect — card mengikuti gerakan mouse (parallax)
-function initUserCardTilt(){
-const modal=document.getElementById('userCardModal');
-const scene=document.getElementById('userCardScene');
-if(!modal||!scene)return;
-
-const onMove=(e)=>{
-if(!modal.classList.contains('open'))return;
-const rect=modal.getBoundingClientRect();
-const x=(e.clientX-rect.left)/rect.width-0.5;  // -0.5 to 0.5
-const y=(e.clientY-rect.top)/rect.height-0.5;
-const rotY=x*20;  // max 20deg
-const rotX=-y*15;  // max 15deg
-scene.style.transform=`rotateY(${rotY}deg) rotateX(${rotX}deg)`;
-};
-
-const onLeave=()=>{
-scene.style.transform='rotateY(0deg) rotateX(0deg)';
-};
-
-modal.addEventListener('mousemove',onMove);
-modal.addEventListener('mouseleave',onLeave);
-// Remove setelah modal close (cleanup)
-const observer=new MutationObserver(()=>{
-if(!modal.classList.contains('open')){
-onLeave();
-modal.removeEventListener('mousemove',onMove);
-modal.removeEventListener('mouseleave',onLeave);
-observer.disconnect();
-}
-});
-observer.observe(modal,{attributes:true,attributeFilter:['class']});
-}
-
-// Download card sebagai PNG atau JPG menggunakan html2canvas
-async function downloadUserCard(format){
-const card=document.getElementById('userCardContent');
-if(!card)return;
-const btn= format==='png'?document.getElementById('userCardDlPng'):document.getElementById('userCardDlJpg');
-if(btn){
-const origText=btn.innerHTML;
-btn.innerHTML='<span>Generating...</span>';
-btn.disabled=true;
-}
-try{
-if(typeof html2canvas==='undefined'){
-showToast('Library html2canvas belum termuat. Refresh halaman.');
-return;
-}
-const canvas=await html2canvas(card,{
-backgroundColor:'#0a0a0a',
-scale:2,  // higher resolution
-useCORS:true,  // allow cross-origin images (avatar from Supabase)
-allowTaint:true,
-logging:false,
-removeContainer:true,
-});
-const mime=format==='jpg'?'image/jpeg':'image/png';
-const dataUrl=canvas.toDataURL(mime,0.95);
-// v7.9.51 fix: currentUser bisa null kalau user belum login tapi card
-// di-show via test/showUserCard mock. Fallback ke 'user'.
-const uname=(currentUser&&currentUser.username)?currentUser.username:'user';
-const filename=`DLavie-Card-${uname.replace(/[^a-zA-Z0-9_]/g,'_')}.${format}`;
-// Trigger download
-const a=document.createElement('a');
-a.href=dataUrl;
-a.download=filename;
-document.body.appendChild(a);
-a.click();
-setTimeout(()=>document.body.removeChild(a),1500);
-showToast(currentLang==='en'?`Card saved as ${format.toUpperCase()}`:`Card tersimpan sebagai ${format.toUpperCase()}`);
-}catch(e){
-console.error('[downloadUserCard]',e);
-showToast('Gagal download card: '+e.message);
-}finally{
-if(btn){
-btn.disabled=false;
-if(format==='png'){
-btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>PNG';
-}else{
-btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>JPG';
-}
-}
-}
-}
-
-// Share card via Web Share API (mobile-friendly)
-async function shareUserCard(){
-const btn=document.getElementById('userCardShare');
-if(btn){
-const origText=btn.innerHTML;
-btn.innerHTML='<span>Sharing...</span>';
-btn.disabled=true;
-}
-try{
-const card=document.getElementById('userCardContent');
-const canvas=await html2canvas(card,{
-backgroundColor:'#0a0a0a',
-scale:2,
-useCORS:true,
-allowTaint:true,
-logging:false,
-});
-canvas.toBlob(async(blob)=>{
-if(!blob){
-showToast('Gagal generate card untuk share.');
-if(btn){btn.innerHTML=origText;btn.disabled=false;}
-return;
-}
-// v7.9.51 fix: currentUser bisa null. Fallback ke 'user'.
-const u=currentUser||{};
-const uname=u.username||'user';
-const dname=u.display_name||uname;
-const file=new File([blob],`DLavie-Card-${uname}.png`,{type:'image/png'});
-const shareData={
-title:`DLavie Card — ${dname}`,
-text:`Lihat profil DLavie saya! @${uname}`,
-};
-// Web Share API with file support (mobile only, mostly)
-if(navigator.canShare&&navigator.canShare({files:[file]})){
-shareData.files=[file];
-try{
-await navigator.share(shareData);
-showToast(currentLang==='en'?'Card shared!':'Card dibagikan!');
-}catch(e){
-if(e.name!=='AbortError')showToast('Share dibatalkan.');
-}
-}else if(navigator.share){
-// Web Share API without file (text only)
-try{
-await navigator.share(shareData);
-}catch(e){
-if(e.name!=='AbortError')showToast('Share dibatalkan.');
-}
-}else{
-// Fallback: download the PNG + copy text
-const a=document.createElement('a');
-a.href=canvas.toDataURL('image/png');
-a.download=`DLavie-Card-${uname}.png`;
-document.body.appendChild(a);
-a.click();
-setTimeout(()=>document.body.removeChild(a),1500);
-const profileUrl=`${window.location.origin}/#/portal`;
-try{
-await navigator.clipboard.writeText(`${shareData.text} — ${profileUrl}`);
-showToast(currentLang==='en'?'Card downloaded + link copied!':'Card didownload + link disalin!');
-}catch(_){
-showToast(currentLang==='en'?'Card downloaded!':'Card didownload!');
-}
-}
-if(btn){btn.innerHTML=origText;btn.disabled=false;}
-},'image/png');
-}catch(e){
-console.error('[shareUserCard]',e);
-showToast('Gagal share: '+e.message);
-if(btn){btn.innerHTML=origText;btn.disabled=false;}
-}
-}
 
 // ═══════════════════════════════════════════════════════════════
 // INIT
