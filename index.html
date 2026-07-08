@@ -413,7 +413,7 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <a href="#/portal" class="btn-secondary" data-link><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg><span data-i18n="btn_connect">Connect Portal</span></a>
 </div>
 <div class="home-stats">
-<div class="home-stat"><div class="home-stat-num" data-count="199">0</div><div class="home-stat-label" data-i18n="stat_version">Versi Terbaru</div></div>
+<div class="home-stat"><div class="home-stat-num" data-count="247">0</div><div class="home-stat-label" data-i18n="stat_version">Versi Terbaru</div></div>
 <div class="home-stat"><div class="home-stat-num" data-count="10">0</div><div class="home-stat-label" data-i18n="stat_lang">Bahasa</div></div>
 <div class="home-stat"><div class="home-stat-num" data-count="3">0</div><div class="home-stat-label" data-i18n="stat_data">GB Data</div></div>
 </div>
@@ -709,6 +709,9 @@ Daftar dengan Google
 // ═══════════════════════════════════════════════════════════════
 const SUPABASE_URL = 'https://lvmucsxbmadtsgrxuwmo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';
+const LAUNCHER_APK_URL = 'https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v247.apk';
+const PORTAL_URL = 'https://drmacze.github.io/dlavie-web/';
+const LAUNCHER_VERSION = 'v7.9.73';
 
 // ═══════════════════════════════════════════════════════════════
 // I18N — Internationalization
@@ -945,7 +948,7 @@ localStorage.setItem('dlavie_email',email||'');
 }
 function clearSession(){
 ['dlavie_access','dlavie_refresh','dlavie_uid','dlavie_email'].forEach(k=>localStorage.removeItem(k));
-currentUser=null;
+let currentUser=null;
 updateNavUser();
 }
 // v7.9.62: logout() function — clear session + redirect to portal page
