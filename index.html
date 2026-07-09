@@ -409,7 +409,7 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <h1 class="home-title" id="typingTarget"></h1><span class="typing-cursor" id="typingCursor">|</span>
 <p class="home-subtitle" data-i18n="hero_sub">Launcher komunitas untuk FIFA 16 Mobile mod. Install, patch, dan kelola game dalam satu aplikasi.</p>
 <div class="home-actions">
-<a href="#" class="btn-primary" onclick="downloadLauncher(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> <span data-i18n="btn_download">Download Launcher</span></a>
+<a href="#" class="btn-primary" onclick="downloadLauncher(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> <span data-i18n="btn_download">Download Launcher</span> <span style="font-size:11px;opacity:0.6;margin-left:4px">v7.9.73</span></a>
 <a href="#/portal" class="btn-secondary" data-link><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg><span data-i18n="btn_connect">Connect Portal</span></a>
 </div>
 <div class="home-stats">
@@ -964,6 +964,7 @@ return(a&&u)?{access:a,uid:u}:null;
 }
 
 async function fetchUserProfile(uid,token){
+if(typeof SUPABASE_URL==='undefined'){window.SUPABASE_URL='https://lvmucsxbmadtsgrxuwmo.supabase.co';window.SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';}
 try{
 // v7.9.62: include cover_url + bio untuk profile display
 const r=await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${uid}&select=id,username,display_name,avatar_url,cover_url,bio,role&limit=1`,{headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${token}`}});
@@ -1080,6 +1081,7 @@ if(mode==='register'){lf.style.display='none';rf.style.display='block';sw.innerH
 }
 
 async function performLogin(){
+if(typeof SUPABASE_URL==='undefined'){window.SUPABASE_URL='https://lvmucsxbmadtsgrxuwmo.supabase.co';window.SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';}
 const email=document.getElementById('loginEmail').value.trim();
 const pwd=document.getElementById('loginPassword').value;
 const err=document.getElementById('loginError');err.classList.remove('show');
@@ -1098,6 +1100,7 @@ location.hash='#/';
 }
 
 async function performRegister(){
+if(typeof SUPABASE_URL==='undefined'){window.SUPABASE_URL='https://lvmucsxbmadtsgrxuwmo.supabase.co';window.SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';}
 const email=document.getElementById('regEmail').value.trim();
 const pwd=document.getElementById('regPassword').value;
 const un=document.getElementById('regUsername').value.trim();
@@ -1226,6 +1229,7 @@ return '<div class="news-card" style="animation:stagger-up 0.5s var(--ease) '+id
 // ═══════════════════════════════════════════════════════════════
 function downloadLauncher(e){
 if(e)e.preventDefault();
+if(typeof LAUNCHER_APK_URL==='undefined'){window.LAUNCHER_APK_URL='https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v247.apk';}
 try{const a=document.createElement('a');a.href=LAUNCHER_APK_URL;a.download='DLavie26-Launcher-debug.apk';a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(LAUNCHER_APK_URL,'_blank','noopener');}
 }
 
