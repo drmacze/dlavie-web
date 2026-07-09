@@ -948,7 +948,7 @@ localStorage.setItem('dlavie_email',email||'');
 }
 function clearSession(){
 ['dlavie_access','dlavie_refresh','dlavie_uid','dlavie_email'].forEach(k=>localStorage.removeItem(k));
-let currentUser=null;
+var currentUser=null;
 updateNavUser();
 }
 // v7.9.62: logout() function — clear session + redirect to portal page
@@ -966,11 +966,13 @@ return(a&&u)?{access:a,uid:u}:null;
 async function fetchUserProfile(uid,token){
 if(typeof SUPABASE_URL==='undefined'){window.SUPABASE_URL='https://lvmucsxbmadtsgrxuwmo.supabase.co';window.SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';}
 try{
-// v7.9.62: include cover_url + bio untuk profile display
-const r=await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${uid}&select=id,username,display_name,avatar_url,cover_url,bio,role&limit=1`,{headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${token}`}});
-if(!r.ok)return null;
-const d=await r.json();return d[0]||null;
-}catch(e){return null;}
+const r=await fetch(SUPABASE_URL+'/rest/v1/profiles?id=eq.'+uid+'&select=id,username,display_name,avatar_url,cover_url,bio,role&limit=1',{headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+token}});
+if(!r.ok){console.warn('fetchUserProfile: HTTP '+r.status);return null;}
+const d=await r.json();
+if(d&&d.length>0)return d[0];
+console.warn('fetchUserProfile: no profile found for uid='+uid);
+return null;
+}catch(e){console.error('fetchUserProfile error:',e);return null;}
 }
 
 async function restoreSession(){
@@ -979,7 +981,10 @@ const p=await fetchUserProfile(s.uid,s.access);
 if(p){
 currentUser={id:p.id,email:localStorage.getItem('dlavie_email')||'',username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,cover_url:p.cover_url||'',bio:p.bio||'',role:p.role};
 updateNavUser();
-}else clearSession();
+}else{
+console.warn('restoreSession: profile not found, clearing session');
+clearSession();
+}
 }
 
 async function autoLoginFromURL(){
@@ -1084,19 +1089,36 @@ async function performLogin(){
 if(typeof SUPABASE_URL==='undefined'){window.SUPABASE_URL='https://lvmucsxbmadtsgrxuwmo.supabase.co';window.SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';}
 const email=document.getElementById('loginEmail').value.trim();
 const pwd=document.getElementById('loginPassword').value;
-const err=document.getElementById('loginError');err.classList.remove('show');
+const err=document.getElementById('loginError');err.classList.remove('show');err.style.color='';
 if(!email||!pwd){err.textContent='Email dan password wajib diisi.';err.classList.add('show');return;}
 try{
-const r=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd})});
+err.textContent='Sedang login...';err.style.color='var(--soft-text)';err.classList.add('show');
+const r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:email,password:pwd})});
 const d=await r.json();
-if(!r.ok)throw new Error(d.error_description||d.error||'Login gagal');
+if(!r.ok){
+let msg='Login gagal';
+if(r.status===400&&d.error_description)d.msg=d.error_description;
+if(d.message)d.msg=d.message;
+if(d.error_description&&d.error_description.includes('Invalid login'))msg='Email atau password salah. Periksa kembali.';
+if(d.error_description&&d.error_description.includes('Email not confirmed'))msg='Email belum dikonfirmasi. Cek email Anda.';
+throw new Error(msg);
+}
 saveSession(d.access_token,d.refresh_token,d.user.id,d.user.email);
 const p=await fetchUserProfile(d.user.id,d.access_token);
-if(p)currentUser={id:p.id,email:d.user.email,username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,cover_url:p.cover_url||'',bio:p.bio||'',role:p.role};
+if(p){currentUser={id:p.id,email:d.user.email,username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,cover_url:p.cover_url||'',bio:p.bio||'',role:p.role};}
+else{
+// Profile belum ada — buat default
+currentUser={id:d.user.id,email:d.user.email,username:d.user.email.split('@')[0],display_name:d.user.email.split('@')[0],avatar_url:null,cover_url:'',bio:'',role:'user'};
+}
 updateNavUser();
-showToast('Login berhasil!');
+showToast('Login berhasil! Selamat datang, '+currentUser.display_name);
 location.hash='#/';
-}catch(e){err.textContent=e.message;err.classList.add('show');}
+}catch(e){
+err.textContent=e.message||'Terjadi kesalahan saat login. Coba lagi.';
+err.style.color='var(--danger)';
+err.classList.add('show');
+console.error('Login error:',e);
+}
 }
 
 async function performRegister(){
@@ -1105,19 +1127,38 @@ const email=document.getElementById('regEmail').value.trim();
 const pwd=document.getElementById('regPassword').value;
 const un=document.getElementById('regUsername').value.trim();
 const dn=document.getElementById('regDisplayName').value.trim();
-const err=document.getElementById('regError');err.classList.remove('show');
+const err=document.getElementById('regError');err.classList.remove('show');err.style.color='';
 if(!email||!pwd||!un||!dn){err.textContent='Semua field wajib diisi.';err.classList.add('show');return;}
 if(pwd.length<6){err.textContent='Password minimal 6 karakter.';err.classList.add('show');return;}
 try{
-const r=await fetch(`${SUPABASE_URL}/auth/v1/signup`,{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd,data:{username:un,display_name:dn}})});
+err.textContent='Sedang mendaftarkan akun...';err.style.color='var(--soft-text)';err.classList.add('show');
+const r=await fetch(SUPABASE_URL+'/auth/v1/signup',{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:email,password:pwd,data:{username:un,display_name:dn}})});
 const d=await r.json();
-if(!r.ok)throw new Error(d.error_description||d.error||'Registrasi gagal');
+if(!r.ok){
+let msg='Registrasi gagal';
+if(d.error_description&&d.error_description.includes('already registered'))msg='Email sudah terdaftar. Silakan login.';
+else if(d.error_description&&d.error_description.includes('password'))msg='Password terlalu lemah. Gunakan minimal 6 karakter.';
+else if(d.message)msg=d.message;
+else if(d.error_description)msg=d.error_description;
+throw new Error(msg);
+}
 if(d.access_token){
 saveSession(d.access_token,d.refresh_token,d.user.id,d.user.email);
 currentUser={id:d.user.id,email:d.user.email,username:un,display_name:dn,avatar_url:null,cover_url:'',bio:'',role:'user'};
-updateNavUser();showToast('Registrasi berhasil!');location.hash='#/';
-}else{err.textContent='Cek email untuk konfirmasi, lalu login.';err.style.color='var(--success)';err.classList.add('show');}
-}catch(e){err.textContent=e.message;err.classList.add('show');}
+updateNavUser();
+showToast('Registrasi berhasil! Selamat datang, '+dn);
+location.hash='#/';
+}else{
+err.textContent='Akun berhasil dibuat! Cek email untuk konfirmasi, lalu login.';
+err.style.color='var(--success)';
+err.classList.add('show');
+}
+}catch(e){
+err.textContent=e.message||'Terjadi kesalahan saat registrasi. Coba lagi.';
+err.style.color='var(--danger)';
+err.classList.add('show');
+console.error('Register error:',e);
+}
 }
 
 // ═══════════════════════════════════════════════════════════════
