@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#000000" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
 <title>DLavie — FIFA Modding Launcher</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet" />
@@ -1381,10 +1384,25 @@ return '<div class="news-card" style="animation:stagger-up 0.5s var(--ease) '+id
 // ═══════════════════════════════════════════════════════════════
 // DOWNLOAD
 // ═══════════════════════════════════════════════════════════════
+// v7.9.78: Dynamic URL — fetch latest APK URL from manifest setiap kali klik.
+// Hindari masalah cached URL lama (v247) yang sudah 404 setelah v248 upload.
 function downloadLauncher(e){
 if(e)e.preventDefault();
-if(typeof LAUNCHER_APK_URL==='undefined'){window.LAUNCHER_APK_URL='https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v248.apk';}
-try{const a=document.createElement('a');a.href=LAUNCHER_APK_URL;a.download='DLavie26-Launcher-v248.apk';a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(LAUNCHER_APK_URL,'_blank','noopener');}
+// Fallback URL (kalau fetch manifest gagal)
+const fallbackUrl='https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v248.apk';
+// Fetch latest URL dari manifest (cache-bust dengan timestamp)
+const manifestUrl='https://raw.githubusercontent.com/drmacze/DLavie-Launcher-Data/main/manifest.json?_t='+Date.now();
+fetch(manifestUrl,{cache:'no-store'})
+.then(r=>r.json())
+.then(m=>{
+const apkUrl=m&&m.launcher&&m.launcher.apk_url?m.launcher.apk_url:fallbackUrl;
+const fileName=apkUrl.split('/').pop();
+try{const a=document.createElement('a');a.href=apkUrl;a.download=fileName;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(apkUrl,'_blank','noopener');}
+})
+.catch(_=>{
+// Fallback: pakai hardcoded URL
+try{const a=document.createElement('a');a.href=fallbackUrl;a.download='DLavie26-Launcher-v248.apk';a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(fallbackUrl,'_blank','noopener');}
+});
 }
 
 // ═══════════════════════════════════════════════════════════════
