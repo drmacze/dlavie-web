@@ -409,7 +409,7 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <h1 class="home-title" id="typingTarget"></h1><span class="typing-cursor" id="typingCursor">|</span>
 <p class="home-subtitle" data-i18n="hero_sub">Launcher komunitas untuk FIFA 16 Mobile mod. Install, patch, dan kelola game dalam satu aplikasi.</p>
 <div class="home-actions">
-<a href="#" class="btn-primary" onclick="downloadLauncher(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> <span data-i18n="btn_download">Download Launcher</span> <span style="font-size:11px;opacity:0.6;margin-left:4px">v7.9.73</span></a>
+<a href="#" class="btn-primary" onclick="downloadLauncher(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> <span data-i18n="btn_download">Download Launcher</span> <span style="font-size:11px;opacity:0.6;margin-left:4px">v7.9.78</span></a>
 <a href="#/portal" class="btn-secondary" data-link><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg><span data-i18n="btn_connect">Connect Portal</span></a>
 </div>
 <div class="home-stats">
@@ -419,6 +419,46 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 </div>
 <div class="scroll-indicator"><span>Scroll</span><div class="scroll-indicator-line"></div></div>
 </section>
+
+<!-- v7.9.78: Banner peringatan untuk user APK lama -->
+<section class="force-update-notice" id="forceUpdateNotice" style="background:rgba(255,170,0,0.08);border:1px solid rgba(255,170,0,0.3);border-radius:20px;padding:32px;margin:24px auto;max-width:900px;text-align:center;display:none">
+<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:16px">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFAA00" stroke-width="2.5" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+<h2 style="color:#FFAA00;font-size:22px;font-weight:700;margin:0;font-family:var(--font-display)">Penting untuk User APK Lama</h2>
+</div>
+<p style="color:var(--soft-text);font-size:15px;line-height:1.6;margin-bottom:16px">
+Kalau Anda sudah install <strong style="color:var(--text-white)">DLavie Launcher v7.9.71 (build 242)</strong> atau versi sebelumnya,
+update otomatis <strong style="color:#FFAA00">tidak akan berhasil</strong> karena signature APK berubah.
+</p>
+<div style="background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:12px;padding:16px;margin:16px 0;text-align:left;max-width:560px;margin-left:auto;margin-right:auto">
+<p style="color:var(--text-white);font-weight:600;font-size:14px;margin-bottom:8px">Solusi (SEKALI SAJA):</p>
+<ol style="color:var(--soft-text);font-size:13px;line-height:1.8;padding-left:20px;margin:0">
+<li><strong style="color:var(--text-white)">Uninstall</strong> DLavie Launcher yang sekarang dari HP Anda</li>
+<li><strong style="color:var(--text-white)">Download APK v7.9.78</strong> (versi terbaru) lewat tombol di bawah</li>
+<li><strong style="color:var(--text-white)">Install APK baru</strong> — allow unknown source jika diminta</li>
+<li>Buka Launcher, login dengan akun Anda — data akun tetap aman</li>
+</ol>
+</div>
+<p style="color:var(--sub-text);font-size:12px;margin-bottom:20px">
+Setelah install APK v7.9.78, semua update berikutnya akan otomatis tanpa perlu uninstall lagi.
+</p>
+<a href="#" class="btn-primary" onclick="downloadLauncher(event);return false;" style="background:#FFAA00;color:#1a1a1a">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+Download Launcher v7.9.78
+</a>
+<button onclick="document.getElementById('forceUpdateNotice').style.display='none'" style="background:transparent;border:none;color:var(--sub-text);font-size:12px;cursor:pointer;margin-top:12px;text-decoration:underline">
+Saya sudah paham, tutup pesan ini
+</button>
+</section>
+<script>
+// v7.9.78: Tampilkan banner peringatan di home page (auto-show setelah 1.5 detik)
+setTimeout(function(){
+  var banner = document.getElementById('forceUpdateNotice');
+  if(banner && window.location.hash !== '#/portal'){
+    banner.style.display = 'block';
+  }
+}, 1500);
+</script>
 <section class="features">
 <div class="section-label reveal" data-i18n="features_label">Fitur</div>
 <h2 class="section-title reveal" data-i18n="features_title">Semua dalam satu launcher.</h2>
@@ -709,9 +749,9 @@ Daftar dengan Google
 // ═══════════════════════════════════════════════════════════════
 const SUPABASE_URL = 'https://lvmucsxbmadtsgrxuwmo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';
-const LAUNCHER_APK_URL = 'https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v247.apk';
+const LAUNCHER_APK_URL = 'https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v243.apk';
 const PORTAL_URL = 'https://drmacze.github.io/dlavie-web/';
-const LAUNCHER_VERSION = 'v7.9.73';
+const LAUNCHER_VERSION = 'v7.9.78';
 
 // ═══════════════════════════════════════════════════════════════
 // I18N — Internationalization
@@ -1382,8 +1422,8 @@ return '<div class="news-card" style="animation:stagger-up 0.5s var(--ease) '+id
 // ═══════════════════════════════════════════════════════════════
 function downloadLauncher(e){
 if(e)e.preventDefault();
-if(typeof LAUNCHER_APK_URL==='undefined'){window.LAUNCHER_APK_URL='https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v247.apk';}
-try{const a=document.createElement('a');a.href=LAUNCHER_APK_URL;a.download='DLavie26-Launcher-debug.apk';a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(LAUNCHER_APK_URL,'_blank','noopener');}
+if(typeof LAUNCHER_APK_URL==='undefined'){window.LAUNCHER_APK_URL='https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v243.apk';}
+try{const a=document.createElement('a');a.href=LAUNCHER_APK_URL;a.download='DLavie26-Launcher-v243.apk';a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(LAUNCHER_APK_URL,'_blank','noopener');}
 }
 
 // ═══════════════════════════════════════════════════════════════
