@@ -982,8 +982,23 @@ if(p){
 currentUser={id:p.id,email:localStorage.getItem('dlavie_email')||'',username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,cover_url:p.cover_url||'',bio:p.bio||'',role:p.role};
 updateNavUser();
 }else{
-console.warn('restoreSession: profile not found, clearing session');
-clearSession();
+// v7.9.77 FIX: Jangan clear session langsung. Coba auto-create profile dulu.
+// Ini handle case dimana user signup via Google OAuth tapi trigger gagal create profile.
+console.warn('restoreSession: profile not found, attempting auto-create...');
+const email=localStorage.getItem('dlavie_email')||'';
+const created=await ensureProfileFromOAuth(s.uid,s.access,email,'','');
+if(created){
+currentUser={id:created.id,email:email,username:created.username,display_name:created.display_name,avatar_url:created.avatar_url,cover_url:'',bio:'',role:created.role};
+updateNavUser();
+showToast('Profil berhasil dibuat. Selamat datang!');
+}else{
+// Last resort: set fallback currentUser dari localStorage supaya user
+// tetap kelihatan logged in (nav shows avatar), meski profile row belum ada.
+// Profile bisa di-create later via launcher atau manual.
+console.warn('restoreSession: profile creation failed, using fallback currentUser');
+currentUser={id:s.uid,email:email,username:email?email.split('@')[0]:'user',display_name:email?email.split('@')[0]:'DLavie User',avatar_url:null,cover_url:'',bio:'',role:'user'};
+updateNavUser();
+}
 }
 }
 
@@ -1185,16 +1200,24 @@ async function handleOAuthCallback() {
 
   if (!accessToken) return false;
 
-  // Decode user ID from JWT
+  // Decode user ID + email + name from JWT
   let uid = '';
   let email = '';
+  let fullName = '';
+  let avatarUrl = '';
   try {
     const payload = accessToken.split('.')[1];
     const b64 = payload.replace(/-/g, '+').replace(/_/g, '/');
     const json = JSON.parse(atob(b64));
     uid = json.sub || '';
     email = json.email || '';
-  } catch (e) {}
+    // Google OAuth sering pakai user_metadata.name / full_name (bukan display_name)
+    fullName = json.user_metadata?.full_name || json.user_metadata?.name ||
+               json.user_metadata?.display_name || '';
+    avatarUrl = json.user_metadata?.avatar_url || json.user_metadata?.picture || '';
+  } catch (e) {
+    console.error('OAuth callback: JWT decode error', e);
+  }
 
   if (!uid) return false;
 
@@ -1202,14 +1225,30 @@ async function handleOAuthCallback() {
   saveSession(accessToken, refreshToken || '', uid, email);
 
   // Fetch profile
-  const profile = await fetchUserProfile(uid, accessToken);
+  let profile = await fetchUserProfile(uid, accessToken);
+
+  // v7.9.77 FIX: If profile not found, auto-create it.
+  // Trigger handle_new_user() seharusnya create profile, tapi bisa fail karena:
+  //  - username constraint (u_<id> conflict, extremely rare)
+  //  - trigger belum dipasang saat user pertama kali signup
+  //  - raw_user_meta_data tidak punya display_name field (Google pakai 'name')
+  if (!profile) {
+    console.warn('OAuth callback: profile not found, auto-creating...');
+    profile = await ensureProfileFromOAuth(uid, accessToken, email, fullName, avatarUrl);
+  }
+
   if (profile) {
     currentUser = {
       id: profile.id, email: email, username: profile.username,
       display_name: profile.display_name, avatar_url: profile.avatar_url, role: profile.role
     };
     updateNavUser();
-    showToast('Login Google berhasil!');
+    showToast('Login Google berhasil! Selamat datang, ' + (currentUser.display_name || currentUser.username));
+    // Redirect ke portal page supaya user langsung lihat profile card
+    setTimeout(() => { location.hash = '#/portal'; }, 300);
+  } else {
+    console.error('OAuth callback: profile creation failed, user will see login form');
+    showToast('Login Google berhasil, tapi profil belum siap. Coba refresh halaman.');
   }
 
   // Clean URL hash
@@ -1217,6 +1256,79 @@ async function handleOAuthCallback() {
   history.replaceState({}, document.title, window.location.pathname);
 
   return true;
+}
+
+// v7.9.77: Auto-create profile untuk OAuth user yang profile-nya belum ada.
+// Pakai service_role-style approach: INSERT ke profiles table pakai user's access token.
+// RLS policy "profiles public read" tidak block INSERT untuk user sendiri (id = auth.uid()).
+// Tapi karena tidak ada "profiles own insert" policy, kita pakai anon INSERT
+// dengan check constraint username unik.
+async function ensureProfileFromOAuth(uid, accessToken, email, fullName, avatarUrl) {
+  if (typeof SUPABASE_URL === 'undefined') {
+    window.SUPABASE_URL = 'https://lvmucsxbmadtsgrxuwmo.supabase.co';
+    window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';
+  }
+
+  // Generate username dari email (ambil prefix sebelum @, sanitize)
+  let username = '';
+  if (email && email.includes('@')) {
+    username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '');
+  }
+  // Pastikan username 3-24 karakter dan alphanumeric/underscore
+  if (username.length < 3) {
+    username = 'u_' + uid.replace(/-/g, '').substring(0, 18);
+  }
+  if (username.length > 24) {
+    username = username.substring(0, 24);
+  }
+
+  // Generate display_name
+  const displayName = fullName || (email ? email.split('@')[0] : 'DLavie User');
+
+  // Coba INSERT ke profiles table
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/profiles?id=eq.' + uid + '&select=id', {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + accessToken }
+    });
+
+    // Coba insert langsung — mungkin RLS block, jadi pakai fallback
+    const insRes = await fetch(SUPABASE_URL + '/rest/v1/profiles', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({
+        id: uid,
+        username: username,
+        display_name: displayName,
+        avatar_url: avatarUrl || null
+      })
+    });
+
+    if (insRes.ok) {
+      const created = await insRes.json();
+      if (created && created.length > 0) {
+        console.log('Profile auto-created for OAuth user:', username);
+        return created[0];
+      }
+    }
+    // INSERT gagal (mungkin RLS block, atau username conflict)
+    console.warn('Profile INSERT failed:', insRes.status, await insRes.text());
+
+    // Fallback: retry fetch — mungkin trigger sudah create profile tapi fetchUserProfile
+    // return null karena race condition
+    const retry = await fetchUserProfile(uid, accessToken);
+    if (retry) {
+      console.log('Profile found on retry (trigger may have been slow):', retry.username);
+      return retry;
+    }
+  } catch (e) {
+    console.error('ensureProfileFromOAuth error:', e);
+  }
+  return null;
 }
 
 
