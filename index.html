@@ -713,7 +713,7 @@ Daftar dengan Google
 // ═══════════════════════════════════════════════════════════════
 const SUPABASE_URL = 'https://lvmucsxbmadtsgrxuwmo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';
-const LAUNCHER_APK_URL = 'https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v265.apk';
+const LAUNCHER_APK_URL = 'https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v266.apk';
 const PORTAL_URL = 'https://drmacze.github.io/dlavie-web/';
 const LAUNCHER_VERSION = 'v7.9.78';
 
@@ -1389,7 +1389,7 @@ return '<div class="news-card" style="animation:stagger-up 0.5s var(--ease) '+id
 function downloadLauncher(e){
 if(e)e.preventDefault();
 // Fallback URL (kalau fetch manifest gagal)
-const fallbackUrl='https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v265.apk';
+const fallbackUrl='https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v266.apk';
 // Fetch latest URL dari manifest (cache-bust dengan timestamp)
 const manifestUrl='https://raw.githubusercontent.com/drmacze/DLavie-Launcher-Data/main/manifest.json?_t='+Date.now();
 fetch(manifestUrl,{cache:'no-store'})
@@ -1401,7 +1401,7 @@ try{const a=document.createElement('a');a.href=apkUrl;a.download=fileName;a.rel=
 })
 .catch(_=>{
 // Fallback: pakai hardcoded URL
-try{const a=document.createElement('a');a.href=fallbackUrl;a.download='DLavie26-Launcher-v265.apk';a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(fallbackUrl,'_blank','noopener');}
+try{const a=document.createElement('a');a.href=fallbackUrl;a.download='DLavie26-Launcher-v266.apk';a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(fallbackUrl,'_blank','noopener');}
 });
 }
 
