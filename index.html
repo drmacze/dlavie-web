@@ -412,7 +412,7 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <h1 class="home-title" id="typingTarget"></h1><span class="typing-cursor" id="typingCursor">|</span>
 <p class="home-subtitle" data-i18n="hero_sub">Launcher komunitas untuk FIFA 16 Mobile mod. Install, patch, dan kelola game dalam satu aplikasi.</p>
 <div class="home-actions">
-<a href="#" class="btn-primary" onclick="downloadLauncher(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> <span data-i18n="btn_download">Download Launcher</span> <span style="font-size:11px;opacity:0.6;margin-left:4px">v7.9.78</span></a>
+<a href="#" class="btn-primary" onclick="downloadLauncher(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> <span data-i18n="btn_download">Download Launcher</span> <span style="font-size:11px;opacity:0.6;margin-left:4px" data-launcher-version>v7.9.80</span></a>
 <a href="#/portal" class="btn-secondary" data-link><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg><span data-i18n="btn_connect">Connect Portal</span></a>
 </div>
 <div class="home-stats">
@@ -713,9 +713,70 @@ Daftar dengan Google
 // ═══════════════════════════════════════════════════════════════
 const SUPABASE_URL = 'https://lvmucsxbmadtsgrxuwmo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';
-const LAUNCHER_APK_URL = 'https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v277.apk';
+// v7.9.80: Dynamic URL — fetched from Supabase app_releases on page load + click.
+// Fallback to manifest.json, then hardcoded URL only if both fail.
+let LAUNCHER_APK_URL = 'https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v278.apk';
+let LAUNCHER_VERSION = 'v7.9.80';
+let LAUNCHER_VERSION_CODE = 278;
 const PORTAL_URL = 'https://drmacze.github.io/dlavie-web/';
-const LAUNCHER_VERSION = 'v7.9.78';
+
+// ═══════════════════════════════════════════════════════════════
+// AUTO-FETCH LATEST VERSION — runs immediately on page load
+// Priority: Supabase app_releases → manifest.json → hardcoded fallback
+// ═══════════════════════════════════════════════════════════════
+(async function fetchLatestRelease(){
+  // Strategy 1: Supabase (primary)
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/app_releases?is_published=eq.true&order=version_code.desc&limit=1&select=version_code,version_name,apk_download_url,changelog`, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      cache: 'no-store'
+    });
+    if (r.ok) {
+      const data = await r.json();
+      if (Array.isArray(data) && data.length > 0) {
+        const rel = data[0];
+        LAUNCHER_VERSION_CODE = rel.version_code;
+        LAUNCHER_VERSION = 'v' + (rel.version_name || 'unknown');
+        LAUNCHER_APK_URL = rel.apk_download_url || LAUNCHER_APK_URL;
+        console.log('[DLavie] Latest from Supabase:', LAUNCHER_VERSION, '(code ' + LAUNCHER_VERSION_CODE + ')');
+        updateVersionBadges();
+        return;
+      }
+    }
+  } catch (e) { console.warn('[DLavie] Supabase fetch failed:', e.message); }
+
+  // Strategy 2: manifest.json (fallback)
+  try {
+    const r = await fetch('https://raw.githubusercontent.com/drmacze/DLavie-Launcher-Data/main/manifest.json?_t=' + Date.now(), {cache:'no-store'});
+    if (r.ok) {
+      const m = await r.json();
+      if (m && m.launcher) {
+        LAUNCHER_VERSION_CODE = m.launcher.latest_version_code || LAUNCHER_VERSION_CODE;
+        LAUNCHER_VERSION = 'v' + (m.launcher.latest_version_name || 'unknown');
+        LAUNCHER_APK_URL = m.launcher.apk_url || LAUNCHER_APK_URL;
+        console.log('[DLavie] Latest from manifest:', LAUNCHER_VERSION);
+        updateVersionBadges();
+        return;
+      }
+    }
+  } catch (e) { console.warn('[DLavie] manifest fetch failed:', e.message); }
+
+  console.log('[DLavie] Using fallback:', LAUNCHER_VERSION);
+  updateVersionBadges();
+})();
+
+// Update all version badges in DOM
+function updateVersionBadges(){
+  document.querySelectorAll('[data-launcher-version]').forEach(el => {
+    el.textContent = LAUNCHER_VERSION;
+  });
+  document.querySelectorAll('[data-launcher-code]').forEach(el => {
+    el.textContent = LAUNCHER_VERSION_CODE;
+  });
+}
 
 // ═══════════════════════════════════════════════════════════════
 // I18N — Internationalization
@@ -1384,24 +1445,28 @@ return '<div class="news-card" style="animation:stagger-up 0.5s var(--ease) '+id
 // ═══════════════════════════════════════════════════════════════
 // DOWNLOAD
 // ═══════════════════════════════════════════════════════════════
-// v7.9.78: Dynamic URL — fetch latest APK URL from manifest setiap kali klik.
-// Hindari masalah cached URL lama (v247) yang sudah 404 setelah v248 upload.
+// v7.9.80: Dynamic URL — uses LAUNCHER_APK_URL yang sudah di-fetch on page load.
+// Re-fetch dari Supabase tiap klik untuk pastikan URL terbaru (hindari cache).
 function downloadLauncher(e){
 if(e)e.preventDefault();
-// Fallback URL (kalau fetch manifest gagal)
-const fallbackUrl='https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v277.apk';
-// Fetch latest URL dari manifest (cache-bust dengan timestamp)
-const manifestUrl='https://raw.githubusercontent.com/drmacze/DLavie-Launcher-Data/main/manifest.json?_t='+Date.now();
-fetch(manifestUrl,{cache:'no-store'})
+// Pakai URL yang sudah di-fetch on page load (paling cepat)
+if(LAUNCHER_APK_URL && LAUNCHER_APK_URL.startsWith('http')){
+  const fileName=LAUNCHER_APK_URL.split('/').pop();
+  try{const a=document.createElement('a');a.href=LAUNCHER_APK_URL;a.download=fileName;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(LAUNCHER_APK_URL,'_blank','noopener');}
+  return;
+}
+// Fallback: fetch dari Supabase real-time
+const supabaseUrl=`${SUPABASE_URL}/rest/v1/app_releases?is_published=eq.true&order=version_code.desc&limit=1&select=apk_download_url`;
+const fallbackUrl='https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v278.apk';
+fetch(supabaseUrl,{headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${SUPABASE_ANON_KEY}`},cache:'no-store'})
 .then(r=>r.json())
-.then(m=>{
-const apkUrl=m&&m.launcher&&m.launcher.apk_url?m.launcher.apk_url:fallbackUrl;
-const fileName=apkUrl.split('/').pop();
-try{const a=document.createElement('a');a.href=apkUrl;a.download=fileName;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(apkUrl,'_blank','noopener');}
+.then(data=>{
+  const apkUrl=Array.isArray(data)&&data.length>0?data[0].apk_download_url:fallbackUrl;
+  const fileName=apkUrl.split('/').pop();
+  try{const a=document.createElement('a');a.href=apkUrl;a.download=fileName;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(apkUrl,'_blank','noopener');}
 })
 .catch(_=>{
-// Fallback: pakai hardcoded URL
-try{const a=document.createElement('a');a.href=fallbackUrl;a.download='DLavie26-Launcher-v277.apk';a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(fallbackUrl,'_blank','noopener');}
+  try{const a=document.createElement('a');a.href=fallbackUrl;a.download='DLavie26-Launcher-v278.apk';a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(fallbackUrl,'_blank','noopener');}
 });
 }
 
