@@ -1009,6 +1009,26 @@ sw.innerHTML=currentLang==='en'
 const routes=["home","portal","faq","issues","news","about","terms","privacy"];
 function router(){
 const hash=window.location.hash.replace('#/','')||'home';
+
+// v7.9.95: Handle game share link (#/game?pkg=PACKAGE_NAME)
+if(hash.startsWith('game?pkg=')){
+const pkg=hash.split('pkg=')[1];
+if(pkg){
+// Try to open DLavie Launcher via deep link
+window.location.href='dlavie://game?pkg='+pkg;
+// Fallback: after 1.5s, if deep link didn't work (app not installed),
+// show download page
+setTimeout(()=>{
+// Check if we're still on the page (deep link failed)
+if(document.visibilityState==='visible'){
+alert('DLavie Launcher belum terinstall. Download sekarang untuk membuka game ini!');
+window.location.hash='#/portal';
+}
+},1500);
+return;
+}
+}
+
 const page=routes.includes(hash)?hash:'home';
 // Fade out current page
 const current=document.querySelector('.page.active');
