@@ -102,23 +102,24 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
   box-shadow:0 2px 8px rgba(107,138,255,0.4);
   white-space:nowrap
 }
-/* ═══ v325: Elegant Download Button ═══ */
-.btn-download{position:relative;display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;padding:18px 32px 18px 28px;border-radius:14px;font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;border:1px solid rgba(255,255,255,0.12);overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,0.06) 0%,rgba(255,255,255,0.02) 100%);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--text-white);transition:border-color 0.4s var(--ease),transform 0.3s var(--ease);min-width:220px;will-change:transform}
-.btn-download::before{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,0.14) 50%,transparent 70%);transform:translateX(-120%);transition:transform 0.9s var(--ease);pointer-events:none}
-.btn-download::after{content:'';position:absolute;inset:-1px;border-radius:14px;padding:1px;background:linear-gradient(135deg,rgba(255,255,255,0.4),transparent 40%,transparent 60%,rgba(255,255,255,0.15));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity 0.4s var(--ease);pointer-events:none}
-.btn-download:hover{border-color:rgba(255,255,255,0.28);transform:translateY(-2px)}
+/* ═══ v326: Elegant Download Button (solid bg) ═══ */
+.btn-download{position:relative;display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;padding:18px 32px 18px 28px;border-radius:14px;font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;border:none;overflow:hidden;background:linear-gradient(135deg,#ffffff 0%,#e8eaff 50%,#ffffff 100%);color:var(--pure-black);transition:transform 0.3s var(--ease),box-shadow 0.3s var(--ease);min-width:220px;will-change:transform;box-shadow:0 4px 20px rgba(107,138,255,0.25),0 1px 3px rgba(0,0,0,0.1),inset 0 1px 0 rgba(255,255,255,0.9);background-size:200% 200%;background-position:0% 50%}
+.btn-download::before{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,0.6) 50%,transparent 70%);transform:translateX(-120%);transition:transform 0.9s var(--ease);pointer-events:none}
+.btn-download::after{content:'';position:absolute;inset:-1px;border-radius:14px;padding:1px;background:linear-gradient(135deg,rgba(107,138,255,0.6),transparent 40%,transparent 60%,rgba(255,255,255,0.4));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity 0.4s var(--ease);pointer-events:none}
+.btn-download:hover{transform:translateY(-3px) scale(1.02);background-position:100% 50%;box-shadow:0 12px 40px rgba(107,138,255,0.45),0 4px 12px rgba(0,0,0,0.15),inset 0 1px 0 rgba(255,255,255,1)}
 .btn-download:hover::before{transform:translateX(120%)}
 .btn-download:hover::after{opacity:1}
-.btn-download:active{transform:translateY(0) scale(0.98)}
+.btn-download:active{transform:translateY(-1px) scale(0.99)}
 .btn-download-row{display:flex;align-items:center;gap:10px;width:100%}
-.btn-download-icon{width:18px;height:18px;flex-shrink:0;transition:transform 0.4s var(--ease)}
+.btn-download-icon{width:18px;height:18px;flex-shrink:0;transition:transform 0.4s var(--ease);color:var(--pure-black)}
 .btn-download:hover .btn-download-icon{transform:translateY(2px)}
-.btn-download-label{font-family:var(--font-display);font-size:15px;font-weight:600;letter-spacing:-0.01em;color:var(--text-white);line-height:1.2}
-.btn-download-meta{display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--sub-text);font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase;font-weight:500;margin-top:2px;padding-left:28px}
-.btn-download-meta-dot{width:5px;height:5px;border-radius:50%;background:var(--success,#00D26A);box-shadow:0 0 8px rgba(0,210,106,0.6);animation:dlDotPulse 2s ease-in-out infinite}
+.btn-download-label{font-family:var(--font-display);font-size:15px;font-weight:600;letter-spacing:-0.01em;color:var(--pure-black);line-height:1.2}
+.btn-download-meta{display:flex;align-items:center;gap:8px;font-size:10.5px;color:rgba(0,0,0,0.6);font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase;font-weight:600;margin-top:2px;padding-left:28px}
+.btn-download-meta-dot{width:5px;height:5px;border-radius:50%;background:#00B050;box-shadow:0 0 8px rgba(0,176,80,0.7);animation:dlDotPulse 2s ease-in-out infinite}
 @keyframes dlDotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.85)}}
-.btn-download-arrow{margin-left:auto;width:14px;height:14px;color:var(--sub-text);transition:transform 0.4s var(--ease),color 0.3s}
-.btn-download:hover .btn-download-arrow{transform:translateX(3px);color:var(--text-white)}
+.btn-download-arrow{margin-left:auto;width:14px;height:14px;color:rgba(0,0,0,0.5);transition:transform 0.4s var(--ease),color 0.3s}
+.btn-download:hover .btn-download-arrow{transform:translateX(3px);color:var(--pure-black)}
+.btn-download-ver-badge{font-size:9px;font-weight:700;letter-spacing:0.5px;padding:2px 7px;border-radius:5px;background:linear-gradient(135deg,#6B8AFF,#8BA3FF);color:#fff;text-transform:uppercase;box-shadow:0 2px 6px rgba(107,138,255,0.4);white-space:nowrap;margin-left:6px}
 @media(max-width:640px){.btn-download{min-width:200px;padding:16px 24px}.btn-download-meta{padding-left:24px;font-size:10px}}
 /* ═══ v325: Download Popup Modal ═══ */
 .dl-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.3s}
@@ -511,14 +512,15 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <a href="#" class="btn-download" id="btnDownloadHero" onclick="openDownloadModal(event)">
 <div class="btn-download-row">
 <svg class="btn-download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-<span class="btn-download-label" data-i18n="btn_download">Latest Version</span>
+<span class="btn-download-label" data-i18n="btn_download">Download Launcher</span>
+<span class="btn-download-ver-badge">LATEST</span>
 <svg class="btn-download-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
 </div>
 <div class="btn-download-meta">
 <span class="btn-download-meta-dot"></span>
-<span data-launcher-version>v8.0.26</span>
+<span>Latest Version</span>
 <span style="opacity:0.4">·</span>
-<span>APK · ~28MB</span>
+<span data-launcher-version>v8.0.26</span>
 </div>
 </a>
 <a href="#/portal" class="btn-secondary" data-link><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg><span data-i18n="btn_connect">Connect Portal</span></a>
@@ -895,7 +897,7 @@ id:{
 nav_home:'Beranda',nav_portal:'Portal',nav_faq:'FAQ',nav_news:'Berita',nav_issues:'Issue',nav_about:'Tentang',nav_terms:'Syarat',nav_privacy:'Privasi',
 // Home
 badge_text:'DLavie: New FIFA Modding Launcher',hero_sub:'Launcher komunitas untuk FIFA 16 Mobile mod. Install, patch, dan kelola game dalam satu aplikasi.',
-btn_download:'Latest Version',btn_connect:'Connect Portal',
+btn_download:'Download Launcher',btn_connect:'Connect Portal',
 stat_version:'Versi Terbaru',stat_lang:'Bahasa',stat_data:'GB Data',
 // Features
 features_label:'Fitur',features_title:'Semua dalam satu launcher.',
@@ -963,7 +965,7 @@ en:{
 nav_home:'Home',nav_portal:'Portal',nav_faq:'FAQ',nav_news:'News',nav_issues:'Issues',nav_about:'About',nav_terms:'Terms',nav_privacy:'Privacy',
 // Home
 badge_text:'DLavie: New FIFA Modding Launcher',hero_sub:'Community launcher for FIFA 16 Mobile modding. Install, patch, and manage your game in one app.',
-btn_download:'Latest Version',btn_connect:'Connect Portal',
+btn_download:'Download Launcher',btn_connect:'Connect Portal',
 stat_version:'Latest Version',stat_lang:'Languages',stat_data:'GB Data',
 // Features
 features_label:'Features',features_title:'Everything in one launcher.',
