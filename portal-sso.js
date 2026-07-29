@@ -2,7 +2,7 @@
   'use strict';
 
   const SUPABASE_URL = 'https://lvmucsxbmadtsgrxuwmo.supabase.co';
-  const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';
+  const ANON_KEY = 'sb_publishable_aYFlbWVJMErOHwPsli33QQ_INJD9mhx';
   const ENDPOINT = `${SUPABASE_URL}/functions/v1/launcher-sso`;
   const PENDING_KEY = 'dlavie_launcher_sso_request';
   const GOOGLE_VERIFIER = 'dlavie_google_pkce_verifier';
