@@ -102,25 +102,17 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
   box-shadow:0 2px 8px rgba(107,138,255,0.4);
   white-space:nowrap
 }
-/* ═══ v326: Elegant Download Button (solid bg) ═══ */
-.btn-download{position:relative;display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;padding:18px 32px 18px 28px;border-radius:14px;font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;border:none;overflow:hidden;background:linear-gradient(135deg,#ffffff 0%,#e8eaff 50%,#ffffff 100%);color:var(--pure-black);transition:transform 0.3s var(--ease),box-shadow 0.3s var(--ease);min-width:220px;will-change:transform;box-shadow:0 4px 20px rgba(107,138,255,0.25),0 1px 3px rgba(0,0,0,0.1),inset 0 1px 0 rgba(255,255,255,0.9);background-size:200% 200%;background-position:0% 50%}
-.btn-download::before{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,0.6) 50%,transparent 70%);transform:translateX(-120%);transition:transform 0.9s var(--ease);pointer-events:none}
-.btn-download::after{content:'';position:absolute;inset:-1px;border-radius:14px;padding:1px;background:linear-gradient(135deg,rgba(107,138,255,0.6),transparent 40%,transparent 60%,rgba(255,255,255,0.4));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity 0.4s var(--ease);pointer-events:none}
-.btn-download:hover{transform:translateY(-3px) scale(1.02);background-position:100% 50%;box-shadow:0 12px 40px rgba(107,138,255,0.45),0 4px 12px rgba(0,0,0,0.15),inset 0 1px 0 rgba(255,255,255,1)}
-.btn-download:hover::before{transform:translateX(120%)}
-.btn-download:hover::after{opacity:1}
-.btn-download:active{transform:translateY(-1px) scale(0.99)}
-.btn-download-row{display:flex;align-items:center;gap:10px;width:100%}
-.btn-download-icon{width:18px;height:18px;flex-shrink:0;transition:transform 0.4s var(--ease);color:var(--pure-black)}
-.btn-download:hover .btn-download-icon{transform:translateY(2px)}
-.btn-download-label{font-family:var(--font-display);font-size:15px;font-weight:600;letter-spacing:-0.01em;color:var(--pure-black);line-height:1.2}
-.btn-download-meta{display:flex;align-items:center;gap:8px;font-size:10.5px;color:rgba(0,0,0,0.6);font-family:var(--font-mono);letter-spacing:0.04em;text-transform:uppercase;font-weight:600;margin-top:2px;padding-left:28px}
-.btn-download-meta-dot{width:5px;height:5px;border-radius:50%;background:#00B050;box-shadow:0 0 8px rgba(0,176,80,0.7);animation:dlDotPulse 2s ease-in-out infinite}
-@keyframes dlDotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.85)}}
-.btn-download-arrow{margin-left:auto;width:14px;height:14px;color:rgba(0,0,0,0.5);transition:transform 0.4s var(--ease),color 0.3s}
-.btn-download:hover .btn-download-arrow{transform:translateX(3px);color:var(--pure-black)}
-.btn-download-ver-badge{font-size:9px;font-weight:700;letter-spacing:0.5px;padding:2px 7px;border-radius:5px;background:linear-gradient(135deg,#6B8AFF,#8BA3FF);color:#fff;text-transform:uppercase;box-shadow:0 2px 6px rgba(107,138,255,0.4);white-space:nowrap;margin-left:6px}
-@media(max-width:640px){.btn-download{min-width:200px;padding:16px 24px}.btn-download-meta{padding-left:24px;font-size:10px}}
+/* DLAVIE_DOWNLOAD_V2: minimal launcher download CTA */
+.btn-download{display:inline-flex;align-items:center;gap:12px;min-width:230px;padding:13px 15px;border-radius:12px;background:#fff;color:#050505;border:1px solid rgba(255,255,255,.72);text-decoration:none;box-shadow:0 8px 28px rgba(0,0,0,.28);transition:transform .2s var(--ease),box-shadow .2s var(--ease),background .2s ease}
+.btn-download:hover{transform:translateY(-2px);background:#f4f4f4;box-shadow:0 12px 34px rgba(0,0,0,.34)}
+.btn-download:active{transform:translateY(0)}
+.btn-download-icon{width:20px;height:20px;flex:0 0 auto}
+.btn-download-copy{display:flex;flex:1;min-width:0;flex-direction:column;align-items:flex-start;line-height:1.2}
+.btn-download-title{font-family:var(--font-display);font-size:15px;font-weight:600;letter-spacing:-.01em}
+.btn-download-version{margin-top:3px;color:rgba(0,0,0,.55);font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase}
+.btn-download-arrow{width:16px;height:16px;flex:0 0 auto;color:rgba(0,0,0,.48);transition:transform .2s var(--ease)}
+.btn-download:hover .btn-download-arrow{transform:translateX(2px)}
+@media(max-width:640px){.btn-download{width:100%;max-width:290px;min-width:0}}
 /* ═══ v325: Download Popup Modal ═══ */
 .dl-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.3s}
 .dl-modal-overlay.open{opacity:1;pointer-events:auto}
@@ -330,6 +322,9 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 .footer-link{color:var(--sub-text);text-decoration:none;font-size:13px;transition:color 0.3s;cursor:pointer}
 .footer-link:hover{color:var(--text-white)}
 .footer-copy{color:var(--dim-text);font-size:11px;font-family:var(--font-mono);letter-spacing:0.04em}
+.footer-version{display:inline-flex;align-items:center;gap:7px;margin:0 0 18px;padding:7px 10px;border:1px solid var(--hairline);border-radius:999px;color:var(--sub-text);font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase}
+.footer-version strong{color:var(--text-white);font-weight:600}
+.footer-version-code{color:var(--dim-text)}
 
 /* MOBILE */
 .mobile-menu{position:fixed;inset:0;background:var(--pure-black);z-index:99;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:20px;opacity:0;pointer-events:none;transition:opacity 0.4s;padding:80px 24px 40px;overflow-y:auto}
@@ -509,19 +504,14 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <h1 class="home-title" id="typingTarget"></h1><span class="typing-cursor" id="typingCursor">|</span>
 <p class="home-subtitle" data-i18n="hero_sub">Launcher komunitas untuk FIFA 16 Mobile mod. Install, patch, dan kelola game dalam satu aplikasi.</p>
 <div class="home-actions">
-<a href="#" class="btn-download" id="btnDownloadHero" onclick="openDownloadModal(event)">
-<div class="btn-download-row">
+<!-- DLAVIE_DOWNLOAD_V2 -->
+<a href="https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v325.apk" class="btn-download" id="btnDownloadHero" onclick="downloadLauncher(event)" aria-label="Download DLavie Launcher for Android">
 <svg class="btn-download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-<span class="btn-download-label" data-i18n="btn_download">Download Launcher</span>
-<span class="btn-download-ver-badge">LATEST</span>
+<span class="btn-download-copy">
+<span class="btn-download-title" data-i18n="btn_download">Download Launcher</span>
+<span class="btn-download-version">Android · <span data-launcher-version>v8.1.0</span></span>
+</span>
 <svg class="btn-download-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-</div>
-<div class="btn-download-meta">
-<span class="btn-download-meta-dot"></span>
-<span>Latest Version</span>
-<span style="opacity:0.4">·</span>
-<span data-launcher-version>v8.0.26</span>
-</div>
 </a>
 <a href="#/portal" class="btn-secondary" data-link><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg><span data-i18n="btn_connect">Connect Portal</span></a>
 </div>
@@ -799,14 +789,15 @@ Daftar dengan Google
 
 <!-- FOOTER -->
 <footer class="footer">
-<div class="footer-logo">DLAVIE · FIFA MOODING LAUNCHER</div>
+<div class="footer-logo">DLAVIE · FIFA MODDING LAUNCHER</div>
+<div class="footer-version">Latest version <strong data-launcher-version>v8.1.0</strong><span class="footer-version-code">build <span data-launcher-code>325</span></span></div>
 <div class="footer-links">
 <a href="#/terms" class="footer-link" data-link>Terms</a>
 <a href="#/privacy" class="footer-link" data-link>Privacy</a>
 <a href="#/faq" class="footer-link" data-link>FAQ</a>
 <a href="#/issues" class="footer-link" data-link>Issues</a>
 </div>
-<div class="footer-copy" data-i18n="footer_copy">© 2026 DLavie Company · FIFA Mooding Launcher</div>
+<div class="footer-copy" data-i18n="footer_copy">© 2026 DLavie Company · FIFA Modding Launcher</div>
 </footer>
 
 
@@ -825,67 +816,54 @@ const SUPABASE_URL = 'https://lvmucsxbmadtsgrxuwmo.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs';
 // v7.9.80: Dynamic URL — fetched from Supabase app_releases on page load + click.
 // Fallback to manifest.json, then hardcoded URL only if both fail.
-let LAUNCHER_APK_URL = 'https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v278.apk';
-let LAUNCHER_VERSION = 'v7.9.80';
-let LAUNCHER_VERSION_CODE = 278;
+let LAUNCHER_APK_URL = 'https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v325.apk';
+let LAUNCHER_VERSION = 'v8.1.0';
+let LAUNCHER_VERSION_CODE = 325;
 const PORTAL_URL = 'https://drmacze.github.io/dlavie-web/';
 
 // ═══════════════════════════════════════════════════════════════
-// AUTO-FETCH LATEST VERSION — runs immediately on page load
-// Priority: Supabase app_releases → manifest.json → hardcoded fallback
+// AUTO-FETCH LATEST VERSION — GitHub manifest is the source of truth
 // ═══════════════════════════════════════════════════════════════
-(async function fetchLatestRelease(){
-  // Strategy 1: Supabase (primary)
-  try {
-    const r = await fetch(`${SUPABASE_URL}/rest/v1/app_releases?is_published=eq.true&order=version_code.desc&limit=1&select=version_code,version_name,apk_download_url,changelog`, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-      },
-      cache: 'no-store'
-    });
-    if (r.ok) {
-      const data = await r.json();
-      if (Array.isArray(data) && data.length > 0) {
-        const rel = data[0];
-        LAUNCHER_VERSION_CODE = rel.version_code;
-        LAUNCHER_VERSION = 'v' + (rel.version_name || 'unknown');
-        LAUNCHER_APK_URL = rel.apk_download_url || LAUNCHER_APK_URL;
-        console.log('[DLavie] Latest from Supabase:', LAUNCHER_VERSION, '(code ' + LAUNCHER_VERSION_CODE + ')');
-        updateVersionBadges();
-        return;
-      }
-    }
-  } catch (e) { console.warn('[DLavie] Supabase fetch failed:', e.message); }
+const LAUNCHER_MANIFEST_SOURCES = [
+  'https://cdn.jsdelivr.net/gh/drmacze/DLavie-Launcher-Data@main/manifest.json',
+  'https://raw.githubusercontent.com/drmacze/DLavie-Launcher-Data/main/manifest.json'
+];
 
-  // Strategy 2: manifest.json (fallback)
-  try {
-    const r = await fetch('https://raw.githubusercontent.com/drmacze/DLavie-Launcher-Data/main/manifest.json?_t=' + Date.now(), {cache:'no-store'});
-    if (r.ok) {
-      const m = await r.json();
-      if (m && m.launcher) {
-        LAUNCHER_VERSION_CODE = m.launcher.latest_version_code || LAUNCHER_VERSION_CODE;
-        LAUNCHER_VERSION = 'v' + (m.launcher.latest_version_name || 'unknown');
-        LAUNCHER_APK_URL = m.launcher.apk_url || LAUNCHER_APK_URL;
-        console.log('[DLavie] Latest from manifest:', LAUNCHER_VERSION);
-        updateVersionBadges();
-        return;
-      }
+async function refreshLauncherRelease(cacheBust=false){
+  for(const source of LAUNCHER_MANIFEST_SOURCES){
+    try{
+      const separator=source.includes('?')?'&':'?';
+      const url=cacheBust?`${source}${separator}_t=${Date.now()}`:source;
+      const response=await fetch(url,{cache:'no-store'});
+      if(!response.ok)continue;
+      const manifest=await response.json();
+      const launcher=manifest&&manifest.launcher;
+      if(!launcher||!launcher.latest_version_code||!launcher.apk_url)continue;
+      LAUNCHER_VERSION_CODE=Number(launcher.latest_version_code);
+      LAUNCHER_VERSION='v'+String(launcher.latest_version_name||LAUNCHER_VERSION_CODE);
+      LAUNCHER_APK_URL=launcher.apk_url;
+      updateVersionBadges();
+      console.log('[DLavie] Launcher release from GitHub manifest:',LAUNCHER_VERSION,LAUNCHER_APK_URL);
+      return true;
+    }catch(error){
+      console.warn('[DLavie] Manifest source failed:',source,error.message);
     }
-  } catch (e) { console.warn('[DLavie] manifest fetch failed:', e.message); }
-
-  console.log('[DLavie] Using fallback:', LAUNCHER_VERSION);
+  }
   updateVersionBadges();
-})();
+  return false;
+}
+
+refreshLauncherRelease(true);
 
 // Update all version badges in DOM
 function updateVersionBadges(){
-  document.querySelectorAll('[data-launcher-version]').forEach(el => {
-    el.textContent = LAUNCHER_VERSION;
-  });
-  document.querySelectorAll('[data-launcher-code]').forEach(el => {
-    el.textContent = LAUNCHER_VERSION_CODE;
-  });
+  document.querySelectorAll('[data-launcher-version]').forEach(el=>{el.textContent=LAUNCHER_VERSION;});
+  document.querySelectorAll('[data-launcher-code]').forEach(el=>{el.textContent=LAUNCHER_VERSION_CODE;});
+  const heroButton=document.getElementById('btnDownloadHero');
+  if(heroButton)heroButton.href=LAUNCHER_APK_URL;
+  window.LAUNCHER_VERSION=LAUNCHER_VERSION;
+  window.LAUNCHER_VERSION_CODE=LAUNCHER_VERSION_CODE;
+  window.LAUNCHER_APK_URL=LAUNCHER_APK_URL;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -942,7 +920,7 @@ feat_li_portal:'DLavie Portal — Connect akun launcher ke web DLavie',
 feat_li_security:'Security & Privacy — End-to-end encryption, RLS, JWT auth, bcrypt hashing',
 feat_li_sync:'Cross-Platform Sync — Connect launcher ke web, login sekali untuk semua',
 // Footer
-footer_copy:'© 2026 DLavie Company · FIFA Mooding Launcher',
+footer_copy:'© 2026 DLavie Company · FIFA Modding Launcher',
 // Legal
 terms_h1:'Terms & Conditions',privacy_h1:'Privacy Policy',legal_updated:'Last updated: July 7, 2026',
 // Errors
@@ -1010,7 +988,7 @@ feat_li_portal:'DLavie Portal — Connect launcher account to DLavie web',
 feat_li_security:'Security & Privacy — End-to-end encryption, RLS, JWT auth, bcrypt hashing',
 feat_li_sync:'Cross-Platform Sync — Connect launcher to web, login once for everything',
 // Footer
-footer_copy:'© 2026 DLavie Company · FIFA Mooding Launcher',
+footer_copy:'© 2026 DLavie Company · FIFA Modding Launcher',
 // Legal
 terms_h1:'Terms & Conditions',privacy_h1:'Privacy Policy',legal_updated:'Last updated: July 7, 2026',
 // Errors
@@ -1573,31 +1551,23 @@ return '<div class="news-card" style="animation:stagger-up 0.5s var(--ease) '+id
 
 
 // ═══════════════════════════════════════════════════════════════
-// DOWNLOAD
+// DOWNLOAD — direct, manifest-backed, no Supabase release lookup
 // ═══════════════════════════════════════════════════════════════
-// v7.9.80: Dynamic URL — uses LAUNCHER_APK_URL yang sudah di-fetch on page load.
-// Re-fetch dari Supabase tiap klik untuk pastikan URL terbaru (hindari cache).
-function downloadLauncher(e){
-if(e)e.preventDefault();
-// Pakai URL yang sudah di-fetch on page load (paling cepat)
-if(LAUNCHER_APK_URL && LAUNCHER_APK_URL.startsWith('http')){
-  const fileName=LAUNCHER_APK_URL.split('/').pop();
-  try{const a=document.createElement('a');a.href=LAUNCHER_APK_URL;a.download=fileName;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(LAUNCHER_APK_URL,'_blank','noopener');}
-  return;
-}
-// Fallback: fetch dari Supabase real-time
-const supabaseUrl=`${SUPABASE_URL}/rest/v1/app_releases?is_published=eq.true&order=version_code.desc&limit=1&select=apk_download_url`;
-const fallbackUrl='https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v278.apk';
-fetch(supabaseUrl,{headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':`Bearer ${SUPABASE_ANON_KEY}`},cache:'no-store'})
-.then(r=>r.json())
-.then(data=>{
-  const apkUrl=Array.isArray(data)&&data.length>0?data[0].apk_download_url:fallbackUrl;
-  const fileName=apkUrl.split('/').pop();
-  try{const a=document.createElement('a');a.href=apkUrl;a.download=fileName;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(apkUrl,'_blank','noopener');}
-})
-.catch(_=>{
-  try{const a=document.createElement('a');a.href=fallbackUrl;a.download='DLavie26-Launcher-v278.apk';a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),1500);}catch(_){window.open(fallbackUrl,'_blank','noopener');}
-});
+async function downloadLauncher(e){
+  if(e)e.preventDefault();
+  await refreshLauncherRelease(true);
+  if(!LAUNCHER_APK_URL||!LAUNCHER_APK_URL.startsWith('https://')){
+    window.alert('Link download launcher belum tersedia. Silakan coba lagi beberapa saat.');
+    return;
+  }
+  const anchor=document.createElement('a');
+  anchor.href=LAUNCHER_APK_URL;
+  anchor.download=LAUNCHER_APK_URL.split('/').pop()||'DLavie-Launcher.apk';
+  anchor.rel='noopener';
+  anchor.style.display='none';
+  document.body.appendChild(anchor);
+  anchor.click();
+  setTimeout(()=>anchor.remove(),1500);
 }
 
 // ═══════════════════════════════════════════════════════════════
