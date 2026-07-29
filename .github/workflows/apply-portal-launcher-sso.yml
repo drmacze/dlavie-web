@@ -35,15 +35,17 @@ jobs:
           grep -F '<script src="portal-sso.js"></script>' index.html
           grep -F 'window.DLaviePortalSso.connect()' index.html
           grep -F "code_challenge_method', 'S256'" portal-sso.js
+          grep -F 'sb_publishable_' index.html portal-sso.js
           ! grep -F 'intent://connect?token=' index.html portal-sso.js
           ! grep -F 'dlavie://connect?token=' index.html portal-sso.js
+          ! grep -F 'eyJpc3MiOiJIUzI1NiI' index.html portal-sso.js
 
-      - name: Commit materialized page
+      - name: Commit materialized Auth source
         shell: bash
         run: |
-          if git diff --quiet -- index.html; then exit 0; fi
+          if git diff --quiet -- index.html portal-sso.js; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html
-          git commit -m 'feat: materialize Portal launcher SSO flow'
+          git add index.html portal-sso.js
+          git commit -m 'fix: use active publishable key for Portal Auth'
           git push
