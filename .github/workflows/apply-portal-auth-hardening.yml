@@ -1,0 +1,55 @@
+name: Apply Portal Auth Hardening
+
+on:
+  push:
+    branches:
+      - fix/portal-auth-hardening
+    paths:
+      - '.github/scripts/harden_portal_auth.py'
+      - '.github/workflows/apply-portal-auth-hardening.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: portal-auth-hardening-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply website security patch
+        run: python3 .github/scripts/harden_portal_auth.py
+
+      - name: Validate generated portal
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -F 'intent://connect?token=' index.html
+          ! grep -F 'dlavie://connect?token=' index.html
+          ! grep -F "localStorage.setItem('dlavie_access'" index.html
+          ! grep -F "hash.includes('access_token')" index.html
+          grep -F 'grant_type=pkce' index.html
+          grep -F 'code_verifier:verifier' index.html
+          grep -F "sessionStorage.setItem('dlavie_access'" index.html
+          grep -F "window.location.href='dlavie://connect'" index.html
+          grep -F 'Content-Security-Policy' index.html
+
+      - name: Commit generated website hardening
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'Website already hardened.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189822+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'fix: materialize PKCE portal login flow'
+          git push
