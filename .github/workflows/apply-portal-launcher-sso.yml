@@ -1,0 +1,49 @@
+name: Apply Portal Launcher SSO
+
+on:
+  push:
+    branches:
+      - feat/portal-launcher-sso
+      - main
+    paths:
+      - 'portal-sso.js'
+      - '.github/scripts/apply_portal_launcher_sso.py'
+      - '.github/workflows/apply-portal-launcher-sso.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: portal-launcher-sso-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply deterministic Portal SSO patch
+        run: python3 .github/scripts/apply_portal_launcher_sso.py
+
+      - name: Validate security invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F '<script src="portal-sso.js"></script>' index.html
+          grep -F 'window.DLaviePortalSso.connect()' index.html
+          grep -F "code_challenge_method', 'S256'" portal-sso.js
+          ! grep -F 'intent://connect?token=' index.html portal-sso.js
+          ! grep -F 'dlavie://connect?token=' index.html portal-sso.js
+
+      - name: Commit materialized page
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'feat: materialize Portal launcher SSO flow'
+          git push
