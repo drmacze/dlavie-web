@@ -792,7 +792,7 @@ Daftar dengan Google
 <!-- FOOTER -->
 <footer class="footer">
 <div class="footer-logo">DLAVIE · FIFA MODDING LAUNCHER</div>
-<div class="footer-version">Latest version <strong data-launcher-version>v8.1.0</strong><span class="footer-version-code">build <span data-launcher-code>325</span></span></div>
+<div class="footer-version">Latest version <strong data-launcher-version>v8.2.0</strong><span class="footer-version-code">build <span data-launcher-code>326</span></span></div>
 <div class="footer-links">
 <a href="#/terms" class="footer-link" data-link>Terms</a>
 <a href="#/privacy" class="footer-link" data-link>Privacy</a>
@@ -809,6 +809,7 @@ Daftar dengan Google
 <button class="lang-btn" onclick="setLang('en')">EN</button>
 </div>
 
+<script src="portal-sso.js"></script>
 <script>
 
 // ═══════════════════════════════════════════════════════════════
@@ -819,8 +820,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // v7.9.80: Dynamic URL — fetched from Supabase app_releases on page load + click.
 // Fallback to manifest.json, then hardcoded URL only if both fail.
 let LAUNCHER_APK_URL = 'https://github.com/drmacze/DLavie-Launcher-Data/releases/download/v26/DLavie26-Launcher-v325.apk';
-let LAUNCHER_VERSION = 'v8.1.0';
-let LAUNCHER_VERSION_CODE = 325;
+let LAUNCHER_VERSION = 'v8.2.0';
+let LAUNCHER_VERSION_CODE = 326;
 const PORTAL_URL = 'https://drmacze.github.io/dlavie-web/';
 
 // ═══════════════════════════════════════════════════════════════
@@ -1204,34 +1205,10 @@ function esc(s){const d=document.createElement('div');d.textContent=s||'';return
 // ═══════════════════════════════════════════════════════════════
 // PORTAL — Connect to DLavie + Login/Register
 // ═══════════════════════════════════════════════════════════════
-// v7.9.62 FIX: connectToDLavie() sekarang mengirim token+uid+refresh
-// langsung ke launcher (NEW flow). Sebelumnya pakai OLD flow (?callback=URL)
-// yang menyebabkan:
-//   1. Launcher tidak terima token → pakai token lama/akun berbeda
-//   2. Atau launcher kirim token lamanya balik ke web → overwrite session web!
-//   3. User bingung: "saya login dev di portal, tapi launcher profile beda"
-//
-// Sekarang: web kirim CURRENT session (token+uid+refresh) ke launcher.
-// Launcher save token tersebut → loadMyProfile() → dapat profile yang sama.
-function connectToDLavie(){
-const ua=navigator.userAgent||'';
-const isAndroid=/android/i.test(ua);
-const isIOS=/iphone|ipad|ipod/i.test(ua);
-if(!isAndroid&&!isIOS){showPortalInfo();return;}
-
-let opened=false;
-const visibilityHandler=()=>{if(document.hidden)opened=true;};
-document.addEventListener('visibilitychange',visibilityHandler,{once:true});
-
-if(isAndroid){
-window.location.href=`intent://connect#Intent;scheme=dlavie;package=com.drmacze.f16launcher;S.browser_fallback_url=${encodeURIComponent(PORTAL_URL+'?connect=fail')};end`;
-}else{
-window.location.href='dlavie://connect';
-}
-setTimeout(()=>{
-document.removeEventListener('visibilitychange',visibilityHandler);
-if(!opened&&!document.hidden)showPortalInfo();
-},1500);
+// v326: Portal-to-launcher SSO is implemented by portal-sso.js.
+// No access token or refresh token is ever placed in a URI.
+async function connectToDLavie(){
+return window.DLaviePortalSso.connect();
 }
 
 function showPortalInfo(){
@@ -1239,11 +1216,11 @@ const c=document.getElementById('portalContent');
 c.innerHTML=`
 <div class="portal-logo">D</div>
 <h1 class="portal-title">Connect to DLavie</h1>
-<p class="portal-sub">Login dilakukan langsung di launcher. Website tidak pernah mengirim token akun ke aplikasi.</p>
+<p class="portal-sub">Akun Portal aktif diotorisasi satu kali lalu digunakan otomatis oleh launcher. Token tidak pernah dikirim lewat URL.</p>
 <div style="margin:20px 0;padding:16px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-stroke);border-radius:12px;text-align:left;">
 <div style="display:flex;gap:12px;margin-bottom:12px;"><div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--text-white);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">1</div><div style="font-size:14px;color:var(--soft-text);"><strong style="color:var(--text-white);">Install DLavie Launcher</strong><br>Download dari tombol di bawah.</div></div>
-<div style="display:flex;gap:12px;margin-bottom:12px;"><div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--text-white);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">2</div><div style="font-size:14px;color:var(--soft-text);"><strong style="color:var(--text-white);">Login di Launcher</strong><br>Buka launcher, login dengan akun DLavie.</div></div>
-<div style="display:flex;gap:12px;"><div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--text-white);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">3</div><div style="font-size:14px;color:var(--soft-text);"><strong style="color:var(--text-white);">Login dengan aman</strong><br>Gunakan email/password atau Google langsung di launcher.</div></div>
+<div style="display:flex;gap:12px;margin-bottom:12px;"><div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--text-white);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">2</div><div style="font-size:14px;color:var(--soft-text);"><strong style="color:var(--text-white);">Secure Connect</strong><br>Launcher memverifikasi akun Portal aktif melalui kode sekali pakai.</div></div>
+<div style="display:flex;gap:12px;"><div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--text-white);color:var(--pure-black);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">3</div><div style="font-size:14px;color:var(--soft-text);"><strong style="color:var(--text-white);">Auto-connect</strong><br>Launcher membuka akun Portal yang sama setelah verifikasi selesai.</div></div>
 </div>
 <button class="btn-connect" onclick="downloadLauncher();location.reload();" style="margin-bottom:12px;">Download Launcher</button>
 <div class="auth-divider" data-i18n="divider_or">atau</div>
@@ -1334,107 +1311,14 @@ console.error('Register error:',e);
 }
 
 // ═══════════════════════════════════════════════════════════════
-// GOOGLE OAUTH LOGIN
+// GOOGLE OAUTH LOGIN — v326 Authorization Code + PKCE
 // ═══════════════════════════════════════════════════════════════
-function base64Url(bytes){
-return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-}
-function createCodeVerifier(){
-const bytes=new Uint8Array(64);
-crypto.getRandomValues(bytes);
-return base64Url(bytes);
-}
-async function createCodeChallenge(verifier){
-const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(verifier));
-return base64Url(new Uint8Array(digest));
-}
-async function loginWithGoogle(){
-try{
-const verifier=createCodeVerifier();
-const challenge=await createCodeChallenge(verifier);
-sessionStorage.setItem('dlavie_pkce_verifier',verifier);
-sessionStorage.setItem('dlavie_pkce_started',String(Date.now()));
-const redirectTo=window.location.origin+window.location.pathname;
-const authUrl=SUPABASE_URL+'/auth/v1/authorize?provider=google'+
-'&redirect_to='+encodeURIComponent(redirectTo)+
-'&code_challenge='+encodeURIComponent(challenge)+
-'&code_challenge_method=s256';
-window.location.assign(authUrl);
-}catch(error){
-console.error('PKCE initialization failed',error);
-showToast('Login Google tidak dapat dimulai. Coba lagi.');
-}
+function loginWithGoogle(){
+return window.DLaviePortalSso.loginWithGoogle();
 }
 
 async function handleOAuthCallback(){
-const url=new URL(window.location.href);
-const code=url.searchParams.get('code');
-const oauthError=url.searchParams.get('error');
-if(!code&&!oauthError)return false;
-
-const verifier=sessionStorage.getItem('dlavie_pkce_verifier')||'';
-const startedAt=Number(sessionStorage.getItem('dlavie_pkce_started')||'0');
-sessionStorage.removeItem('dlavie_pkce_verifier');
-sessionStorage.removeItem('dlavie_pkce_started');
-url.searchParams.delete('code');
-url.searchParams.delete('error');
-url.searchParams.delete('error_description');
-history.replaceState({},document.title,url.pathname+url.search+(url.hash||''));
-
-if(oauthError){
-showToast('Login Google dibatalkan atau gagal.');
-return true;
-}
-if(!verifier||!startedAt||Date.now()-startedAt>10*60*1000){
-clearSession();
-showToast('Sesi login sudah kedaluwarsa. Mulai login Google kembali.');
-return true;
-}
-
-try{
-const tokenResponse=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=pkce',{
-method:'POST',
-headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json','Accept':'application/json'},
-body:JSON.stringify({auth_code:code,code_verifier:verifier}),
-cache:'no-store'
-});
-const session=await tokenResponse.json();
-if(!tokenResponse.ok||!session.access_token||!session.refresh_token)throw new Error('PKCE exchange failed');
-
-const userResponse=await fetch(SUPABASE_URL+'/auth/v1/user',{
-headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+session.access_token,'Accept':'application/json'},
-cache:'no-store'
-});
-const user=await userResponse.json();
-if(!userResponse.ok||!user.id)throw new Error('Session verification failed');
-if(session.user&&session.user.id&&session.user.id!==user.id)throw new Error('User mismatch');
-
-saveSession(session.access_token,session.refresh_token,user.id,user.email||'');
-let profile=await fetchUserProfile(user.id,session.access_token);
-if(!profile){
-const meta=user.user_metadata||{};
-profile=await ensureProfileFromOAuth(
-user.id,
-session.access_token,
-user.email||'',
-meta.full_name||meta.name||meta.display_name||'',
-meta.avatar_url||meta.picture||''
-);
-}
-if(profile){
-currentUser={id:profile.id,email:user.email||'',username:profile.username,display_name:profile.display_name,avatar_url:profile.avatar_url,role:profile.role};
-updateNavUser();
-showToast('Login Google berhasil! Selamat datang, '+(currentUser.display_name||currentUser.username));
-setTimeout(()=>{location.hash='#/portal';},300);
-}else{
-showToast('Login berhasil, tetapi profil belum siap. Coba refresh halaman.');
-}
-}catch(error){
-console.error('OAuth PKCE callback failed',error);
-clearSession();
-showToast('Sesi Google tidak dapat diverifikasi. Silakan login kembali.');
-}
-return true;
+return window.DLaviePortalSso.handleOAuthCallback();
 }
 
 // v7.9.77: Auto-create profile untuk OAuth user yang profile-nya belum ada.

@@ -1,0 +1,102 @@
+name: Apply Portal Launcher SSO
+
+on:
+  push:
+    branches:
+      - feat/portal-launcher-sso
+      - main
+    paths:
+      - 'portal-sso.js'
+      - '.github/scripts/apply_portal_launcher_sso.py'
+      - '.github/workflows/apply-portal-launcher-sso.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'portal-sso.js'
+      - '.github/scripts/apply_portal_launcher_sso.py'
+      - '.github/workflows/apply-portal-launcher-sso.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: portal-launcher-sso-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply deterministic Portal SSO patch
+        run: python3 .github/scripts/apply_portal_launcher_sso.py
+
+      - name: Validate security invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F '<script src="portal-sso.js"></script>' index.html
+          grep -F 'window.DLaviePortalSso.connect()' index.html
+          grep -F "code_challenge_method', 'S256'" portal-sso.js
+          grep -F 'sb_publishable_' index.html portal-sso.js
+          ! grep -F 'intent://connect?token=' index.html portal-sso.js
+          ! grep -F 'dlavie://connect?token=' index.html portal-sso.js
+          ! grep -F 'eyJpc3MiOiJIUzI1NiI' index.html portal-sso.js
+          node --check portal-sso.js
+
+      - name: Verify Portal Google PKCE contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          SUPABASE_URL='https://lvmucsxbmadtsgrxuwmo.supabase.co'
+          API_KEY=$(grep -o "sb_publishable_[A-Za-z0-9_-]*" portal-sso.js | head -1)
+          curl --fail --silent --show-error \
+            -H "apikey: ${API_KEY}" \
+            "${SUPABASE_URL}/auth/v1/settings" > /tmp/settings.json
+          python3 - <<'PY'
+          import json
+          with open('/tmp/settings.json', encoding='utf-8') as handle:
+              settings = json.load(handle)
+          if (settings.get('external') or {}).get('google') is not True:
+              raise SystemExit('Google provider is disabled')
+          PY
+          CHALLENGE='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+          REDIRECT=$(python3 -c "import urllib.parse; print(urllib.parse.quote('https://drmacze.github.io/dlavie-web/', safe=''))")
+          STATUS=$(curl --silent --show-error --max-redirs 0 \
+            -D /tmp/oauth-headers.txt -o /tmp/oauth-body.txt \
+            -H "apikey: ${API_KEY}" \
+            -w '%{http_code}' \
+            "${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${REDIRECT}&code_challenge=${CHALLENGE}&code_challenge_method=S256&prompt=select_account" || true)
+          test "$STATUS" = '302' -o "$STATUS" = '303'
+          LOCATION=$(awk 'BEGIN{IGNORECASE=1}/^location:/{sub(/^[^:]+:[[:space:]]*/,"");gsub(/\r/,"");print;exit}' /tmp/oauth-headers.txt)
+          echo "$LOCATION" | grep -Ei 'google\.com|accounts\.google'
+
+      - name: Verify SSO rejects forged exchange
+        shell: bash
+        run: |
+          set -euo pipefail
+          API_KEY=$(grep -o "sb_publishable_[A-Za-z0-9_-]*" portal-sso.js | head -1)
+          STATUS=$(curl --silent --show-error \
+            -o /tmp/sso.json -w '%{http_code}' \
+            -X POST 'https://lvmucsxbmadtsgrxuwmo.supabase.co/functions/v1/launcher-sso' \
+            -H "apikey: ${API_KEY}" \
+            -H "Authorization: Bearer ${API_KEY}" \
+            -H 'Content-Type: application/json' \
+            -d '{"action":"exchange","auth_code":"invalid","code_verifier":"invalid","state":"invalid"}')
+          test "$STATUS" = '400'
+          grep -F 'invalid_request' /tmp/sso.json
+
+      - name: Commit materialized Auth source
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html portal-sso.js; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html portal-sso.js
+          git commit -m 'fix: use active publishable key for Portal Auth'
+          git push
