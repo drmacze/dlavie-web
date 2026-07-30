@@ -1127,6 +1127,7 @@ sessionStorage.setItem('dlavie_email',email||'');
 function clearSession(){
 ['dlavie_access','dlavie_refresh','dlavie_uid','dlavie_email'].forEach(k=>sessionStorage.removeItem(k));
 currentUser=null;
+window.currentUser=null;
 updateNavUser();
 }
 function logout(){
@@ -1625,6 +1626,7 @@ function initPortal(){
 const c=document.getElementById('portalContent');
 if(!c)return;
 if(currentUser){
+window.currentUser=currentUser;
 // ── LOGGED IN: Compact profile card (Photo 1 style) ──
 const initial=(currentUser.display_name||currentUser.username||'?')[0].toUpperCase();
 const isDev=['owner','developer','admin'].includes(String(currentUser.role||'').toLowerCase());
