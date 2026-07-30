@@ -27,6 +27,21 @@ if old_role in html:
 elif new_role not in html:
     raise SystemExit('developer role marker not found')
 
+# Expose the already verified Portal profile to the isolated strict-mode Dev Hub module.
+profile_marker = "if(currentUser){\n// ── LOGGED IN: Compact profile card (Photo 1 style) ──"
+profile_replacement = "if(currentUser){\nwindow.currentUser=currentUser;\n// ── LOGGED IN: Compact profile card (Photo 1 style) ──"
+if 'window.currentUser=currentUser;' not in html:
+    if profile_marker not in html:
+        raise SystemExit('active profile marker not found')
+    html = html.replace(profile_marker, profile_replacement, 1)
+
+clear_marker = "currentUser=null;\nupdateNavUser();"
+clear_replacement = "currentUser=null;\nwindow.currentUser=null;\nupdateNavUser();"
+if 'window.currentUser=null;' not in html:
+    if clear_marker not in html:
+        raise SystemExit('session clear marker not found')
+    html = html.replace(clear_marker, clear_replacement, 1)
+
 button_marker = '''<button class="compact-logout-btn" onclick="logout()">'''
 dev_button = '''${isDev?'<button class="compact-devhub-btn" onclick="window.DLavieMaintenanceHub.open()" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 3.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H2v-4h.1A1.7 1.7 0 0 0 3.6 8a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 8 3.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V2h4v.1A1.7 1.7 0 0 0 15 3.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 8a1.7 1.7 0 0 0 .6 1 1.7 1.7 0 0 0 1.1.4h.1v4h-.1a1.7 1.7 0 0 0-1.7 1.6z"/></svg><span>Dev Hub</span></button>':''}
 '''
@@ -39,6 +54,8 @@ required = [
     style_tag,
     script_tag,
     new_role,
+    'window.currentUser=currentUser;',
+    'window.currentUser=null;',
     'window.DLavieMaintenanceHub.open()',
 ]
 missing = [item for item in required if item not in html]
