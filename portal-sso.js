@@ -4,6 +4,7 @@
   const SUPABASE_URL = 'https://lvmucsxbmadtsgrxuwmo.supabase.co';
   const ANON_KEY = 'sb_publishable_aYFlbWVJMErOHwPsli33QQ_INJD9mhx';
   const ENDPOINT = `${SUPABASE_URL}/functions/v1/launcher-sso`;
+  const VERIFIED_CALLBACK = 'https://drmacze.github.io/launcher/auth/callback/';
   const PENDING_KEY = 'dlavie_launcher_sso_request';
   const GOOGLE_VERIFIER = 'dlavie_google_pkce_verifier';
   const GOOGLE_STATE = 'dlavie_google_pkce_state';
@@ -29,6 +30,42 @@
   async function codeChallenge(verifier) {
     const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
     return base64Url(new Uint8Array(digest));
+  }
+
+  function normalizeRequestedCallback(value) {
+    if (!value) return '';
+    return value === VERIFIED_CALLBACK ? VERIFIED_CALLBACK : null;
+  }
+
+  function isTrustedCallbackResult(value, request) {
+    if (typeof value !== 'string') return false;
+    try {
+      const callback = new URL(value);
+      const verifiedRequested = request.callback_uri === VERIFIED_CALLBACK;
+      if (verifiedRequested) {
+        const expected = new URL(VERIFIED_CALLBACK);
+        if (callback.protocol !== expected.protocol ||
+            callback.hostname !== expected.hostname ||
+            callback.port !== expected.port ||
+            callback.pathname !== expected.pathname ||
+            callback.username || callback.password || callback.hash) {
+          return false;
+        }
+      } else if (callback.protocol !== 'dlavie:' ||
+                 callback.hostname !== 'portal-complete' ||
+                 (callback.pathname && callback.pathname !== '/') ||
+                 callback.username || callback.password || callback.port || callback.hash) {
+        return false;
+      }
+
+      const names = [...callback.searchParams.keys()].sort();
+      if (names.length !== 2 || names[0] !== 'code' || names[1] !== 'state') return false;
+      const code = callback.searchParams.get('code') || '';
+      const state = callback.searchParams.get('state') || '';
+      return validBase64Url(code) && validBase64Url(state) && state === request.state;
+    } catch {
+      return false;
+    }
   }
 
   function toast(message) {
@@ -94,18 +131,21 @@
   function captureLauncherRequest() {
     const url = new URL(location.href);
     if (url.searchParams.get('launcher_sso') !== '1') return;
+    const callbackUri = normalizeRequestedCallback(url.searchParams.get('callback_uri') || '');
     const request = {
       capability: url.searchParams.get('cap') || '',
       code_challenge: url.searchParams.get('challenge') || '',
       state: url.searchParams.get('state') || '',
+      callback_uri: callbackUri,
       received_at: Date.now(),
     };
-    ['launcher_sso', 'cap', 'challenge', 'state'].forEach(key => url.searchParams.delete(key));
+    ['launcher_sso', 'cap', 'challenge', 'state', 'callback_uri'].forEach(key => url.searchParams.delete(key));
     history.replaceState({}, document.title, url.pathname + url.search + (url.hash || '#/portal'));
 
     if (!validBase64Url(request.capability) ||
         !validBase64Url(request.code_challenge, 43) ||
-        !validBase64Url(request.state)) {
+        !validBase64Url(request.state) ||
+        request.callback_uri === null) {
       sessionStorage.removeItem(PENDING_KEY);
       toast('Permintaan launcher tidak valid. Mulai Connect kembali dari Portal.');
       return;
@@ -117,6 +157,10 @@
     try {
       const request = JSON.parse(sessionStorage.getItem(PENDING_KEY) || 'null');
       if (!request || Date.now() - Number(request.received_at || 0) > REQUEST_TTL_MS) {
+        sessionStorage.removeItem(PENDING_KEY);
+        return null;
+      }
+      if (normalizeRequestedCallback(request.callback_uri || '') === null) {
         sessionStorage.removeItem(PENDING_KEY);
         return null;
       }
@@ -140,12 +184,14 @@
     showConnecting('Mengotorisasi akun Portal yang aktif untuk launcher resmi…');
     try {
       const result = await callBackend('authorize', request, current.access);
-      if (!result.callback_uri || !result.callback_uri.startsWith('dlavie://portal-complete?')) {
+      if (!isTrustedCallbackResult(result.callback_uri, request)) {
         throw new Error('invalid_callback');
       }
       sessionStorage.removeItem(PENDING_KEY);
-      showConnecting('Otorisasi berhasil. Kembali ke launcher…');
-      location.href = result.callback_uri;
+      showConnecting(request.callback_uri === VERIFIED_CALLBACK
+        ? 'Otorisasi berhasil. Membuka launcher melalui tautan terverifikasi…'
+        : 'Otorisasi berhasil. Kembali ke launcher…');
+      location.assign(result.callback_uri);
       return true;
     } catch (error) {
       console.error('Portal launcher authorization failed', error);

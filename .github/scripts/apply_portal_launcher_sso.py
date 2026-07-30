@@ -8,6 +8,7 @@ for source in (INDEX, MODULE):
 
 wrong_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6Imx2bXVjc3hibWFkdHNncnh1d21vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI5ODUyODksImV4cCI6MjA5ODU2MTI4OX0.y-1sE6uYTn4Wbter6g6NozY6uojzD5x9YVeYif-5nJs"
 publishable_key = "sb_publishable_aYFlbWVJMErOHwPsli33QQ_INJD9mhx"
+verified_callback = "https://drmacze.github.io/launcher/auth/callback/"
 
 text = INDEX.read_text(encoding="utf-8")
 module = MODULE.read_text(encoding="utf-8")
@@ -24,7 +25,8 @@ if '<script src="portal-sso.js"></script>' not in text:
         1,
     )
 
-secure_connect = '''// v326: Portal-to-launcher SSO is implemented by portal-sso.js.
+secure_connect = '''// v327: Portal-to-launcher SSO is implemented by portal-sso.js.
+// New launchers return through a verified HTTPS App Link; v326 remains compatible.
 // No access token or refresh token is ever placed in a URI.
 async function connectToDLavie(){
 return window.DLaviePortalSso.connect();
@@ -40,7 +42,7 @@ if "return window.DLaviePortalSso.connect();" not in text:
     text = text[:start] + secure_connect + text[end:]
 
 secure_oauth = '''// ═══════════════════════════════════════════════════════════════
-// GOOGLE OAUTH LOGIN — v326 Authorization Code + PKCE
+// GOOGLE OAUTH LOGIN — v327 Authorization Code + PKCE
 // ═══════════════════════════════════════════════════════════════
 function loginWithGoogle(){
 return window.DLaviePortalSso.loginWithGoogle();
@@ -72,10 +74,12 @@ text = text.replace(
     "Login dengan aman</strong><br>Gunakan email/password atau Google langsung di launcher.",
     "Auto-connect</strong><br>Launcher membuka akun Portal yang sama setelah verifikasi selesai.",
 )
-text = text.replace("Latest version <strong data-launcher-version>v8.1.0</strong>", "Latest version <strong data-launcher-version>v8.2.0</strong>")
-text = text.replace("build <span data-launcher-code>325</span>", "build <span data-launcher-code>326</span>")
-text = text.replace("let LAUNCHER_VERSION = 'v8.1.0';", "let LAUNCHER_VERSION = 'v8.2.0';")
-text = text.replace("let LAUNCHER_VERSION_CODE = 325;", "let LAUNCHER_VERSION_CODE = 326;")
+for old in ("v8.1.0", "v8.2.0"):
+    text = text.replace(f"Latest version <strong data-launcher-version>{old}</strong>", "Latest version <strong data-launcher-version>v8.3.0</strong>")
+    text = text.replace(f"let LAUNCHER_VERSION = '{old}';", "let LAUNCHER_VERSION = 'v8.3.0';")
+for old_code in (325, 326):
+    text = text.replace(f"build <span data-launcher-code>{old_code}</span>", "build <span data-launcher-code>327</span>")
+    text = text.replace(f"let LAUNCHER_VERSION_CODE = {old_code};", "let LAUNCHER_VERSION_CODE = 327;")
 
 required = [
     '<script src="portal-sso.js"></script>',
@@ -83,6 +87,10 @@ required = [
     'return window.DLaviePortalSso.loginWithGoogle();',
     'return window.DLaviePortalSso.handleOAuthCallback();',
     publishable_key,
+    verified_callback,
+    'normalizeRequestedCallback',
+    'isTrustedCallbackResult',
+    'callback_uri',
 ]
 missing = [item for item in required if item not in text and item not in module]
 if missing:
@@ -96,4 +104,4 @@ if "intent://connect?token=" in text + module or "dlavie://connect?token=" in te
 
 INDEX.write_text(text, encoding="utf-8")
 MODULE.write_text(module, encoding="utf-8")
-print("Portal launcher SSO source materialized")
+print("Portal verified launcher SSO source materialized")
