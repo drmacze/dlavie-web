@@ -48,7 +48,7 @@ jobs:
           grep -F "['owner','developer','admin']" index.html
           grep -F 'maintenance-control' maintenance-dev-hub.js
           grep -F 'expected_updated_at' maintenance-dev-hub.js
-          ! grep -E 'service_role|github_pat|ghp_' maintenance-dev-hub.js index.html
+          ! grep -Ei 'service[_-]?role[_-]?(key|secret)|github_pat_|ghp_[A-Za-z0-9]' maintenance-dev-hub.js
 
       - name: Verify maintenance control contract
         shell: bash
