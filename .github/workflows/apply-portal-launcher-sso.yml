@@ -2,9 +2,7 @@ name: Apply Portal Launcher SSO
 
 on:
   push:
-    branches:
-      - feat/portal-launcher-sso
-      - main
+    branches: [main]
     paths:
       - 'portal-sso.js'
       - '.github/scripts/apply_portal_launcher_sso.py'
@@ -24,6 +22,10 @@ concurrency:
   group: portal-launcher-sso-${{ github.ref }}
   cancel-in-progress: false
 
+env:
+  VERIFIED_CALLBACK: https://drmacze.github.io/launcher/auth/callback/
+  RELEASE_CERT_SHA256: 4F:6C:88:4E:E6:DF:76:4B:B5:CD:B2:B6:B6:C1:3A:FA:95:16:4B:A9:20:7E:E6:95:27:4F:51:FC:DA:DC:09:B0
+
 jobs:
   materialize-and-test:
     runs-on: ubuntu-latest
@@ -42,11 +44,51 @@ jobs:
           grep -F '<script src="portal-sso.js"></script>' index.html
           grep -F 'window.DLaviePortalSso.connect()' index.html
           grep -F "code_challenge_method', 'S256'" portal-sso.js
+          grep -F "const VERIFIED_CALLBACK = '${VERIFIED_CALLBACK}';" portal-sso.js
+          grep -F 'normalizeRequestedCallback' portal-sso.js
+          grep -F 'isTrustedCallbackResult' portal-sso.js
+          grep -F 'callback_uri' portal-sso.js
           grep -F 'sb_publishable_' index.html portal-sso.js
           ! grep -F 'intent://connect?token=' index.html portal-sso.js
           ! grep -F 'dlavie://connect?token=' index.html portal-sso.js
           ! grep -F 'eyJpc3MiOiJIUzI1NiI' index.html portal-sso.js
           node --check portal-sso.js
+
+      - name: Verify live Digital Asset Links association
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-redirs 0 \
+            -H 'Cache-Control: no-cache' \
+            "https://drmacze.github.io/.well-known/assetlinks.json?run=${GITHUB_RUN_ID}" > /tmp/assetlinks.json
+          curl --fail --silent --show-error --max-redirs 0 \
+            -H 'Cache-Control: no-cache' \
+            "${VERIFIED_CALLBACK}?run=${GITHUB_RUN_ID}" > /tmp/callback.html
+          python3 - <<'PY'
+          import json
+          import os
+          with open('/tmp/assetlinks.json', encoding='utf-8') as handle:
+              statements = json.load(handle)
+          matches = []
+          for statement in statements:
+              target = statement.get('target') or {}
+              if (
+                  'delegate_permission/common.handle_all_urls' in (statement.get('relation') or [])
+                  and target.get('namespace') == 'android_app'
+                  and target.get('package_name') == 'com.drmacze.f16launcher'
+                  and os.environ['RELEASE_CERT_SHA256'] in (target.get('sha256_cert_fingerprints') or [])
+              ):
+                  matches.append(statement)
+          if len(matches) != 1:
+              raise SystemExit('Digital Asset Links association mismatch')
+          with open('/tmp/callback.html', encoding='utf-8') as handle:
+              callback = handle.read()
+          if 'DLavie Secure Connect' not in callback:
+              raise SystemExit('verified callback fallback is not live')
+          if 'dlavie://portal-complete' in callback or 'access_token' in callback or 'refresh_token' in callback:
+              raise SystemExit('callback fallback forwards sensitive data')
+          print('Verified App Link host is live and matches the release certificate.')
+          PY
 
       - name: Verify Portal Google PKCE contract
         shell: bash
@@ -75,6 +117,44 @@ jobs:
           LOCATION=$(awk 'BEGIN{IGNORECASE=1}/^location:/{sub(/^[^:]+:[[:space:]]*/,"");gsub(/\r/,"");print;exit}' /tmp/oauth-headers.txt)
           echo "$LOCATION" | grep -Ei 'google\.com|accounts\.google'
 
+      - name: Verify backend callback allow-list
+        shell: bash
+        run: |
+          set -euo pipefail
+          API_KEY=$(grep -o "sb_publishable_[A-Za-z0-9_-]*" portal-sso.js | head -1)
+          ENDPOINT='https://lvmucsxbmadtsgrxuwmo.supabase.co/functions/v1/launcher-sso'
+          COMMON='"action":"authorize","capability":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","code_challenge":"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB","state":"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"'
+
+          EVIL_STATUS=$(curl --silent --show-error -o /tmp/evil-callback.json -w '%{http_code}' \
+            -X POST "$ENDPOINT" \
+            -H "apikey: ${API_KEY}" \
+            -H "Authorization: Bearer ${API_KEY}" \
+            -H 'Origin: https://drmacze.github.io' \
+            -H 'Content-Type: application/json' \
+            -d "{${COMMON},\"callback_uri\":\"https://attacker.example/callback/\"}")
+          test "$EVIL_STATUS" = '400'
+          grep -F 'invalid_callback_uri' /tmp/evil-callback.json
+
+          VERIFIED_STATUS=$(curl --silent --show-error -o /tmp/verified-callback.json -w '%{http_code}' \
+            -X POST "$ENDPOINT" \
+            -H "apikey: ${API_KEY}" \
+            -H "Authorization: Bearer ${API_KEY}" \
+            -H 'Origin: https://drmacze.github.io' \
+            -H 'Content-Type: application/json' \
+            -d "{${COMMON},\"callback_uri\":\"${VERIFIED_CALLBACK}\"}")
+          test "$VERIFIED_STATUS" = '401'
+          grep -F 'authentication_required' /tmp/verified-callback.json
+
+          LEGACY_STATUS=$(curl --silent --show-error -o /tmp/legacy-callback.json -w '%{http_code}' \
+            -X POST "$ENDPOINT" \
+            -H "apikey: ${API_KEY}" \
+            -H "Authorization: Bearer ${API_KEY}" \
+            -H 'Origin: https://drmacze.github.io' \
+            -H 'Content-Type: application/json' \
+            -d "{${COMMON}}")
+          test "$LEGACY_STATUS" = '401'
+          grep -F 'authentication_required' /tmp/legacy-callback.json
+
       - name: Verify SSO rejects forged exchange
         shell: bash
         run: |
@@ -98,5 +178,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html portal-sso.js
-          git commit -m 'fix: use active publishable key for Portal Auth'
+          git commit -m 'feat(v327): materialize verified launcher callback'
           git push
