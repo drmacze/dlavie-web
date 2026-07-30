@@ -1,0 +1,101 @@
+name: Apply Maintenance Dev Hub
+
+on:
+  push:
+    branches:
+      - feat/maintenance-dev-hub
+      - main
+    paths:
+      - 'maintenance-dev-hub.js'
+      - 'maintenance-dev-hub.css'
+      - '.github/scripts/apply_maintenance_dev_hub.py'
+      - '.github/workflows/apply-maintenance-dev-hub.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'maintenance-dev-hub.js'
+      - 'maintenance-dev-hub.css'
+      - '.github/scripts/apply_maintenance_dev_hub.py'
+      - '.github/workflows/apply-maintenance-dev-hub.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: maintenance-dev-hub-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Materialize Dev Hub entry point
+        run: python3 .github/scripts/apply_maintenance_dev_hub.py
+
+      - name: Validate browser source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check maintenance-dev-hub.js
+          grep -F '<link rel="stylesheet" href="maintenance-dev-hub.css" />' index.html
+          grep -F '<script src="maintenance-dev-hub.js"></script>' index.html
+          grep -F 'window.DLavieMaintenanceHub.open()' index.html
+          grep -F "['owner','developer','admin']" index.html
+          grep -F 'window.currentUser=currentUser;' index.html
+          grep -F 'window.currentUser=null;' index.html
+          grep -F 'maintenance-control' maintenance-dev-hub.js
+          grep -F 'expected_updated_at' maintenance-dev-hub.js
+          ! grep -Ei 'service[_-]?role[_-]?(key|secret)|github_pat_|ghp_[A-Za-z0-9]' maintenance-dev-hub.js
+
+      - name: Verify maintenance control contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          ENDPOINT='https://lvmucsxbmadtsgrxuwmo.supabase.co/functions/v1/maintenance-control'
+          API_KEY=$(grep -o "sb_publishable_[A-Za-z0-9_-]*" maintenance-dev-hub.js | head -1)
+
+          READ_STATUS=$(curl --silent --show-error -o /tmp/maintenance-read.json -w '%{http_code}' \
+            -X POST "$ENDPOINT" \
+            -H "apikey: ${API_KEY}" \
+            -H 'Origin: https://drmacze.github.io' \
+            -H 'Content-Type: application/json' \
+            -d '{"action":"get"}')
+          test "$READ_STATUS" = '200'
+          python3 - <<'PY'
+          import json
+          data=json.load(open('/tmp/maintenance-read.json',encoding='utf-8'))
+          config=data['config']
+          assert config['scope'] in ('none','partial','full')
+          assert isinstance(config['enabled'],bool)
+          assert int(config['schema_version']) >= 2
+          assert 'updated_at' in data
+          PY
+
+          WRITE_STATUS=$(curl --silent --show-error -o /tmp/maintenance-write.json -w '%{http_code}' \
+            -X POST "$ENDPOINT" \
+            -H "apikey: ${API_KEY}" \
+            -H "Authorization: Bearer ${API_KEY}" \
+            -H 'Origin: https://drmacze.github.io' \
+            -H 'Content-Type: application/json' \
+            -d '{"action":"update","config":{"enabled":false,"scope":"none","status_label":"Test","title":"Unauthorized","message":"This must not be written","allow_offline_play":true}}')
+          test "$WRITE_STATUS" = '403'
+          grep -F 'staff_access_required' /tmp/maintenance-write.json
+
+      - name: Commit materialized website
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'Website already materialized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'feat: expose maintenance control in DLavie Dev Hub'
+          git push
