@@ -2,7 +2,7 @@ name: Apply Portal Launcher SSO
 
 on:
   push:
-    branches: [main]
+    branches: [main, feat/guided-launcher-connect]
     paths:
       - 'portal-sso.js'
       - '.github/scripts/apply_portal_launcher_sso.py'
@@ -37,7 +37,7 @@ jobs:
       - name: Apply deterministic Portal SSO patch
         run: python3 .github/scripts/apply_portal_launcher_sso.py
 
-      - name: Validate security invariants
+      - name: Validate security and guided-flow invariants
         shell: bash
         run: |
           set -euo pipefail
@@ -48,6 +48,12 @@ jobs:
           grep -F 'normalizeRequestedCallback' portal-sso.js
           grep -F 'isTrustedCallbackResult' portal-sso.js
           grep -F 'callback_uri' portal-sso.js
+          grep -F 'captureLauncherStartIntent' portal-sso.js
+          grep -F 'renderLauncherStartGuide' portal-sso.js
+          grep -F 'Lanjutkan ke Launcher' portal-sso.js
+          grep -F 'Memverifikasi akun Portal' portal-sso.js
+          grep -F 'Kembali ke Launcher' portal-sso.js
+          grep -F 'Kode sekali pakai' portal-sso.js
           grep -F 'sb_publishable_' index.html portal-sso.js
           ! grep -F 'intent://connect?token=' index.html portal-sso.js
           ! grep -F 'dlavie://connect?token=' index.html portal-sso.js
@@ -178,5 +184,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html portal-sso.js
-          git commit -m 'feat(v327): materialize verified launcher callback'
+          git commit -m 'feat: materialize guided launcher connection flow'
           git push
