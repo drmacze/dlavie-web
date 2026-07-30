@@ -8,6 +8,7 @@
 
   let state = null;
   let saving = false;
+  let notificationScriptPromise = null;
 
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>'"]/g, ch => ({
@@ -21,6 +22,51 @@
 
   function canManage() {
     return Boolean(window.currentUser && PRIVILEGED_ROLES.has(String(window.currentUser.role || '').toLowerCase()));
+  }
+
+  function ensureNotificationStyles() {
+    if (document.querySelector('link[data-dlavie-notification-hub]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'notification-dev-hub.css';
+    link.dataset.dlavieNotificationHub = 'true';
+    document.head.appendChild(link);
+  }
+
+  function ensureNotificationScript() {
+    if (window.DLavieNotificationHub) return Promise.resolve();
+    if (notificationScriptPromise) return notificationScriptPromise;
+    notificationScriptPromise = new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[data-dlavie-notification-hub]');
+      if (existing) {
+        existing.addEventListener('load', resolve, { once: true });
+        existing.addEventListener('error', reject, { once: true });
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'notification-dev-hub.js';
+      script.async = true;
+      script.dataset.dlavieNotificationHub = 'true';
+      script.addEventListener('load', resolve, { once: true });
+      script.addEventListener('error', () => reject(new Error('Notification Center gagal dimuat.')), { once: true });
+      document.body.appendChild(script);
+    }).catch(error => {
+      notificationScriptPromise = null;
+      throw error;
+    });
+    return notificationScriptPromise;
+  }
+
+  async function openNotifications() {
+    if (!canManage()) return;
+    ensureNotificationStyles();
+    try {
+      await ensureNotificationScript();
+      close();
+      setTimeout(() => window.DLavieNotificationHub?.open(), 190);
+    } catch {
+      if (typeof window.showToast === 'function') window.showToast('Notification Center gagal dimuat. Coba refresh halaman.');
+    }
   }
 
   async function call(action, payload = {}, authenticated = false) {
@@ -63,6 +109,7 @@
   }
 
   function renderShell() {
+    ensureNotificationStyles();
     let overlay = document.getElementById('maintenanceDevHub');
     if (overlay) return overlay;
     overlay = document.createElement('div');
@@ -73,16 +120,21 @@
         <header class="mh-header">
           <div>
             <div class="mh-eyebrow">DLavie Dev Hub</div>
-            <h2 id="mhTitle">Maintenance Control</h2>
+            <h2 id="mhTitle">Developer Hub</h2>
           </div>
           <button class="mh-icon-button" type="button" data-mh-close aria-label="Tutup">×</button>
         </header>
+        <nav class="mh-tabs" aria-label="Developer Hub modules">
+          <button type="button" class="active">Maintenance</button>
+          <button type="button" data-mh-notifications>Notifications</button>
+        </nav>
         <div id="mhContent" class="mh-content">
           <div class="mh-loading"><span></span><p>Memuat status layanan…</p></div>
         </div>
       </section>`;
     overlay.addEventListener('click', event => {
       if (event.target === overlay || event.target.closest('[data-mh-close]')) close();
+      if (event.target.closest('[data-mh-notifications]')) openNotifications();
     });
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && document.getElementById('maintenanceDevHub')) close();
@@ -273,5 +325,5 @@
     setTimeout(() => overlay.remove(), 180);
   }
 
-  window.DLavieMaintenanceHub = { open, close };
+  window.DLavieMaintenanceHub = { open, close, openNotifications };
 })();
