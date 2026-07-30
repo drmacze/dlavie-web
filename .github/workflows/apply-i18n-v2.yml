@@ -1,0 +1,82 @@
+name: Apply Website I18N v2
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'i18n.js'
+      - 'i18n.css'
+      - '.github/scripts/apply_i18n_v2.py'
+      - '.github/workflows/apply-i18n-v2.yml'
+  push:
+    branches:
+      - feat/i18n-v2
+      - main
+    paths:
+      - 'index.html'
+      - 'i18n.js'
+      - 'i18n.css'
+      - '.github/scripts/apply_i18n_v2.py'
+      - '.github/workflows/apply-i18n-v2.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: website-i18n-v2-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply deterministic localization patch
+        run: python3 .github/scripts/apply_i18n_v2.py
+
+      - name: Validate JavaScript and integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check i18n.js
+          grep -F '<link rel="stylesheet" href="i18n.css" />' index.html
+          grep -F '<script src="i18n.js"></script>' index.html
+          grep -F 'window.DLavieI18n.init();' index.html
+          grep -F 'syncFromProfile(currentUser)' index.html
+          grep -F 'data-i18n="register_google"' index.html
+          ! grep -F "const I18N={" index.html
+          ! grep -F "localStorage.getItem('dlavie_lang')||'id'" index.html
+          ! grep -F "login_google:'<span" index.html
+
+      - name: Validate locale contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import re
+          source=open('i18n.js',encoding='utf-8').read()
+          for code in ('en','id','ms','pt','es','de','fr','ja','zh','ar'):
+              assert re.search(rf"\['{code}'|\b{code}:\{{", source), code
+          assert "preferred_locale" in source
+          assert "document.documentElement.dir" in source
+          assert "MutationObserver" in source
+          assert "Intl.DateTimeFormat" in source
+          PY
+
+      - name: Commit materialized index
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then
+            echo 'Website already materialized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'feat(i18n): materialize shared locale runtime'
+          git push
