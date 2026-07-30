@@ -13,6 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="maintenance-dev-hub.css" />
+<link rel="stylesheet" href="i18n.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
@@ -560,7 +561,7 @@ button,a.nav-link,a.nav-cta,.menu-toggle{min-height:44px;min-width:44px;touch-ac
 <div id="registerForm" style="display:none;">
 <button class="btn-google" onclick="loginWithGoogle()">
 <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.6 2.84c.87-2.6 3.3-4.53 6.22-4.53z"/></svg>
-Daftar dengan Google
+<span data-i18n="register_google">Daftar dengan Google</span>
 </button>
 <div class="auth-divider" data-i18n="divider_email">atau email</div>
 <div class="auth-form-group"><label class="auth-label" data-i18n="label_email">Email</label><input type="email" class="auth-input" id="regEmail" placeholder="kamu@email.com" /></div>
@@ -658,7 +659,7 @@ Daftar dengan Google
 <div class="page" id="page-terms">
 <section class="legal">
 <h1 data-i18n="terms_h1">Terms & Conditions</h1>
-<p class="updated">Last updated: July 7, 2026</p>
+<p class="updated" data-i18n="legal_updated">Last updated: July 7, 2026</p>
 <h2>1. Acceptance of Terms</h2>
 <p>By downloading, installing, or using DLavie Launcher ("the App"), you agree to be bound by these Terms & Conditions. If you do not agree, do not use the App.</p>
 <h2>2. Description of Service</h2>
@@ -702,7 +703,7 @@ Daftar dengan Google
 <div class="page" id="page-privacy">
 <section class="legal">
 <h1 data-i18n="privacy_h1">Privacy Policy</h1>
-<p class="updated">Last updated: July 7, 2026</p>
+<p class="updated" data-i18n="legal_updated">Last updated: July 7, 2026</p>
 <h2>1. Information We Collect</h2>
 <h3>Account Information</h3>
 <ul>
@@ -804,12 +805,10 @@ Daftar dengan Google
 </footer>
 
 
-<!-- LANGUAGE SELECTOR -->
-<div class="lang-selector" id="langSelector">
-<button class="lang-btn active" onclick="setLang('id')">ID</button>
-<button class="lang-btn" onclick="setLang('en')">EN</button>
-</div>
+<!-- LANGUAGE SELECTOR — rendered by i18n.js -->
+<div class="lang-selector" id="langSelector" aria-label="Language"></div>
 
+<script src="i18n.js"></script>
 <script src="maintenance-dev-hub.js"></script>
 <script src="portal-sso.js"></script>
 <script>
@@ -872,178 +871,19 @@ function updateVersionBadges(){
 }
 
 // ═══════════════════════════════════════════════════════════════
-// I18N — Internationalization
+// I18N v2 — shared runtime in i18n.js
 // ═══════════════════════════════════════════════════════════════
-const I18N={
-id:{
-// Nav
-nav_home:'Beranda',nav_portal:'Portal',nav_faq:'FAQ',nav_news:'Berita',nav_issues:'Issue',nav_about:'Tentang',nav_terms:'Syarat',nav_privacy:'Privasi',
-// Home
-badge_text:'DLavie: New FIFA Modding Launcher',hero_sub:'Launcher komunitas untuk FIFA 16 Mobile mod. Install, patch, dan kelola game dalam satu aplikasi.',
-btn_download:'Download Launcher',btn_connect:'Connect Portal',
-stat_version:'Versi Terbaru',stat_lang:'Bahasa',stat_data:'GB Data',
-// Features
-features_label:'Fitur',features_title:'Semua dalam satu launcher.',
-feat_mod_title:'FIFA 16 Mod Support',feat_mod_desc:'Install base data FIFA 16 Mobile mod (2.7GB) + patch system via Shizuku/root. Backup, rollback, dan channel system (stable/beta).',
-feat_community_title:'Community Hub',feat_community_desc:'Feed komunitas, follow/unfollow, posts, comments, badges, dan presence indicators (online/last seen).',
-feat_portal_title:'DLavie Portal',feat_portal_desc:'Connect akun launcher ke web DLavie. Buat issue, kelola akun, dan akses FAQ — semua dari satu login.',
-feat_security_title:'Security & Privacy',feat_security_desc:'Data Anda dilindungi dengan end-to-end encryption, RLS policies, dan JWT authentication. Password di-hash bcrypt, token disimpan terenkripsi di device.',
-feat_sync_title:'Cross-Platform Sync',feat_sync_desc:'Connect akun launcher ke web DLavie. Login sekali, akses FAQ, Issues, dan Portal dari browser apapun. Sinkron penuh antar device.',
-// Portal
-portal_title:'DLavie Portal',portal_sub:'Login atau connect akun DLavie Launcher untuk mengakses semua fitur web.',
-connect_dlavie:'Connect to DLavie',login_google:'<span data-i18n="login_google">Login dengan Google</span>',divider_or:'atau',divider_email:'atau email',
-btn_logout:'Logout',
-label_email:'Email',label_password:'Password',label_username:'Username',label_displayname:'Display Name',
-btn_masuk:'Masuk',btn_daftar:'Daftar',
-switch_noaccount:'Belum punya akun?',switch_register:'Daftar di sini',switch_haveaccount:'Sudah punya akun?',switch_login:'Masuk di sini',
-google_hint:'Atau login/register dengan Google di atas',
-// FAQ
-faq_badge:'DLavie: New FIFA Modding Launcher',faq_sub:'Semua yang perlu kamu tahu tentang DLavie Launcher.',
-faq_search:'Cari pertanyaan…',faq_cat_label:'Kategori',faq_cat_all:'Semua',faq_empty_title:'Pilih kategori di atas',faq_empty_sub:'Atau gunakan kolom pencarian untuk mencari pertanyaan spesifik.',
-faq_noresult_title:'Tidak ada hasil',faq_noresult_sub:'Coba kata kunci lain atau pilih kategori berbeda.',
-// Issues
-issues_label:'Issues Komunitas',issues_title:'Lihat semua issue dari user DLavie.',issues_sub:'Transparansi penuh — semua issue yang dilaporkan user tampil di sini.',
-btn_buatissue:'Buat Issue',issues_empty_title:'Belum ada issue',issues_empty_sub:'Jadilah yang pertama melaporkan issue.',
-modal_title:'Buat Issue',modal_sub:'Laporan Anda akan tampil di halaman Issue untuk semua user DLavie.',
-label_akun:'Akun',label_kategori:'Kategori',label_judul:'Judul Issue',label_detail:'Detail Issue',
-ph_judul:'Ringkasan singkat issue Anda',ph_detail:'Jelaskan issue secara detail…',btn_kirim:'Kirim Issue',
-reply_toggle:'Lihat balasan',
-// News
-news_label:'News & Updates',news_title:'Berita terbaru DLavie.',
-news_all:'Semua',news_update:'Update',news_maintenance:'Maintenance',news_mechanics:'Mekanika',
-news_readmore:'Baca selengkapnya',news_empty:'Tidak ada berita.',
-// About
-about_title:'DLavie',about_sub:'Launcher komunitas untuk FIFA 16 Mobile modding. Dibuat oleh komunitas, untuk komunitas.',
-about_stat_version:'Versi',about_stat_lang:'Bahasa',about_stat_data:'Data',about_stat_faq:'FAQ',
-about_h2_about:'Tentang DLavie',about_p_about:'DLavie Launcher adalah aplikasi launcher Android untuk komunitas FIFA 16 Mobile modding. Launcher ini menyediakan sistem instalasi game, patch management, community hub, dan account management dalam satu aplikasi.',
-about_h2_mission:'Misi Kami',about_p_mission:'Memberikan pengalaman modding FIFA 16 Mobile yang mudah, aman, dan terstruktur bagi seluruh komunitas. Kami berkomitmen untuk terus mengembangkan launcher dengan fitur-fitur modern dan UI yang clean.',
-about_h2_features:'Fitur Utama',about_h2_privacy:'Privacy & Security',about_p_privacy:'Data Anda aman bersama kami. Kami menggunakan Supabase dengan Row-Level Security, JWT authentication, HTTPS, dan EncryptedSharedPreferences. Password di-hash dengan bcrypt. Kami tidak menyimpan GPS, kontak, SMS, atau riwayat browsing.',
-about_h2_contact:'Kontak',about_p_contact:'Untuk pertanyaan atau dukungan, buat issue di halaman Issues atau connect via DLavie Portal.',
-feat_li_mod:'FIFA 16 Mod Support — Install base data + patch system via Shizuku/root',
-feat_li_community:'Community Hub — Feed, follow/unfollow, posts, comments, badges',
-feat_li_portal:'DLavie Portal — Connect akun launcher ke web DLavie',
-feat_li_security:'Security & Privacy — End-to-end encryption, RLS, JWT auth, bcrypt hashing',
-feat_li_sync:'Cross-Platform Sync — Connect launcher ke web, login sekali untuk semua',
-// Footer
-footer_copy:'© 2026 DLavie Company · FIFA Modding Launcher',
-// Legal
-terms_h1:'Terms & Conditions',privacy_h1:'Privacy Policy',legal_updated:'Last updated: July 7, 2026',
-// Errors
-err_email_pwd:'Email dan password wajib diisi.',err_min_title:'Judul minimal 5 karakter.',err_min_body:'Detail minimal 10 karakter. Jelaskan lebih lengkap.',
-err_spam:'Judul tidak valid. Gunakan judul yang deskriptif.',err_all_fields:'Semua field wajib diisi.',err_min_pwd:'Password minimal 6 karakter.',
-// Toasts
-toast_login_ok:'Login berhasil!',toast_register_ok:'Registrasi berhasil!',toast_connect_ok:'Berhasil connect dengan launcher!',
-toast_issue_ok:'Issue berhasil dibuat!',toast_logout:'Logout berhasil.',
-// Connect info
-info_title:'Connect to DLavie',info_sub:'Untuk connect langsung dari launcher, pastikan:',
-info_step1:'Install DLavie Launcher',info_step1_desc:'Download dari tombol di bawah.',
-info_step2:'Login di Launcher',info_step2_desc:'Buka launcher, login dengan akun DLavie.',
-info_step3:'Klik Connect dari Launcher',info_step3_desc:'Launcher akan redirect balik ke sini.',
-info_download:'Download Launcher',info_login_manual:'Login Manual',
-// Auth
-auth_login_manual:'atau login manual',
-},
-en:{
-// Nav
-nav_home:'Home',nav_portal:'Portal',nav_faq:'FAQ',nav_news:'News',nav_issues:'Issues',nav_about:'About',nav_terms:'Terms',nav_privacy:'Privacy',
-// Home
-badge_text:'DLavie: New FIFA Modding Launcher',hero_sub:'Community launcher for FIFA 16 Mobile modding. Install, patch, and manage your game in one app.',
-btn_download:'Download Launcher',btn_connect:'Connect Portal',
-stat_version:'Latest Version',stat_lang:'Languages',stat_data:'GB Data',
-// Features
-features_label:'Features',features_title:'Everything in one launcher.',
-feat_mod_title:'FIFA 16 Mod Support',feat_mod_desc:'Install FIFA 16 Mobile mod base data (2.7GB) + patch system via Shizuku/root. Backup, rollback, and channel system (stable/beta).',
-feat_community_title:'Community Hub',feat_community_desc:'Community feed, follow/unfollow, posts, comments, badges, and presence indicators (online/last seen).',
-feat_portal_title:'DLavie Portal',feat_portal_desc:'Connect your launcher account to DLavie web. Create issues, manage your account, and access FAQ — all from one login.',
-feat_security_title:'Security & Privacy',feat_security_desc:'Your data is protected with end-to-end encryption, RLS policies, and JWT authentication. Passwords are bcrypt-hashed, tokens stored encrypted on device.',
-feat_sync_title:'Cross-Platform Sync',feat_sync_desc:'Connect your launcher account to DLavie web. Login once, access FAQ, Issues, and Portal from any browser. Full cross-device sync.',
-// Portal
-portal_title:'DLavie Portal',portal_sub:'Login or connect your DLavie Launcher account to access all web features.',
-connect_dlavie:'Connect to DLavie',login_google:'Sign in with Google',divider_or:'or',divider_email:'or email',
-btn_logout:'Logout',
-label_email:'Email',label_password:'Password',label_username:'Username',label_displayname:'Display Name',
-btn_masuk:'Sign In',btn_daftar:'Register',
-switch_noaccount:"Don't have an account?",switch_register:'Register here',switch_haveaccount:'Already have an account?',switch_login:'Sign in here',
-google_hint:'Or login/register with Google above',
-// FAQ
-faq_badge:'DLavie: New FIFA Modding Launcher',faq_sub:'Everything you need to know about DLavie Launcher.',
-faq_search:'Search questions…',faq_cat_label:'Categories',faq_cat_all:'All',faq_empty_title:'Select a category above',faq_empty_sub:'Or use the search box to find specific questions.',
-faq_noresult_title:'No results',faq_noresult_sub:'Try different keywords or select another category.',
-// Issues
-issues_label:'Community Issues',issues_title:'View all issues from DLavie users.',issues_sub:'Full transparency — all reported issues are displayed here.',
-btn_buatissue:'Create Issue',issues_empty_title:'No issues yet',issues_empty_sub:'Be the first to report an issue.',
-modal_title:'Create Issue',modal_sub:'Your report will appear on the Issues page for all DLavie users.',
-label_akun:'Account',label_kategori:'Category',label_judul:'Issue Title',label_detail:'Issue Details',
-ph_judul:'Brief summary of your issue',ph_detail:'Describe your issue in detail…',btn_kirim:'Submit Issue',
-reply_toggle:'View reply',
-// News
-news_label:'News & Updates',news_title:'Latest DLavie news.',
-news_all:'All',news_update:'Update',news_maintenance:'Maintenance',news_mechanics:'Mechanics',
-news_readmore:'Read more',news_empty:'No news yet.',
-// About
-about_title:'DLavie',about_sub:'Community launcher for FIFA 16 Mobile modding. Built by the community, for the community.',
-about_stat_version:'Version',about_stat_lang:'Languages',about_stat_data:'Data',about_stat_faq:'FAQ',
-about_h2_about:'About DLavie',about_p_about:'DLavie Launcher is an Android launcher application for the FIFA 16 Mobile modding community. It provides game installation, patch management, community hub, and account management in one app.',
-about_h2_mission:'Our Mission',about_p_mission:'To provide an easy, safe, and structured FIFA 16 Mobile modding experience for the entire community. We are committed to continuously developing the launcher with modern features and clean UI.',
-about_h2_features:'Key Features',about_h2_privacy:'Privacy & Security',about_p_privacy:'Your data is safe with us. We use Supabase with Row-Level Security, JWT authentication, HTTPS, and EncryptedSharedPreferences. Passwords are bcrypt-hashed. We do not store GPS, contacts, SMS, or browsing history.',
-about_h2_contact:'Contact',about_p_contact:'For questions or support, create an issue on the Issues page or connect via DLavie Portal.',
-feat_li_mod:'FIFA 16 Mod Support — Install base data + patch system via Shizuku/root',
-feat_li_community:'Community Hub — Feed, follow/unfollow, posts, comments, badges',
-feat_li_portal:'DLavie Portal — Connect launcher account to DLavie web',
-feat_li_security:'Security & Privacy — End-to-end encryption, RLS, JWT auth, bcrypt hashing',
-feat_li_sync:'Cross-Platform Sync — Connect launcher to web, login once for everything',
-// Footer
-footer_copy:'© 2026 DLavie Company · FIFA Modding Launcher',
-// Legal
-terms_h1:'Terms & Conditions',privacy_h1:'Privacy Policy',legal_updated:'Last updated: July 7, 2026',
-// Errors
-err_email_pwd:'Email and password are required.',err_min_title:'Title must be at least 5 characters.',err_min_body:'Details must be at least 10 characters. Please elaborate.',
-err_spam:'Invalid title. Use a descriptive title.',err_all_fields:'All fields are required.',err_min_pwd:'Password must be at least 6 characters.',
-// Toasts
-toast_login_ok:'Login successful!',toast_register_ok:'Registration successful!',toast_connect_ok:'Successfully connected with launcher!',
-toast_issue_ok:'Issue created successfully!',toast_logout:'Logged out successfully.',
-// Connect info
-info_title:'Connect to DLavie',info_sub:'To connect directly from the launcher, ensure:',
-info_step1:'Install DLavie Launcher',info_step1_desc:'Download using the button below.',
-info_step2:'Login in Launcher',info_step2_desc:'Open launcher, login with your DLavie account.',
-info_step3:'Click Connect from Launcher',info_step3_desc:'Launcher will redirect back here.',
-info_download:'Download Launcher',info_login_manual:'Login Manually',
-// Auth
-auth_login_manual:'or login manually',
-}
-};
-let currentLang='id';
+let currentLang = window.DLavieI18n.getLocale();
 function setLang(lang){
-currentLang=lang;
-localStorage.setItem('dlavie_lang',lang);
-document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase()===lang));
-applyLang();
+  window.DLavieI18n.setLocale(lang);
+  currentLang = window.DLavieI18n.getLocale();
+  applyLang();
 }
 function applyLang(){
-const t=I18N[currentLang]||I18N.id;
-// Translate all elements with data-i18n attribute
-document.querySelectorAll('[data-i18n]').forEach(el=>{
-const key=el.getAttribute('data-i18n');
-if(t[key]!==undefined)el.textContent=t[key];
-});
-// Translate placeholders with data-i18n-ph
-document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
-const key=el.getAttribute('data-i18n-ph');
-if(t[key]!==undefined)el.placeholder=t[key];
-});
-// Translate innerHTML with data-i18n-html
-document.querySelectorAll('[data-i18n-html]').forEach(el=>{
-const key=el.getAttribute('data-i18n-html');
-if(t[key]!==undefined)el.innerHTML=t[key];
-});
-// Auth switch
-const sw=document.getElementById('authSwitch');
-if(sw){
-sw.innerHTML=currentLang==='en'
-?"Don't have an account? <span onclick=switchAuthMode('register') style=cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)>Register here</span>"
-:"Belum punya akun? <span onclick=switchAuthMode('register') style=cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)>Daftar di sini</span>";
+  currentLang = window.DLavieI18n.getLocale();
+  window.DLavieI18n.translate(document);
 }
-}
+function tr(key, vars){ return window.DLavieI18n.t(key, vars); }
 
 // ═══════════════════════════════════════════════════════════════
 // ROUTER
@@ -1132,7 +972,7 @@ updateNavUser();
 }
 function logout(){
 clearSession();
-showToast(currentLang==='en'?'Logged out successfully.':'Berhasil logout.');
+showToast(tr('toast_logout'));
 location.hash='#/portal';
 setTimeout(()=>{initPortal();},200);
 }
@@ -1234,7 +1074,7 @@ c.innerHTML=`
 function switchAuthMode(mode){
 const lf=document.getElementById('loginForm'),rf=document.getElementById('registerForm');
 const sw=document.getElementById('authSwitch');
-if(mode==='register'){lf.style.display='none';rf.style.display='block';sw.innerHTML=currentLang==='en'?'Already have an account? <span onclick=switchAuthMode(\'login\') style=cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)>Sign in here</span>':'Sudah punya akun? <span onclick=switchAuthMode(\'login\') style=cursor:pointer;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1)>Masuk di sini</span>';}
+if(mode==='register'){lf.style.display='none';rf.style.display='block';sw.dataset.mode='register';sw.innerHTML=`${tr('auth_have_account')} <a onclick="switchAuthMode('login')">${tr('auth_login_here')}</a>`;}else{lf.style.display='block';rf.style.display='none';sw.dataset.mode='login';sw.innerHTML=`${tr('auth_no_account')} <a onclick="switchAuthMode('register')">${tr('auth_register_here')}</a><br><span class="auth-google-hint">${tr('auth_google_hint')}</span>`;}
 }
 
 async function performLogin(){
@@ -1626,7 +1466,7 @@ function initPortal(){
 const c=document.getElementById('portalContent');
 if(!c)return;
 if(currentUser){
-window.currentUser=currentUser;
+window.currentUser=currentUser; window.DLavieI18n?.syncFromProfile(currentUser);
 // ── LOGGED IN: Compact profile card (Photo 1 style) ──
 const initial=(currentUser.display_name||currentUser.username||'?')[0].toUpperCase();
 const isDev=['owner','developer','admin'].includes(String(currentUser.role||'').toLowerCase());
@@ -1841,9 +1681,9 @@ if(localStorage.getItem('dlavie_pending_issue')==='1'&&currentUser){
 localStorage.removeItem('dlavie_pending_issue');
 setTimeout(()=>openCreateIssueModal(),1000);
 }
-// Restore language preference
-const savedLang=localStorage.getItem('dlavie_lang')||'id';
-setLang(savedLang);
+// Initialize locale after the page and authenticated profile are ready.
+window.DLavieI18n.init();
+currentLang=window.DLavieI18n.getLocale();
 router();
 applyLang();
 })();
