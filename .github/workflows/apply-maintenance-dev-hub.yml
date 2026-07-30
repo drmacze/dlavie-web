@@ -46,6 +46,8 @@ jobs:
           grep -F '<script src="maintenance-dev-hub.js"></script>' index.html
           grep -F 'window.DLavieMaintenanceHub.open()' index.html
           grep -F "['owner','developer','admin']" index.html
+          grep -F 'window.currentUser=currentUser;' index.html
+          grep -F 'window.currentUser=null;' index.html
           grep -F 'maintenance-control' maintenance-dev-hub.js
           grep -F 'expected_updated_at' maintenance-dev-hub.js
           ! grep -Ei 'service[_-]?role[_-]?(key|secret)|github_pat_|ghp_[A-Za-z0-9]' maintenance-dev-hub.js
