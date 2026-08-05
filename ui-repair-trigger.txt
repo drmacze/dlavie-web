@@ -1,0 +1,1 @@
+Trigger deterministic UI text, contrast, JavaScript, and i18n repair.
