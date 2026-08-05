@@ -25,17 +25,16 @@ jobs:
         with:
           node-version: 22
 
-      - name: Apply deterministic UI repair
-        run: python scripts/repair-ui.py
+      - name: Remove literal UI escape sequences
+        run: python scripts/fix-ui-followup.py
 
       - name: Audit HTML, CSS, JavaScript, and i18n
         run: node scripts/ui-audit.mjs
 
       - name: Commit repaired website
         run: |
-          rm -f .github/workflows/ui-quality.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html i18n.js i18n.css portal-sso.js maintenance-dev-hub.css scripts/ui-audit.mjs
-          git commit -m "fix: restore UI text and contrast"
+          git add index.html
+          git commit -m "fix: remove literal UI escape text"
           git push origin HEAD:main
