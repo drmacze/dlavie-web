@@ -1,0 +1,42 @@
+name: UI Quality
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - i18n.js
+      - i18n.css
+      - portal-sso.js
+      - maintenance-dev-hub.js
+      - maintenance-dev-hub.css
+      - scripts/ui-audit.mjs
+      - .github/workflows/ui-quality.yml
+  pull_request:
+    paths:
+      - index.html
+      - i18n.js
+      - i18n.css
+      - portal-sso.js
+      - maintenance-dev-hub.js
+      - maintenance-dev-hub.css
+      - scripts/ui-audit.mjs
+      - .github/workflows/ui-quality.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/ui-audit.mjs
