@@ -16,7 +16,7 @@
 
   const EN = {
     nav_home:'Home',nav_portal:'Portal',nav_faq:'FAQ',nav_news:'News',nav_issues:'Issues',nav_about:'About',nav_terms:'Terms',nav_privacy:'Privacy',
-    badge_text:'DLavie — FIFA modding, made simpler',hero_sub:'A community launcher for FIFA 16 Mobile. Install, update, and manage your game from one place.',
+    badge_text:'DLavie — FIFA modding, made simpler',hero_title:'DLavie Launcher.',hero_sub:'A community launcher for FIFA 16 Mobile. Install, update, and manage your game from one place.',
     btn_download:'Download Launcher',btn_connect:'Connect Portal',stat_version:'Latest version',stat_lang:'Languages',stat_data:'GB game data',
     features_label:'Features',features_title:'Everything you need, in one launcher.',
     feat_mod_title:'FIFA 16 Mod Support',feat_mod_desc:'Install the base game data and verified patches with backup and rollback support.',
@@ -27,7 +27,7 @@
     portal_title:'DLavie Portal',portal_sub:'Sign in or connect your launcher account to continue.',connect_dlavie:'Connect to DLavie',login_google:'Continue with Google',
     divider_or:'or',divider_email:'or use email',btn_logout:'Sign out',label_email:'Email',label_password:'Password',label_username:'Username',label_displayname:'Display name',
     btn_masuk:'Sign in',btn_daftar:'Create account',switch_noaccount:"Don't have an account?",switch_register:'Create one',switch_haveaccount:'Already have an account?',switch_login:'Sign in',google_hint:'You can also continue with Google.',
-    faq_badge:'DLavie Help Center',faq_sub:'Clear answers for installing, connecting, and using DLavie Launcher.',faq_search:'Search questions…',faq_cat_label:'Categories',faq_cat_all:'All',
+    faq_badge:'DLavie Help Center',faq_title:'Frequently Asked Questions',faq_sub:'Clear answers for installing, connecting, and using DLavie Launcher.',faq_search:'Search questions…',faq_cat_label:'Categories',faq_cat_all:'All',
     faq_empty_title:'Choose a category',faq_empty_sub:'Or search for a specific question.',faq_noresult_title:'No results',faq_noresult_sub:'Try another keyword or category.',
     issues_label:'Community Issues',issues_title:'Track reports from DLavie users.',issues_sub:'Public reports help everyone understand known problems and progress.',btn_buatissue:'Create issue',issues_empty_title:'No issues yet',issues_empty_sub:'Be the first to report one.',
     modal_title:'Create issue',modal_sub:'Your report will be visible to the DLavie community.',label_akun:'Account',label_kategori:'Category',label_judul:'Issue title',label_detail:'Issue details',
@@ -50,13 +50,13 @@
   const ID = {
     ...EN,
     nav_home:'Beranda',nav_news:'Berita',nav_issues:'Issue',nav_about:'Tentang',nav_terms:'Syarat',nav_privacy:'Privasi',
-    badge_text:'DLavie — modding FIFA yang lebih mudah',hero_sub:'Launcher komunitas untuk FIFA 16 Mobile. Instal, perbarui, dan kelola game dari satu tempat.',
+    badge_text:'DLavie — modding FIFA yang lebih mudah',hero_title:'DLavie Launcher.',hero_sub:'Launcher komunitas untuk FIFA 16 Mobile. Instal, perbarui, dan kelola game dari satu tempat.',
     btn_download:'Unduh Launcher',btn_connect:'Hubungkan Portal',stat_version:'Versi terbaru',stat_lang:'Bahasa',stat_data:'GB data game',
     features_label:'Fitur',features_title:'Semua yang dibutuhkan, dalam satu launcher.',
     feat_mod_desc:'Instal data game dan patch terverifikasi dengan dukungan backup serta rollback.',feat_community_desc:'Ikuti anggota, buat postingan, berdiskusi, dan lihat aktivitas komunitas.',feat_portal_desc:'Gunakan akun DLavie yang sama di website dan launcher melalui koneksi aman.',feat_security_desc:'Sesi terlindungi, HTTPS, kebijakan akses server, dan penghubungan akun terverifikasi.',feat_sync_title:'Akun lintas perangkat',feat_sync_desc:'Pertahankan akun, preferensi, issue, dan akses Portal di semua perangkat.',
     portal_sub:'Masuk atau hubungkan akun launcher untuk melanjutkan.',connect_dlavie:'Hubungkan ke DLavie',login_google:'Lanjutkan dengan Google',divider_or:'atau',divider_email:'atau gunakan email',btn_logout:'Keluar',label_displayname:'Nama tampilan',btn_masuk:'Masuk',btn_daftar:'Buat akun',
     switch_noaccount:'Belum punya akun?',switch_register:'Buat akun',switch_haveaccount:'Sudah punya akun?',switch_login:'Masuk',google_hint:'Anda juga dapat melanjutkan dengan Google.',
-    faq_badge:'Pusat Bantuan DLavie',faq_sub:'Jawaban jelas untuk instalasi, koneksi, dan penggunaan DLavie Launcher.',faq_search:'Cari pertanyaan…',faq_cat_label:'Kategori',faq_cat_all:'Semua',faq_empty_title:'Pilih kategori',faq_empty_sub:'Atau cari pertanyaan tertentu.',faq_noresult_title:'Tidak ada hasil',faq_noresult_sub:'Coba kata kunci atau kategori lain.',
+    faq_badge:'Pusat Bantuan DLavie',faq_title:'Pertanyaan yang Sering Diajukan',faq_sub:'Jawaban jelas untuk instalasi, koneksi, dan penggunaan DLavie Launcher.',faq_search:'Cari pertanyaan…',faq_cat_label:'Kategori',faq_cat_all:'Semua',faq_empty_title:'Pilih kategori',faq_empty_sub:'Atau cari pertanyaan tertentu.',faq_noresult_title:'Tidak ada hasil',faq_noresult_sub:'Coba kata kunci atau kategori lain.',
     issues_label:'Issue Komunitas',issues_title:'Pantau laporan pengguna DLavie.',issues_sub:'Laporan publik membantu semua orang memahami masalah dan progres.',btn_buatissue:'Buat issue',issues_empty_title:'Belum ada issue',issues_empty_sub:'Jadilah yang pertama melapor.',modal_title:'Buat issue',modal_sub:'Laporan Anda akan terlihat oleh komunitas DLavie.',label_akun:'Akun',label_kategori:'Kategori',label_judul:'Judul issue',label_detail:'Detail issue',ph_judul:'Ringkasan singkat masalah',ph_detail:'Jelaskan kejadian dan cara mengulanginya…',btn_kirim:'Kirim issue',reply_toggle:'Lihat balasan',
     news_title:'Kabar terbaru dari DLavie.',news_all:'Semua',news_update:'Pembaruan',news_readmore:'Baca selengkapnya',news_empty:'Belum ada berita.',
     about_sub:'Launcher komunitas FIFA 16 Mobile yang dibangun bersama komunitas.',about_stat_version:'Versi',about_stat_lang:'Bahasa',about_h2_about:'Tentang DLavie',about_p_about:'DLavie Launcher menyatukan instalasi game, pembaruan, komunitas, dan pengelolaan akun dalam satu aplikasi Android.',about_h2_mission:'Misi kami',about_p_mission:'Membuat modding FIFA 16 Mobile lebih mudah, aman, dan terstruktur untuk semua pemain.',about_h2_features:'Fitur utama',about_h2_privacy:'Privasi & keamanan',about_p_privacy:'DLavie menggunakan HTTPS, sesi terlindungi, dan kebijakan akses database. Kami tidak mengumpulkan kontak, SMS, GPS, atau riwayat browsing.',about_h2_contact:'Kontak',about_p_contact:'Untuk bantuan, buat issue atau gunakan DLavie Portal.',
@@ -114,7 +114,11 @@
   function applyAttributes(root) {
     root.querySelectorAll?.('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
-      if (key) el.textContent = t(key);
+      if (key) {
+        const value = t(key).trim();
+        if (value) el.textContent = value;
+        else if (!el.textContent.trim()) el.textContent = key;
+      }
     });
     root.querySelectorAll?.('[data-i18n-ph], [data-i18n-placeholder]').forEach(el => {
       const key = el.getAttribute('data-i18n-ph') || el.getAttribute('data-i18n-placeholder');
