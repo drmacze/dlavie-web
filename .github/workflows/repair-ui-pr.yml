@@ -33,8 +33,9 @@ jobs:
 
       - name: Commit repaired website
         run: |
+          rm -f .github/workflows/ui-quality.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html i18n.js i18n.css portal-sso.js maintenance-dev-hub.css scripts/ui-audit.mjs .github/workflows/ui-quality.yml
+          git add index.html i18n.js i18n.css portal-sso.js maintenance-dev-hub.css scripts/ui-audit.mjs
           git commit -m "fix: restore UI text and contrast"
           git push origin HEAD:main
