@@ -16,6 +16,8 @@ check(/id="typingTarget"[^>]*data-i18n="hero_title"[^>]*>\s*[^<\s][^<]*<\/h1>/.t
 check(/id="faqTyping"[^>]*data-i18n="faq_title"[^>]*>\s*[^<\s][^<]*<\/h1>/.test(index), 'FAQ heading needs visible fallback text.');
 check(/id="btnDownloadHero"[^>]*onclick="openDownloadModal\(event\)"/.test(index), 'Hero download must open the confirmation modal.');
 check(!/<\/a>\\+\s*<a/.test(index), 'Stray backslashes must not appear between links.');
+check(!/<\/a>\\+n\s*<a/.test(index), 'Literal newline escapes must not appear between links.');
+check(!/>\\+n\s*</.test(index), 'Literal newline escapes must not appear between HTML elements.');
 check(!/color:#(?:444|555|666|777)\b/i.test(portal), 'Portal dynamic UI contains unreadably dark foreground text.');
 
 const enBlock = i18n.match(/const EN = \{([\s\S]*?)\n  \};/)?.[1] || '';
