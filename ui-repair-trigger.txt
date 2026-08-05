@@ -1,1 +1,1 @@
-Trigger final literal UI escape cleanup and strengthened website audit.
+Trigger safe literal UI escape cleanup with JavaScript string preservation.
