@@ -1,1 +1,1 @@
-Trigger deterministic UI text, contrast, JavaScript, and i18n repair.
+Retry deterministic UI text, contrast, JavaScript, and i18n repair after separating workflow publication.
