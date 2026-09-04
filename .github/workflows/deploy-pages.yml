@@ -5,6 +5,7 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Keep Pages deployable independently after auth source is materialized by CI.
 permissions:
   contents: read
   pages: write
