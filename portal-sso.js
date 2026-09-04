@@ -76,11 +76,47 @@
     else console.info('[DLavie]', message);
   }
 
+  const AUTH_KEYS = ['dlavie_access', 'dlavie_refresh', 'dlavie_uid', 'dlavie_email'];
+
+  function readAuthValue(key) {
+    return sessionStorage.getItem(key) || localStorage.getItem(key) || '';
+  }
+
+  function persistAuthSession(access, refresh, uid, email) {
+    const values = {
+      dlavie_access: access || '',
+      dlavie_refresh: refresh || '',
+      dlavie_uid: uid || '',
+      dlavie_email: email || '',
+    };
+    Object.entries(values).forEach(([key, value]) => {
+      if (value) {
+        sessionStorage.setItem(key, value);
+        localStorage.setItem(key, value);
+      } else {
+        sessionStorage.removeItem(key);
+        localStorage.removeItem(key);
+      }
+    });
+  }
+
+  function clearAuthSession() {
+    AUTH_KEYS.forEach(key => {
+      sessionStorage.removeItem(key);
+      localStorage.removeItem(key);
+    });
+  }
+
   function session() {
-    const access = sessionStorage.getItem('dlavie_access') || '';
-    const uid = sessionStorage.getItem('dlavie_uid') || '';
-    const email = sessionStorage.getItem('dlavie_email') || '';
-    return access && uid ? { access, uid, email } : null;
+    const access = readAuthValue('dlavie_access');
+    const uid = readAuthValue('dlavie_uid');
+    const email = readAuthValue('dlavie_email');
+    if (!access || !uid) return null;
+    // Hydrate the active tab so existing Portal code keeps working unchanged.
+    sessionStorage.setItem('dlavie_access', access);
+    sessionStorage.setItem('dlavie_uid', uid);
+    if (email) sessionStorage.setItem('dlavie_email', email);
+    return { access, uid, email };
   }
 
   async function callBackend(action, payload = {}, accessToken = '') {
@@ -434,9 +470,9 @@
       const verifier = randomSecret(64);
       const challenge = await codeChallenge(verifier);
       const state = randomSecret(32);
-      sessionStorage.setItem(GOOGLE_VERIFIER, verifier);
-      sessionStorage.setItem(GOOGLE_STATE, state);
-      sessionStorage.setItem(GOOGLE_STARTED, String(Date.now()));
+      localStorage.setItem(GOOGLE_VERIFIER, verifier);
+      localStorage.setItem(GOOGLE_STATE, state);
+      localStorage.setItem(GOOGLE_STARTED, String(Date.now()));
       const redirectTo = `${location.origin}${location.pathname}`;
       const url = new URL(`${SUPABASE_URL}/auth/v1/authorize`);
       url.searchParams.set('provider', 'google');
@@ -444,7 +480,6 @@
       url.searchParams.set('code_challenge', challenge);
       url.searchParams.set('code_challenge_method', 'S256');
       url.searchParams.set('state', state);
-      url.searchParams.set('prompt', 'select_account');
       location.assign(url.toString());
       return true;
     } catch (error) {
@@ -460,11 +495,11 @@
     const oauthError = url.searchParams.get('error');
     if (!code && !oauthError) return false;
 
-    const verifier = sessionStorage.getItem(GOOGLE_VERIFIER) || '';
-    const expectedState = sessionStorage.getItem(GOOGLE_STATE) || '';
-    const startedAt = Number(sessionStorage.getItem(GOOGLE_STARTED) || '0');
+    const verifier = localStorage.getItem(GOOGLE_VERIFIER) || '';
+    const expectedState = localStorage.getItem(GOOGLE_STATE) || '';
+    const startedAt = Number(localStorage.getItem(GOOGLE_STARTED) || '0');
     const returnedState = url.searchParams.get('state') || '';
-    [GOOGLE_VERIFIER, GOOGLE_STATE, GOOGLE_STARTED].forEach(key => sessionStorage.removeItem(key));
+    [GOOGLE_VERIFIER, GOOGLE_STATE, GOOGLE_STARTED].forEach(key => localStorage.removeItem(key));
     ['code', 'error', 'error_description', 'state'].forEach(key => url.searchParams.delete(key));
     history.replaceState({}, document.title, url.pathname + url.search + (url.hash || ''));
 
@@ -504,10 +539,7 @@
         throw new Error('session_verification_failed');
       }
 
-      sessionStorage.setItem('dlavie_access', authSession.access_token);
-      sessionStorage.setItem('dlavie_refresh', authSession.refresh_token);
-      sessionStorage.setItem('dlavie_uid', user.id);
-      sessionStorage.setItem('dlavie_email', user.email || '');
+      persistAuthSession(authSession.access_token, authSession.refresh_token, user.id, user.email || '');
       sessionStorage.setItem('dlavie_oauth_completed', '1');
       removeFlow();
       location.reload();
@@ -515,7 +547,7 @@
     } catch (error) {
       console.error('Google OAuth callback failed', error);
       removeFlow();
-      ['dlavie_access', 'dlavie_refresh', 'dlavie_uid', 'dlavie_email'].forEach(key => sessionStorage.removeItem(key));
+      clearAuthSession();
       toast('Login Google gagal diverifikasi. Coba lagi atau gunakan email dan password.');
       return true;
     }

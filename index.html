@@ -971,14 +971,17 @@ window.addEventListener('hashchange',router);
 // ═══════════════════════════════════════════════════════════════
 // SESSION (SSO — shared localStorage across same origin)
 // ═══════════════════════════════════════════════════════════════
+const DLAVIE_AUTH_KEYS=['dlavie_access','dlavie_refresh','dlavie_uid','dlavie_email'];
+function readSessionValue(key){return sessionStorage.getItem(key)||localStorage.getItem(key)||'';}
 function saveSession(access,refresh,uid,email){
-sessionStorage.setItem('dlavie_access',access);
-sessionStorage.setItem('dlavie_refresh',refresh||'');
-sessionStorage.setItem('dlavie_uid',uid);
-sessionStorage.setItem('dlavie_email',email||'');
+const values={dlavie_access:access||'',dlavie_refresh:refresh||'',dlavie_uid:uid||'',dlavie_email:email||''};
+Object.entries(values).forEach(([key,value])=>{
+if(value){sessionStorage.setItem(key,value);localStorage.setItem(key,value);}
+else{sessionStorage.removeItem(key);localStorage.removeItem(key);}
+});
 }
 function clearSession(){
-['dlavie_access','dlavie_refresh','dlavie_uid','dlavie_email'].forEach(k=>sessionStorage.removeItem(k));
+DLAVIE_AUTH_KEYS.forEach(k=>{sessionStorage.removeItem(k);localStorage.removeItem(k);});
 currentUser=null;
 window.currentUser=null;
 updateNavUser();
@@ -990,8 +993,31 @@ location.hash='#/portal';
 setTimeout(()=>{initPortal();},200);
 }
 function getStoredSession(){
-const a=sessionStorage.getItem('dlavie_access'),u=sessionStorage.getItem('dlavie_uid');
-return(a&&u)?{access:a,uid:u}:null;
+const access=readSessionValue('dlavie_access'),uid=readSessionValue('dlavie_uid');
+if(!access||!uid)return null;
+const value={access:access,refresh:readSessionValue('dlavie_refresh'),uid:uid,email:readSessionValue('dlavie_email')};
+// Migrate an older tab-only session into persistent same-origin storage.
+saveSession(value.access,value.refresh,value.uid,value.email);
+return value;
+}
+function accessTokenNeedsRefresh(token){
+try{
+const part=token.split('.')[1]||'';
+const normalized=part.replace(/-/g,'+').replace(/_/g,'/');
+const padded=normalized+'='.repeat((4-normalized.length%4)%4);
+const payload=JSON.parse(atob(padded));
+return Number(payload.exp||0)<=Math.floor(Date.now()/1000)+60;
+}catch(_){return true;}
+}
+async function refreshStoredSession(stored){
+if(!stored||!stored.refresh)return null;
+try{
+const r=await fetch(SUPABASE_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{'apikey':SUPABASE_ANON_KEY,'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({refresh_token:stored.refresh}),cache:'no-store'});
+const d=await r.json().catch(()=>({}));
+if(!r.ok||!d.access_token||!d.refresh_token||!d.user||!d.user.id)return null;
+saveSession(d.access_token,d.refresh_token,d.user.id,d.user.email||stored.email||'');
+return{access:d.access_token,refresh:d.refresh_token,uid:d.user.id,email:d.user.email||stored.email||''};
+}catch(e){console.warn('Session refresh failed:',e);return null;}
 }
 
 async function fetchUserProfile(uid,token){
@@ -1007,27 +1033,36 @@ return null;
 }
 
 async function restoreSession(){
-const s=getStoredSession();if(!s)return;
-const p=await fetchUserProfile(s.uid,s.access);
+let s=getStoredSession();if(!s)return;
+if(accessTokenNeedsRefresh(s.access)){
+const refreshed=await refreshStoredSession(s);
+if(!refreshed){clearSession();return;}
+s=refreshed;
+}
+let p=await fetchUserProfile(s.uid,s.access);
+// A token can be revoked before its exp. One refresh retry avoids presenting a
+// valid Google user as signed-out because of a stale access token.
+if(!p&&s.refresh){
+const refreshed=await refreshStoredSession(s);
+if(refreshed){s=refreshed;p=await fetchUserProfile(s.uid,s.access);}
+}
 if(p){
-currentUser={id:p.id,email:sessionStorage.getItem('dlavie_email')||'',username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,cover_url:p.cover_url||'',bio:p.bio||'',role:p.role};
+currentUser={id:p.id,email:readSessionValue('dlavie_email'),username:p.username,display_name:p.display_name,avatar_url:p.avatar_url,cover_url:p.cover_url||'',bio:p.bio||'',role:p.role};
+window.currentUser=currentUser;
 updateNavUser();
 }else{
-// v7.9.77 FIX: Jangan clear session langsung. Coba auto-create profile dulu.
-// Ini handle case dimana user signup via Google OAuth tapi trigger gagal create profile.
 console.warn('restoreSession: profile not found, attempting auto-create...');
-const email=sessionStorage.getItem('dlavie_email')||'';
+const email=readSessionValue('dlavie_email');
 const created=await ensureProfileFromOAuth(s.uid,s.access,email,'','');
 if(created){
 currentUser={id:created.id,email:email,username:created.username,display_name:created.display_name,avatar_url:created.avatar_url,cover_url:'',bio:'',role:created.role};
+window.currentUser=currentUser;
 updateNavUser();
 showToast('Profil berhasil dibuat. Selamat datang!');
 }else{
-// Last resort: set fallback currentUser dari localStorage supaya user
-// tetap kelihatan logged in (nav shows avatar), meski profile row belum ada.
-// Profile bisa di-create later via launcher atau manual.
-console.warn('restoreSession: profile creation failed, using fallback currentUser');
+console.warn('restoreSession: profile creation failed, using verified-session fallback user');
 currentUser={id:s.uid,email:email,username:email?email.split('@')[0]:'user',display_name:email?email.split('@')[0]:'DLavie User',avatar_url:null,cover_url:'',bio:'',role:'user'};
+window.currentUser=currentUser;
 updateNavUser();
 }
 }
